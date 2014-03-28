@@ -28,6 +28,13 @@ public class MainActivity extends Activity {
 	protected String telnetServer="";
 	protected int telnetPort = 23;
 	protected String telnetLogon = "";
+	protected String qsoTFreq = "";
+	protected String qsoRFreq = "";
+	protected String qsoCall = "";
+	protected String qsoMode = "";
+	protected String qsoRRST = "";
+	protected String qsoSRST = "";
+	
 	protected TerminalSocket st = null;
 	protected int state=loggedOut;
 	protected String mode(String freq)
@@ -135,38 +142,65 @@ public class MainActivity extends Activity {
             
             String text = o.toString();
             int pos =  text.indexOf(' ');
-            
-            callBox.setText(text.substring(0, pos));
+            qsoCall = text.substring(0, pos);
+            callBox.setText(qsoCall);
             int pos2 = text.indexOf(' ', pos+1);
             if (pos2 <=0)
             	pos2 = text.length();
-            String freq = text.substring(pos+1, pos2);
-            int posp = freq.indexOf('.');
-            if (posp == -1)
+            qsoRFreq = text.substring(pos+1, pos2);
+            int posp = qsoRFreq.indexOf('.');
+            // TODO: QSX 3.838, QSX 4, UP 5, DOWN 2, U 5, D4, U4, DN4, UP4, DOWN4, QSX7144
+            String comment ="";
+            if (pos2 < text.length())
+            	comment = text.substring(pos2);
+            if (comment.contains("up1") || comment.contains("up 1") ) // for now treat as up 1
             {
-            	freq = freq.substring(0,freq.length()-3)+"."+freq.substring(freq.length()-3);
-            }
-            else
-            {
-            	if (freq.substring(posp+1).equals("0"))
-            		freq = freq.substring(0, posp-3)+"."+freq.substring(posp-3, posp);
+            	int addLoc = -1;
+            	if (posp == -1)
+            		addLoc = qsoRFreq.length()-1;
             	else
-            		freq = freq.substring(0, posp-3)+"."+freq.substring(posp-3, posp)+freq.substring(posp+1);
+            		addLoc = posp - 1;
+            	while (addLoc > 0)
+            	{
+            		char t = qsoRFreq.charAt(addLoc);
+            		if (t == '9')
+            		{
+            			t = '0';
+            			qsoTFreq = (qsoRFreq.substring(0, addLoc) + t);
+            			if (addLoc < qsoRFreq.length()-1)
+            				qsoTFreq = qsoTFreq + qsoRFreq.substring(addLoc+1);
+            			
+            			addLoc--;
+            		}
+            		else
+            		{
+            			t++;
+            			qsoTFreq = (qsoRFreq.substring(0, addLoc) + t);
+                    	if (addLoc < qsoRFreq.length()-1)
+            				qsoTFreq = qsoTFreq + qsoRFreq.substring(addLoc+1);
+            			addLoc = 0;
+            		}
+            	}
+            		
             }
-            txfreqBox.setText(freq);
-            rxfreqBox.setText(freq);
-            String md = mode(freq);
-            modeBox.setText(md);
-            if (md.equals("SSB") || md.equals("AM") || md.equals("FM"))
+            qsoRFreq = convertToMHz(qsoRFreq, posp);
+            qsoTFreq = convertToMHz(qsoTFreq, posp);
+            txfreqBox.setText(qsoTFreq);
+            rxfreqBox.setText(qsoRFreq);
+            qsoMode = mode(qsoRFreq);
+            modeBox.setText(qsoMode);
+            if (qsoMode.equals("SSB") || qsoMode.equals("AM") || qsoMode.equals("FM"))
             {
-            	rrstBox.setText("59");
-            	srstBox.setText("59");
+            	qsoRRST = "59";
+            	qsoSRST = "59";
             }
             else
             {
-            	rrstBox.setText("599");
-            	srstBox.setText("599");
+            	qsoRRST="599";
+            	qsoSRST="599";
             }
+        	rrstBox.setText(qsoRRST);
+        	srstBox.setText(qsoSRST);
           }
         });
     }
@@ -176,6 +210,29 @@ public class MainActivity extends Activity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
       super.onActivityResult(requestCode, resultCode, data);
       switch(requestCode) {
+      	case (log_request) : {
+            if (resultCode == Activity.RESULT_OK) {
+            	qsoTFreq = data.getStringExtra(LogActivity.QSO_FREQ);
+            	qsoRFreq = data.getStringExtra(LogActivity.QSO_FREQ);
+            	qsoCall = data.getStringExtra(LogActivity.QSO_CALL);
+            	qsoRRST = data.getStringExtra(LogActivity.QSO_RRST);
+            	qsoSRST = data.getStringExtra(LogActivity.QSO_SRST);
+            	qsoMode = data.getStringExtra(LogActivity.QSO_MODE);
+                EditText callBox = (EditText) findViewById(R.id.call_edit);
+                EditText txfreqBox = (EditText) findViewById(R.id.txfreq_edit);
+                EditText rxfreqBox = (EditText) findViewById(R.id.rxfreq_edit);
+                EditText modeBox = (EditText) findViewById(R.id.mode_edit);
+                EditText rrstBox = (EditText) findViewById(R.id.rrst_edit);
+                EditText srstBox = (EditText) findViewById(R.id.srst_edit);
+                callBox.setText(qsoCall);
+                txfreqBox.setText(qsoTFreq);
+                rxfreqBox.setText(qsoRFreq);
+                modeBox.setText(qsoMode);
+            	rrstBox.setText(qsoRRST);
+            	srstBox.setText(qsoSRST);
+            }
+    	  break;
+      	}
         case (config_request) : {
           if (resultCode == Activity.RESULT_OK) {
         		telnetServer = data.getStringExtra(ConfigActivity.SERVER_NAME);
@@ -193,7 +250,25 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-	
+
+    protected String convertToMHz(String freq, int posp)
+    {
+    
+    	String ret = "";
+        if (posp == -1)
+        {
+        	ret = freq.substring(0,freq.length()-3)+"."+freq.substring(freq.length()-3);
+        }
+        else
+        {
+        	if (freq.substring(posp+1).equals("0"))
+        		ret = freq.substring(0, posp-3)+"."+freq.substring(posp-3, posp);
+        	else
+        		ret = freq.substring(0, posp-3)+"."+freq.substring(posp-3, posp)+freq.substring(posp+1);
+        }
+        return ret;
+    }
+    
     public class StableArrayAdapter extends ArrayAdapter<String> {
 
     	protected int curId = 0;

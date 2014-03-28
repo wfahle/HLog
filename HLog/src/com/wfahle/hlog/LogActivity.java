@@ -79,7 +79,8 @@ public class LogActivity extends Activity {
 			//
 			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
 			//
-			NavUtils.navigateUpFromSameTask(this);
+			clickSave(null);
+//			NavUtils.navigateUpFromSameTask(this);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -96,8 +97,25 @@ public class LogActivity extends Activity {
         // do whatever u want to do with 'f' File object
         */ 
     	// on config screen? do export of adif to file and/or email
-		
-		NavUtils.navigateUpFromSameTask(this);
+    	Intent resultIntent = new Intent();
+    	EditText call_edit = (EditText) findViewById(R.id.callt_edit);
+    	String call = call_edit.getEditableText().toString();
+    	EditText freq_edit = (EditText) findViewById(R.id.rxfreqt_edit);
+    	String freq = freq_edit.getEditableText().toString();
+    	EditText rrst_edit = (EditText) findViewById(R.id.rrstt_edit);
+    	String rrst = rrst_edit.getEditableText().toString();
+    	EditText srst_edit = (EditText) findViewById(R.id.srstt_edit);
+    	String srst = srst_edit.getEditableText().toString();
+    	EditText mode_edit = (EditText) findViewById(R.id.modet_edit);
+    	String mode = mode_edit.getEditableText().toString();
+    	resultIntent.putExtra(QSO_FREQ, freq);
+    	resultIntent.putExtra(QSO_CALL, call);
+    	resultIntent.putExtra(QSO_RRST, rrst);
+    	resultIntent.putExtra(QSO_SRST, srst);    	
+    	resultIntent.putExtra(QSO_MODE, mode);
+    	// TODO Add extras or a data URI to this intent as appropriate.
+    	setResult(Activity.RESULT_OK, resultIntent);
+    	finish();
 	}
 	public void clickNowOn(View view)
 	{
