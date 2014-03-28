@@ -1,0 +1,55 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".ConfigActivity" >
+
+    <TextView
+        android:id="@+id/cluster"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/server_ui" />
+
+    <EditText
+        android:id="@+id/cluster_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/cluster"
+        android:layout_below="@+id/cluster"
+        android:ems="10"
+        android:inputType="text|textUri" >
+
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:id="@+id/yourcall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/cluster_edit"
+        android:layout_below="@+id/cluster_edit"
+        android:text="@string/yourcall_ui" />
+
+    <EditText
+        android:id="@+id/yourcall_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/yourcall"
+        android:layout_below="@+id/yourcall"
+        android:ems="10"
+        android:inputType="textCapCharacters" />
+
+    <Button
+        android:id="@+id/done_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/yourcall_edit"
+        android:layout_below="@+id/yourcall_edit"
+        android:onClick="done"
+        android:text="@string/done_ui" />
+
+</RelativeLayout>

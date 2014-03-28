@@ -1,0 +1,281 @@
+<ScrollView
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+
+	<RelativeLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:paddingBottom="@dimen/activity_vertical_margin"
+	    android:paddingLeft="@dimen/activity_horizontal_margin"
+	    android:paddingRight="@dimen/activity_horizontal_margin"
+	    android:paddingTop="@dimen/activity_vertical_margin"
+	    tools:context=".LogActivity" >
+	
+	    <TextView
+	        android:id="@+id/timeon"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/timeon_ui" />	
+	        
+	    <Button
+	        android:id="@+id/save_button"
+	        style="@style/AppTheme"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:layout_below="@+id/timeon"
+	        android:onClick="clickSave"
+	        android:text="@string/save_ui" />
+
+	    <Button
+	        android:id="@+id/nowon_button"
+	        style="?android:attr/buttonStyleSmall"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignTop="@+id/save_button"
+	        android:layout_toLeftOf="@+id/save_button"
+	        android:onClick="clickNowOn"
+	        android:text="@string/now_ui" />
+	
+	    	    <EditText
+	        android:id="@+id/timeon_edit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/timeon"
+	        android:layout_below="@+id/timeon"
+	        android:layout_toLeftOf="@id/nowon_button"
+	        android:ems="10"
+	        android:inputType="datetime" >
+	
+	        <requestFocus />
+	    </EditText>
+	
+	    <TextView
+	        android:id="@+id/timeoff"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/timeon_edit"
+	        android:layout_below="@+id/timeon_edit"
+	        android:text="@string/timeoff_ui" />
+	
+	    <EditText
+	        android:id="@+id/timeoff_edit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/timeoff"
+	        android:layout_below="@+id/timeoff"
+	        android:layout_toLeftOf="@+id/nowon_button"
+	        android:ems="10"
+	        android:inputType="datetime" />
+	
+	    <Button
+	        android:id="@+id/nowoff_button"
+	        style="?android:attr/buttonStyleSmall"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignBaseline="@+id/timeoff_edit"
+	        android:layout_alignBottom="@+id/timeoff_edit"
+	        android:layout_toRightOf="@+id/timeoff_edit"
+	        android:onClick="clickNowOff"
+	        android:text="@string/now_ui" />
+
+	    <TextView
+	        android:id="@+id/rxfreqt"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/timeoff_edit"
+	        android:layout_below="@+id/timeoff_edit"
+	        android:text="@string/rx_freq" />
+	
+	    <EditText
+	        android:id="@+id/rxfreqt_edit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/rxfreqt"
+	        android:layout_below="@+id/rxfreqt"
+	        android:ems="10"
+	        android:inputType="numberDecimal" />
+	
+	    <TextView
+	        android:id="@+id/callt"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/rxfreqt_edit"
+	        android:layout_below="@+id/rxfreqt_edit"
+	        android:text="@string/call_ui" />
+	
+	    <EditText
+	        android:id="@+id/callt_edit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/callt"
+	        android:layout_below="@+id/callt"
+	        android:layout_toLeftOf="@+id/lookup_box"
+	        android:ems="10"
+	        android:inputType="textPersonName|numberDecimal" />
+	
+	    <CheckBox
+	        android:id="@+id/lookup_box"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignBaseline="@+id/callt_edit"
+	        android:layout_alignBottom="@+id/callt_edit"
+	        android:layout_alignParentRight="true"
+	        android:checked="true"
+	        android:text="@string/lookup_ui" />
+	
+	    <TextView
+	        android:id="@+id/modet"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/callt_edit"
+	        android:layout_below="@+id/callt_edit"
+	        android:text="@string/mode_ui" />
+	
+	    <EditText
+	        android:id="@+id/modet_edit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/modet"
+	        android:layout_alignRight="@+id/rxfreqt"
+	        android:layout_below="@+id/modet"
+	        android:ems="10"
+	        android:inputType="textCapCharacters" />
+	
+	    <EditText
+	        android:id="@+id/rrstt_edit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignBottom="@+id/modet_edit"
+	        android:layout_alignRight="@+id/callt_edit"
+	        android:layout_toRightOf="@+id/modet_edit"
+	        android:ems="10"
+	        android:inputType="number" />
+	
+	    <TextView
+	        android:id="@+id/rrstt"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_above="@+id/rrstt_edit"
+	        android:layout_alignLeft="@+id/rrstt_edit"
+	        android:text="@string/rrst_ui" />
+	
+	    <EditText
+	        android:id="@+id/srstt_edit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignBottom="@+id/rrstt_edit"
+	        android:layout_alignLeft="@+id/lookup_box"
+	        android:layout_alignParentRight="true"
+	        android:ems="10"
+	        android:inputType="number" />
+	
+	    <TextView
+	        android:id="@+id/srstt"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_above="@+id/srstt_edit"
+	        android:layout_alignLeft="@+id/srstt_edit"
+	        android:text="@string/srst_ui" />
+	
+	    <TextView
+	        android:id="@+id/name"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/modet_edit"
+	        android:layout_below="@+id/modet_edit"
+	        android:text="@string/namet_ui" />
+	
+	    <EditText
+	        android:id="@+id/name_edit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/name"
+	        android:layout_below="@+id/name"
+	        android:ems="10"
+	        android:inputType="textPersonName" />
+	
+	    <TextView
+	        android:id="@+id/qth"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/name_edit"
+	        android:layout_below="@+id/name_edit"
+	        android:text="@string/qth_ui" />
+	
+	    <EditText
+	        android:id="@+id/qth_edit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/qth"
+	        android:layout_below="@+id/qth"
+	        android:ems="10"
+	        android:inputType="textCapWords" />
+
+	    <TextView
+	        android:id="@+id/state"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/qth_edit"
+	        android:layout_below="@+id/qth_edit"
+	        android:text="@string/state_ui" />
+
+	    <EditText
+	        android:id="@+id/state_edit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/state"
+	        android:layout_alignRight="@+id/rrstt"
+	        android:layout_below="@+id/state"
+	        android:ems="10"
+	        android:inputType="textCapWords" />
+
+	    <EditText
+	        android:id="@+id/country_edit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignBottom="@+id/state_edit"
+	        android:layout_toRightOf="@+id/state_edit"
+	        android:ems="10"
+	        android:inputType="textCapWords" />
+
+	    <TextView
+	        android:id="@+id/country"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_above="@+id/country_edit"
+	        android:layout_alignLeft="@+id/country_edit"
+	        android:text="@string/country_ui" />
+
+	    <Button
+	        android:id="@+id/cancel_button"
+	        style="?android:attr/buttonStyleSmall"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignBaseline="@+id/nowoff_button"
+	        android:layout_alignBottom="@+id/nowoff_button"
+	        android:layout_alignParentRight="true"
+	        android:onClick="clickCancel"
+	        android:text="@string/cancel_ui" />
+
+	    <TextView
+	        android:id="@+id/grid"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/state_edit"
+	        android:layout_below="@id/state_edit"
+	        android:text="@string/grid_ui" />
+
+	    <EditText
+	        android:id="@+id/grid_edit"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/grid"
+	        android:layout_below="@+id/grid"
+	        android:ems="10"
+	        android:inputType="textCapCharacters" />
+
+	</RelativeLayout>
+</ScrollView>
