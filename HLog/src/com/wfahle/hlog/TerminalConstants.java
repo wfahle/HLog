@@ -205,6 +205,10 @@ class MyHandler extends Handler {
 			{
 				main.submitCall();
 			}
+			else if (msgText.indexOf("login:") >= 0)
+			{
+				main.submitCall();
+			}
 		}
 		else if(msg.what == 1)
 		{
