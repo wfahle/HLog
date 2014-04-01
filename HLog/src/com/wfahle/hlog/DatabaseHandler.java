@@ -1,11 +1,6 @@
 package com.wfahle.hlog;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -17,24 +12,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     // Database Name
     private static final String DATABASE_NAME = "qsoManager";
  
-    // Contacts table name
-    private static final String TABLE_CONTACTS = "qsos";
- 
-    // Contacts Table Columns names
-    private static final String KEY_ID = "id";
-    private static final String KEY_CALL = "call";
-    private static final String KEY_RXFREQ = "rxfreq";
-    private static final String KEY_TXFREQ = "txfreq";
-    private static final String KEY_TIMEON = "timeon";
-    private static final String KEY_TIMEOFF = "timeoff";
-    private static final String KEY_MODE = "mode";
-    private static final String KEY_RRST = "rrst";
-    private static final String KEY_SRST = "srst";
-    private static final String KEY_NAME = "name";
-    private static final String KEY_QTH = "qth";
-    private static final String KEY_STATE = "state";
-    private static final String KEY_COUNTRY = "country";
-    private static final String KEY_GRID = "grid";
  
 	public DatabaseHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -42,32 +19,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-	       String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS + "("
-	                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_CALL + " TEXT,"
-	                + KEY_RXFREQ + " TEXT," 
-	                + KEY_TXFREQ + " TEXT," 
-	                + KEY_TIMEON + " TEXT," 
-	                + KEY_TIMEOFF + " TEXT," 
-	                + KEY_MODE + " TEXT," 
-	                + KEY_RRST + " TEXT," 
-	                + KEY_SRST + " TEXT," 
-	                + KEY_NAME + " TEXT," 
-	                + KEY_QTH + " TEXT," 
-	                + KEY_STATE + " TEXT," 
-	                + KEY_COUNTRY + " TEXT," 
-	                + KEY_GRID + " TEXT" 
-	                + ")";
-	        db.execSQL(CREATE_CONTACTS_TABLE);
-	 
+	       QSOContactTable.onCreate(db);	 
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-	     db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
-	     
-	        // Create tables again
-	        onCreate(db);
+		QSOContactTable.onUpgrade(db, oldVersion, newVersion);
 	}
+	
+	/*
 	// Adding new contact
 	public void addContact(QSOContact contact) {
 	    SQLiteDatabase db = this.getWritableDatabase();
@@ -189,5 +149,5 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	    db.delete(TABLE_CONTACTS, KEY_ID + " = ?",
 	            new String[] { String.valueOf(contact.getId()) });
 	    db.close();	
-	}
+	} */
 }
