@@ -33,5 +33,10 @@
     <string name="save_ui">Save</string>
     <string name="cancel_ui">Cancel</string>
     <string name="grid_ui">Grid</string>
+    <string name="title_activity_entry">EntryActivity</string>
+    <string name="capture_ui">Capture</string>
+    <string name="contacts_ui">Contacts(0)</string>
+    <string name="edit_ui">Edit</string>
+    <string name="tools_ui">Tools</string>
 
 </resources>

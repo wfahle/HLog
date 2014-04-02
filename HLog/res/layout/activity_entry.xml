@@ -1,0 +1,182 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".MainActivity" >
+
+    <Button
+        android:id="@+id/new_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:onClick="newContact"
+        android:text="@string/edit_ui" />
+
+    <TextView
+        android:id="@+id/call"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/new_button"
+        android:layout_marginLeft="14dp"
+        android:text="@string/call_ui" />
+
+    <EditText
+        android:id="@+id/call_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/call"
+        android:layout_marginLeft="14dp"
+        android:ems="10"
+        android:inputType="textCapCharacters|textPhonetic" >
+
+    </EditText>
+
+    <TextView
+        android:id="@+id/rxfreqt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/call_edit"
+        android:layout_marginLeft="14dp"
+        android:text="@string/rx_freq" />
+
+    <EditText
+        android:id="@+id/rxfreq_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/rxfreqt"
+        android:layout_marginLeft="14dp"
+        android:ems="10"
+        android:inputType="numberDecimal" />
+
+    <TextView
+        android:id="@+id/txfreq"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/rxfreq_edit"
+        android:layout_marginLeft="14dp"
+        android:text="@string/txfreq_ui" />
+
+    <EditText
+        android:id="@+id/txfreq_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txfreq"
+        android:layout_below="@+id/txfreq"
+        android:ems="10"
+        android:inputType="numberDecimal" >
+    </EditText>
+
+    <ListView
+        android:id="@+id/spot_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txfreq_edit"
+        android:layout_below="@+id/txfreq_edit" >
+
+    </ListView>
+
+    <Button
+        android:id="@+id/configure_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/call"
+        android:layout_alignRight="@+id/spot_list"
+        android:onClick="configureApp"
+        android:text="@string/configure_ui" />
+
+    <Button
+        android:id="@+id/dxcStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/log_button"
+        android:layout_alignBottom="@+id/log_button"
+        android:layout_toLeftOf="@+id/configure_button"
+        android:onClick="LogOn"
+        android:text="@string/login_ui" />
+
+    <TextView
+        android:id="@+id/dxc_out"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/spot_list"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="20dp" />
+
+    <Button
+        android:id="@+id/log_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/call"
+        android:layout_toRightOf="@+id/new_button"
+        android:contentDescription="@string/log_contact"
+        android:onClick="logContact"
+        android:text="@string/log_ui" />
+
+    <EditText
+        android:id="@+id/mode_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/call_edit"
+        android:layout_alignBottom="@+id/call_edit"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/call_edit"
+        android:ems="10"
+        android:inputType="textCapCharacters" >
+
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:id="@+id/mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/mode_edit"
+        android:layout_alignLeft="@+id/mode_edit"
+        android:text="@string/mode_ui" />
+
+    <EditText
+        android:id="@+id/rrst_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/rxfreq_edit"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/rxfreq_edit"
+        android:ems="10"
+        android:inputType="number" />
+
+    <TextView
+        android:id="@+id/timeon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/rrst_edit"
+        android:layout_alignLeft="@+id/rrst_edit"
+        android:text="@string/rrst_ui" />
+
+    <EditText
+        android:id="@+id/srst_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/txfreq_edit"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/txfreq_edit"
+        android:ems="10"
+        android:inputType="number" />
+
+    <TextView
+        android:id="@+id/srstt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/srst_edit"
+        android:layout_alignLeft="@+id/srst_edit"
+        android:text="@string/srst_ui" />
+
+</RelativeLayout>

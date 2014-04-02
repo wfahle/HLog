@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import com.wfahle.hlog.MainActivity.StableArrayAdapter;
+import com.wfahle.hlog.EntryActivity.StableArrayAdapter;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -152,13 +152,13 @@ public final class TerminalConstants {
 
 }
 class MyHandler extends Handler {
-	MainActivity main;
+	EntryActivity main;
 	ListView lv;
 	TextView txt;
 
-	MyHandler(MainActivity main, ListView listView, TextView txt) {
+	MyHandler(EntryActivity entryActivity, ListView listView, TextView txt) {
 		super();
-		this.main = main;
+		this.main = entryActivity;
 		lv = listView;
 		this.txt = txt;
 	}
