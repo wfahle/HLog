@@ -18,6 +18,15 @@ public class LogActivity extends Activity {
 	public static final String QSO_RRST = "com.wfahle.hlog.QSO_RRST";
 	public static final String QSO_SRST = "com.wfahle.hlog.QSO_SRST";
 	public static final String QSO_MODE = "com.wfahle.hlog.QSO_MODE";
+	public static final String QSO_TIMEON = "com.wfahle.hlog.QSO_TIMEON";
+	public static final String QSO_TIMEOFF = "com.wfahle.hlog.QSO_TIMEOFF";
+	public static final String QSO_NAME = "com.wfahle.hlog.QSO_NAME";
+	public static final String QSO_QTH = "com.wfahle.hlog.QSO_QTH";
+	public static final String QSO_STATE = "com.wfahle.hlog.QSO_STATE";
+	public static final String QSO_COUNTRY = "com.wfahle.hlog.QSO_COUNTRY";
+	public static final String QSO_GRID = "com.wfahle.hlog.QSO_GRID";
+	
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -109,11 +118,33 @@ public class LogActivity extends Activity {
     	String srst = srst_edit.getEditableText().toString();
     	EditText mode_edit = (EditText) findViewById(R.id.modet_edit);
     	String mode = mode_edit.getEditableText().toString();
+    	EditText timeon_edit = (EditText) findViewById(R.id.timeon_edit);
+    	String timeon = timeon_edit.getEditableText().toString();
+    	EditText timeoff_edit = (EditText) findViewById(R.id.timeoff_edit);
+    	String timeoff = timeoff_edit.getEditableText().toString();
+    	EditText name_edit = (EditText) findViewById(R.id.name_edit);
+    	String name = name_edit.getEditableText().toString();
+    	EditText qth_edit = (EditText) findViewById(R.id.qth_edit);
+    	String qth = qth_edit.getEditableText().toString();
+    	EditText state_edit = (EditText) findViewById(R.id.state_edit);
+    	String state = state_edit.getEditableText().toString();
+    	EditText country_edit = (EditText) findViewById(R.id.country_edit);
+    	String country = country_edit.getEditableText().toString();
+    	EditText grid_edit = (EditText) findViewById(R.id.grid_edit);
+    	String grid = grid_edit.getEditableText().toString();
     	resultIntent.putExtra(QSO_FREQ, freq);
     	resultIntent.putExtra(QSO_CALL, call);
     	resultIntent.putExtra(QSO_RRST, rrst);
     	resultIntent.putExtra(QSO_SRST, srst);    	
     	resultIntent.putExtra(QSO_MODE, mode);
+    	resultIntent.putExtra(QSO_TIMEON, timeon);
+    	resultIntent.putExtra(QSO_TIMEOFF, timeoff);
+    	resultIntent.putExtra(QSO_NAME, name);
+    	resultIntent.putExtra(QSO_QTH, qth);
+    	resultIntent.putExtra(QSO_STATE, state);
+    	resultIntent.putExtra(QSO_COUNTRY, country);
+    	resultIntent.putExtra(QSO_GRID, grid);
+    	
     	// TODO Add extras or a data URI to this intent as appropriate.
     	setResult(Activity.RESULT_OK, resultIntent);
     	finish();

@@ -15,6 +15,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
@@ -113,6 +114,20 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	public void onLoaderReset(Loader<Cursor> loader) {
 		   // data is not available anymore, delete reference
 	    adapter.swapCursor(null);
+	}
+    @Override
+	public boolean onContextItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {
+	    case DELETE_ID:
+	      AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+	          .getMenuInfo();
+	      Uri uri = Uri.parse(QSOContactProvider.CONTENT_URI + "/"
+	          + info.id);
+	      getContentResolver().delete(uri, null, null);
+	      fillData();
+	      return true;
+	    }
+	    return super.onContextItemSelected(item);
 	}
 
 }

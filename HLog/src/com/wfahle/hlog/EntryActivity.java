@@ -5,10 +5,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.wfahle.hlog.contentprovider.QSOContactProvider;
+
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,9 +39,24 @@ public class EntryActivity extends Activity {
 	protected String qsoMode = "";
 	protected String qsoRRST = "";
 	protected String qsoSRST = "";
-	
+	protected String qsoTimeon = "";
+	protected String qsoTimeoff = "";
+	protected String qsoName = "";
+	protected String qsoQTH = "";
+	protected String qsoState = "";
+	protected String qsoCountry = "";
+	protected String qsoGrid = "";
+    EditText callBox;
+    EditText txfreqBox;
+    EditText rxfreqBox;
+    EditText modeBox;
+    EditText rrstBox;
+    EditText srstBox;
+
 	protected TerminalSocket st = null;
 	protected int state=loggedOut;
+	private Uri contactUri;
+
 	protected String mode(String freq)
 	{
 		String ret = "";
@@ -123,6 +143,26 @@ public class EntryActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entry);
+        Bundle extras = getIntent().getExtras();
+        callBox = (EditText) findViewById(R.id.call_edit);
+        txfreqBox = (EditText) findViewById(R.id.txfreq_edit);
+        rxfreqBox = (EditText) findViewById(R.id.rxfreq_edit);
+        modeBox = (EditText) findViewById(R.id.mode_edit);
+        rrstBox = (EditText) findViewById(R.id.rrst_edit);
+        srstBox = (EditText) findViewById(R.id.srst_edit);
+
+        // check from the saved Instance
+        contactUri = (savedInstanceState == null) ? null : (Uri) savedInstanceState
+            .getParcelable(QSOContactProvider.CONTENT_ITEM_TYPE);
+
+        // Or passed from the other activity
+        if (extras != null) {
+          contactUri = extras
+              .getParcelable(QSOContactProvider.CONTENT_ITEM_TYPE);
+
+          fillData(contactUri);
+        }
+        
         final ListView lv = (ListView) findViewById(R.id.spot_list);
         lv.setClickable(true);
         final ArrayList<String> list = new ArrayList<String>();
@@ -133,12 +173,6 @@ public class EntryActivity extends Activity {
           public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
 
             Object o = lv.getItemAtPosition(position);
-            EditText callBox = (EditText) findViewById(R.id.call_edit);
-            EditText txfreqBox = (EditText) findViewById(R.id.txfreq_edit);
-            EditText rxfreqBox = (EditText) findViewById(R.id.rxfreq_edit);
-            EditText modeBox = (EditText) findViewById(R.id.mode_edit);
-            EditText rrstBox = (EditText) findViewById(R.id.rrst_edit);
-            EditText srstBox = (EditText) findViewById(R.id.srst_edit);
             
             String text = o.toString();
             int pos =  text.indexOf(' ');
@@ -207,7 +241,93 @@ public class EntryActivity extends Activity {
         });
     }
     
-    
+	private void fillData(Uri uri) {
+	    String[] projection = { QSOContactTable.KEY_CALL,
+	        QSOContactTable.KEY_RXFREQ, QSOContactTable.KEY_TXFREQ, QSOContactTable.KEY_MODE, QSOContactTable.KEY_RRST, QSOContactTable.KEY_SRST };
+	    Cursor cursor = getContentResolver().query(uri, projection, null, null,
+	        null);
+	    if (cursor != null) {
+	      cursor.moveToFirst();
+
+	      /* this is for a spinner - could be mode, for example, but have to maintain
+	      String category = cursor.getString(cursor
+	          .getColumnIndexOrThrow(QSOContactTable.COLUMN_CATEGORY));
+	      for (int i = 0; i < mCategory.getCount(); i++) {
+
+	        String s = (String) mCategory.getItemAtPosition(i);
+	        if (s.equalsIgnoreCase(category)) {
+	          mCategory.setSelection(i);
+	        }
+	      } */
+
+	      callBox.setText(cursor.getString(cursor
+		          .getColumnIndexOrThrow(QSOContactTable.KEY_CALL)));
+	      txfreqBox.setText(cursor.getString(cursor
+			      .getColumnIndexOrThrow(QSOContactTable.KEY_TXFREQ)));
+	      rxfreqBox.setText(cursor.getString(cursor
+			      .getColumnIndexOrThrow(QSOContactTable.KEY_RXFREQ)));
+	      modeBox.setText(cursor.getString(cursor
+			      .getColumnIndexOrThrow(QSOContactTable.KEY_MODE)));
+	      rrstBox.setText(cursor.getString(cursor
+			      .getColumnIndexOrThrow(QSOContactTable.KEY_RRST)));
+	      srstBox.setText(cursor.getString(cursor
+			      .getColumnIndexOrThrow(QSOContactTable.KEY_SRST)));
+	      // always close the cursor
+	      cursor.close();
+	    }
+	}
+
+	protected void onSaveInstanceState(Bundle outState) {
+	    super.onSaveInstanceState(outState);
+	    saveState();
+	    outState.putParcelable(QSOContactProvider.CONTENT_ITEM_TYPE, contactUri);
+	}
+
+	@Override
+	protected void onPause() {
+	    super.onPause();
+	    saveState();
+	}
+
+	private void saveState() {
+	    qsoCall = callBox.getText().toString();
+	    qsoTFreq = txfreqBox.getText().toString();
+	    qsoRFreq = rxfreqBox.getText().toString();
+	    qsoMode = modeBox.getText().toString();
+	    qsoRRST = rrstBox.getText().toString();
+	    qsoSRST = srstBox.getText().toString();
+
+	    // only save if either callsign or frequency
+	    // is available
+
+	    if (qsoCall.length() == 0 && qsoRFreq.length() == 0) {
+	      return;
+	    }
+
+		ContentValues values = new ContentValues();
+		values.put(QSOContactTable.KEY_CALL, qsoCall);
+		values.put(QSOContactTable.KEY_TXFREQ, qsoTFreq);
+		values.put(QSOContactTable.KEY_RXFREQ, qsoRFreq);
+		values.put(QSOContactTable.KEY_MODE, qsoMode);
+		values.put(QSOContactTable.KEY_RRST, qsoRRST);
+		values.put(QSOContactTable.KEY_SRST, qsoSRST);
+		values.put(QSOContactTable.KEY_TIMEON, qsoTimeon);
+		values.put(QSOContactTable.KEY_TIMEOFF, qsoTimeoff);
+		values.put(QSOContactTable.KEY_NAME, qsoName);
+		values.put(QSOContactTable.KEY_QTH, qsoQTH);
+		values.put(QSOContactTable.KEY_STATE, qsoState);
+		values.put(QSOContactTable.KEY_COUNTRY, qsoCountry);
+		values.put(QSOContactTable.KEY_GRID, qsoGrid);
+		
+		if (contactUri == null) {
+		      // New qso
+		      contactUri = getContentResolver().insert(QSOContactProvider.CONTENT_URI, values);
+		} else {
+		      // Update todo
+		      getContentResolver().update(contactUri, values, null, null);
+		}
+	}
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
       super.onActivityResult(requestCode, resultCode, data);
@@ -220,6 +340,14 @@ public class EntryActivity extends Activity {
             	qsoRRST = data.getStringExtra(LogActivity.QSO_RRST);
             	qsoSRST = data.getStringExtra(LogActivity.QSO_SRST);
             	qsoMode = data.getStringExtra(LogActivity.QSO_MODE);
+            	qsoTimeon = data.getStringExtra(LogActivity.QSO_TIMEON);
+            	qsoTimeoff = data.getStringExtra(LogActivity.QSO_TIMEOFF);
+            	qsoName = data.getStringExtra(LogActivity.QSO_NAME);
+            	qsoQTH = data.getStringExtra(LogActivity.QSO_QTH);
+            	qsoState = data.getStringExtra(LogActivity.QSO_STATE);
+            	qsoCountry = data.getStringExtra(LogActivity.QSO_COUNTRY);
+            	qsoGrid = data.getStringExtra(LogActivity.QSO_GRID);
+            	
                 EditText callBox = (EditText) findViewById(R.id.call_edit);
                 EditText txfreqBox = (EditText) findViewById(R.id.txfreq_edit);
                 EditText rxfreqBox = (EditText) findViewById(R.id.rxfreq_edit);
@@ -232,6 +360,8 @@ public class EntryActivity extends Activity {
                 modeBox.setText(qsoMode);
             	rrstBox.setText(qsoRRST);
             	srstBox.setText(qsoSRST);
+            	saveState();
+            	newContact(null);
             }
     	  break;
       	}
@@ -306,6 +436,13 @@ public class EntryActivity extends Activity {
       }
     
     public void newContact(View view) {
+	      callBox.setText("");
+	      txfreqBox.setText("");
+	      rxfreqBox.setText("");
+	      modeBox.setText("");
+	      rrstBox.setText("");
+	      srstBox.setText("");
+	      fillData(null);
     }
 
     public void submitCall()
@@ -363,6 +500,7 @@ public class EntryActivity extends Activity {
 	}
 	
     public void logContact(View view) {
+    	saveState();
     	Intent intent = new Intent(this, LogActivity.class);
     	EditText call = (EditText) findViewById(R.id.call_edit);
     	EditText freq = (EditText) findViewById(R.id.rxfreq_edit);
@@ -380,6 +518,7 @@ public class EntryActivity extends Activity {
     }
     
     public void configureApp(View view) {
+    	saveState();
     	Intent intent = new Intent(this, ConfigActivity.class);
     	startActivityForResult(intent, config_request);
     }
