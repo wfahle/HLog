@@ -45,6 +45,12 @@
             android:name="com.wfahle.hlog.EntryActivity"
             android:label="@string/title_activity_entry" >
         </activity>
+        
+        <provider
+            android:name=".contentprovider.QSOContactProvider"
+            android:authorities="com.wfahle.hlog.contentprovider" >
+        </provider>
+        
     </application>
 
 </manifest>

@@ -38,5 +38,6 @@
     <string name="contacts_ui">Contacts(0)</string>
     <string name="edit_ui">Edit</string>
     <string name="tools_ui">Tools</string>
+    <string name="menu_delete">Delete</string>
 
 </resources>

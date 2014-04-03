@@ -24,8 +24,8 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f080039;
-        public static final int button1=0x7f080035;
+        public static final int action_settings=0x7f080038;
+        public static final int button1=0x7f080034;
         public static final int call=0x7f080006;
         public static final int call_edit=0x7f080007;
         public static final int callt=0x7f08001e;
@@ -44,10 +44,9 @@ public final class R {
         public static final int dxc_out=0x7f080010;
         public static final int grid=0x7f08002f;
         public static final int grid_edit=0x7f080030;
-        public static final int key_call=0x7f080036;
-        public static final int key_rxfreq=0x7f080037;
-        public static final int key_timeoff=0x7f080038;
-        public static final int listView1=0x7f080034;
+        public static final int key_call=0x7f080035;
+        public static final int key_rxfreq=0x7f080036;
+        public static final int key_timeon=0x7f080037;
         public static final int log_button=0x7f08000f;
         public static final int lookup_box=0x7f080020;
         public static final int mode=0x7f080012;
@@ -114,6 +113,7 @@ public final class R {
         public static final int log_ui=0x7f050009;
         public static final int login_ui=0x7f05000f;
         public static final int lookup_ui=0x7f050019;
+        public static final int menu_delete=0x7f050025;
         public static final int mode_ui=0x7f050012;
         public static final int namet_ui=0x7f050018;
         public static final int new_ui=0x7f050007;

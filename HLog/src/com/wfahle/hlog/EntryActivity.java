@@ -183,6 +183,8 @@ public class EntryActivity extends Activity {
             	}
             		
             }
+            else
+            	qsoTFreq = qsoRFreq;
             qsoRFreq = convertToMHz(qsoRFreq, posp);
             qsoTFreq = convertToMHz(qsoTFreq, posp);
             txfreqBox.setText(qsoTFreq);
