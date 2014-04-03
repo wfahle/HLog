@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.support.v4.app.NavUtils;
 
 public class LogActivity extends Activity {
 
@@ -87,7 +86,9 @@ public class LogActivity extends Activity {
 	}
 	public void clickCancel(View view)
 	{
-		NavUtils.navigateUpFromSameTask(this);
+		Intent resultIntent = new Intent();
+		setResult(Activity.RESULT_CANCELED, resultIntent);
+		finish();
 	}
 	public void clickSave(View view)
 	{
