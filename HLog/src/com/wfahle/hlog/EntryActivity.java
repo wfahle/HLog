@@ -10,7 +10,6 @@ import com.wfahle.hlog.contentprovider.QSOContactProvider;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -324,7 +323,7 @@ public class EntryActivity extends Activity {
 		      // New qso
 		      contactUri = getContentResolver().insert(QSOContactProvider.CONTENT_URI, values);
 		} else {
-		      // Update todo
+		      // Update qso
 		      getContentResolver().update(contactUri, values, null, null);
 		}
 	}
@@ -443,7 +442,7 @@ public class EntryActivity extends Activity {
 	      modeBox.setText("");
 	      rrstBox.setText("");
 	      srstBox.setText("");
-	      fillData(null);
+	      contactUri = null;
     }
 
     public void submitCall()
