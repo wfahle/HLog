@@ -3,6 +3,7 @@ package com.wfahle.hlog;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -29,6 +30,7 @@ public class LocalDBHandler extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		ConfigTable.onUpgrade(db, oldVersion, newVersion);
 	}
+
 	// Getting All Configs
 	public List<TelnetConfig> getAllConfigs() {
 	   List<TelnetConfig> configList = new ArrayList<TelnetConfig>();
@@ -51,6 +53,20 @@ public class LocalDBHandler extends SQLiteOpenHelper {
 	 
 	    // return contact list
 	    return configList;
+	}
+	
+	public void addConfig(TelnetConfig config) {
+	    SQLiteDatabase db = this.getWritableDatabase();
+	    
+	    ContentValues values = new ContentValues();
+	    values.put(ConfigTable.KEY_SERVER, config.getServer());
+	    values.put(ConfigTable.KEY_PORT, config.getPort());
+	    values.put(ConfigTable.KEY_PREFERRED, config.getPreferred()?1:0);
+//		what about id?
+	    
+	    // Inserting Row
+	    db.insert(ConfigTable.TABLE_CONFIG, null, values);
+	    db.close(); // Closing database connection		
 	}
 
 }
