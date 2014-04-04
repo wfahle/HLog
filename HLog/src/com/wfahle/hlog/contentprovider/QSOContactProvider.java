@@ -8,6 +8,7 @@ import com.wfahle.hlog.QSOContactTable;
 
 import android.content.ContentProvider;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -85,7 +86,8 @@ public class QSOContactProvider extends ContentProvider {
 	      throw new IllegalArgumentException("Unknown URI: " + uri);
 	    }
 	    getContext().getContentResolver().notifyChange(uri, null);
-	    return Uri.parse(BASE_PATH + "/" + id);
+	    return ContentUris.withAppendedId(uri, id);
+	    //return Uri.parse(BASE_PATH + "/" + id);
 	}
 
 	@Override
