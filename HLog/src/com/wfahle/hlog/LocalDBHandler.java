@@ -43,9 +43,10 @@ public class LocalDBHandler extends SQLiteOpenHelper {
 	    // looping through all rows and adding to list
 	    if (cursor.moveToFirst()) {
 	        do {
-	        	TelnetConfig config = new TelnetConfig(cursor.getString(0), 
-	        			Integer.parseInt(cursor.getString(1)), 
-	        			Integer.parseInt(cursor.getString(2))==0);
+	        	TelnetConfig config = new TelnetConfig( cursor.getInt(0),
+	        			cursor.getString(1),cursor.getString(2), 
+	        			Integer.parseInt(cursor.getString(3)), 
+	        			Integer.parseInt(cursor.getString(4))==0);
 	            // Adding contact to list
 	            configList.add(config);
 	        } while (cursor.moveToNext());
@@ -54,11 +55,25 @@ public class LocalDBHandler extends SQLiteOpenHelper {
 	    // return contact list
 	    return configList;
 	}
-	
+
+	public int updateConfig(TelnetConfig config) {
+	    SQLiteDatabase db = this.getWritableDatabase();
+		    
+		ContentValues values = new ContentValues();
+		values.put(ConfigTable.KEY_CALL, config.getCall());
+		values.put(ConfigTable.KEY_SERVER, config.getServer());
+		values.put(ConfigTable.KEY_PORT, config.getPort());
+		values.put(ConfigTable.KEY_PREFERRED, config.getPreferred());
+		 
+		    // updating row
+		return db.update(ConfigTable.TABLE_CONFIG, values, ConfigTable.KEY_ID + " = ?",
+		        new String[] { String.valueOf(config.getId()) });
+	}
 	public void addConfig(TelnetConfig config) {
 	    SQLiteDatabase db = this.getWritableDatabase();
 	    
 	    ContentValues values = new ContentValues();
+	    values.put(ConfigTable.KEY_CALL, config.getCall());
 	    values.put(ConfigTable.KEY_SERVER, config.getServer());
 	    values.put(ConfigTable.KEY_PORT, config.getPort());
 	    values.put(ConfigTable.KEY_PREFERRED, config.getPreferred()?1:0);

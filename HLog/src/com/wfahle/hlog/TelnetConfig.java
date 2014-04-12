@@ -1,8 +1,9 @@
 package com.wfahle.hlog;
 
 public class TelnetConfig {
-	int id;
+	int _id;
 	String tserver;
+	String tcall;
 	int tport;
     boolean tpreferred;
     
@@ -10,15 +11,25 @@ public class TelnetConfig {
 	{
 	}
 	
-	public TelnetConfig(String server, int port, boolean preferred)
+	public TelnetConfig(int id, String call, String server, int port, boolean preferred)
 	{
+		_id = id;
+		tcall = call;
 		tserver = server;
 		tport = port;
 		tpreferred = preferred;
 	}
+	public int getId()
+	{
+		return _id;
+	}
 	public String getServer()
 	{
 		return tserver;
+	}
+	public String getCall()
+	{
+		return tcall;
 	}
 	public int getPort()
 	{

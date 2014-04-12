@@ -1,7 +1,10 @@
 package com.wfahle.hlog;
 
+import java.util.List;
+
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,11 +16,22 @@ public class ConfigActivity extends Activity {
 	public static final String SERVER_NAME = "com.wfahle.hlog.SERVER_NAME";
 	public static final String PORT_NUMBER = "com.wfahle.hlog.PORT_NUMBER";
 	public static final String LOGON_CALL = "com.wfahle.hlog.LOGON_CALL";
+	private int _id = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_config);
+		Context con = getBaseContext();
+		LocalDBHandler ldb = new LocalDBHandler(con);
+		List<TelnetConfig> configs = ldb.getAllConfigs();
+    	EditText server_edit = (EditText) findViewById(R.id.cluster_edit);
+    	String server = configs.get(0).getServer();
+    	server_edit.setText(server);
+    	EditText logon_edit = (EditText) findViewById(R.id.yourcall_edit);
+    	String call = configs.get(0).getCall();
+    	logon_edit.setText(call);
+    	_id = configs.get(0).getId();
 		// Show the Up button in the action bar.
 		setupActionBar();
 	}
@@ -29,6 +43,24 @@ public class ConfigActivity extends Activity {
 
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
+	}
+	
+	@Override
+	protected void onPause()
+	{
+    	EditText logon_edit = (EditText) findViewById(R.id.yourcall_edit);
+		String call = logon_edit.getEditableText().toString();
+    	EditText server_edit = (EditText) findViewById(R.id.cluster_edit);
+		String server = server_edit.getEditableText().toString();
+		int port = 23;
+		boolean preferred = true;
+		
+		TelnetConfig cfg = new TelnetConfig(_id, call, server, port, preferred);
+		LocalDBHandler ldb = new LocalDBHandler(getBaseContext());
+		if (_id == 0)
+			ldb.addConfig(cfg);
+		else
+			ldb.updateConfig(cfg);
 	}
 
 	@Override
