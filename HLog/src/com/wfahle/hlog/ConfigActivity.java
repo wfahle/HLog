@@ -25,13 +25,16 @@ public class ConfigActivity extends Activity {
 		Context con = getBaseContext();
 		LocalDBHandler ldb = new LocalDBHandler(con);
 		List<TelnetConfig> configs = ldb.getAllConfigs();
-    	EditText server_edit = (EditText) findViewById(R.id.cluster_edit);
-    	String server = configs.get(0).getServer();
-    	server_edit.setText(server);
-    	EditText logon_edit = (EditText) findViewById(R.id.yourcall_edit);
-    	String call = configs.get(0).getCall();
-    	logon_edit.setText(call);
-    	_id = configs.get(0).getId();
+		if (!configs.isEmpty())
+		{
+			EditText server_edit = (EditText) findViewById(R.id.cluster_edit);
+			String server = configs.get(0).getServer();
+			server_edit.setText(server);
+			EditText logon_edit = (EditText) findViewById(R.id.yourcall_edit);
+			String call = configs.get(0).getCall();
+			logon_edit.setText(call);
+			_id = configs.get(0).getId();
+		}
 		// Show the Up button in the action bar.
 		setupActionBar();
 	}
@@ -48,6 +51,7 @@ public class ConfigActivity extends Activity {
 	@Override
 	protected void onPause()
 	{
+		super.onPause();
     	EditText logon_edit = (EditText) findViewById(R.id.yourcall_edit);
 		String call = logon_edit.getEditableText().toString();
     	EditText server_edit = (EditText) findViewById(R.id.cluster_edit);
@@ -92,7 +96,7 @@ public class ConfigActivity extends Activity {
     	EditText server_edit = (EditText) findViewById(R.id.cluster_edit);
     	String server = server_edit.getEditableText().toString();
     	EditText logon_edit = (EditText) findViewById(R.id.yourcall_edit);
-    	String logon = logon_edit.getEditableText().toString()+"\r\n";
+    	String logon = logon_edit.getEditableText().toString();
     	int port=23; // TODO: add ability to set port
     	resultIntent.putExtra(SERVER_NAME, server);
     	resultIntent.putExtra(PORT_NUMBER, port);

@@ -15,7 +15,7 @@ public class ConfigTable {
     public static final String SELECT_ALL = "SELECT  * FROM " + TABLE_CONFIG;
     private static final String CREATE_CONFIG_TABLE = "CREATE TABLE " + TABLE_CONFIG + "("
             + KEY_ID + " INTEGER PRIMARY KEY," 
-            + KEY_CALL+ "CALL,"
+            + KEY_CALL+ " TEXT,"
     		+ KEY_SERVER + " TEXT,"
             + KEY_PORT + " INTEGER," 
             + KEY_PREFERRED + " INTEGER" 

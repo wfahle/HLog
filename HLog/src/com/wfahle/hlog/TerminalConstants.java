@@ -239,7 +239,8 @@ class TerminalSocket implements Runnable {
 	protected String Server = "";
 	protected int Port = 0;
 	protected String Logon = "";
-
+	private boolean bRunning;
+	
 	public TerminalSocket(MyHandler h) {
 		hnd = h;
 		tr = new Thread(this);
@@ -250,6 +251,16 @@ class TerminalSocket implements Runnable {
 		tr.start();
 	}
 
+	public void SocketStop() {
+		bRunning = false;
+		try {
+			sk.close();
+		} catch (IOException e) {
+			hnd.sendMessage(ErrorToMessage("Socket close failed" + Server + ":" + Port));
+		}
+		sk = null;
+	}
+	
 	private Message StringToMessage(String s) {
 		Message msg = new Message();
 		msg.what = 0;
@@ -281,6 +292,7 @@ class TerminalSocket implements Runnable {
 	
 	public void run() {
 		InetAddress ia = null;
+		bRunning = true;
 		hnd.sendMessage(InfoToMessage("Resolve server name " + Server));
 		try {
 			ia = InetAddress.getByName(Server);
@@ -306,7 +318,7 @@ class TerminalSocket implements Runnable {
 
 		// wont negotiate window size - was 0xff, 0xfb, 0x1f
 		SpecialSocketSend(new byte[] { (byte) 0xff, (byte) 0xfc, (byte) 0x1f });
-		while (true) {
+		while (bRunning) {
 			byte[] buf = new byte[2048];
 			try {
 				int i = iStream.read(buf);

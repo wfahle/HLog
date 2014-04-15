@@ -162,7 +162,16 @@ public class EntryActivity extends Activity {
 
           fillData(contactUri);
         }
-        
+        LocalDBHandler ldb = new LocalDBHandler(getBaseContext());
+        List<TelnetConfig> tlist = ldb.getAllConfigs();
+        if (!tlist.isEmpty())
+        {
+        	TelnetConfig cfg = tlist.get(0);
+        	telnetServer = cfg.getServer();
+        	telnetPort = cfg.getPort();
+        	telnetLogon = cfg.getCall();
+        }
+
         final ListView lv = (ListView) findViewById(R.id.spot_list);
         lv.setClickable(true);
         final ArrayList<String> list = new ArrayList<String>();
@@ -472,14 +481,14 @@ public class EntryActivity extends Activity {
 					String quit = "q\r\n";
 					st.oStream.write(quit.getBytes());
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 			state = loggedOut;
 			Button button = (Button) findViewById(R.id.dxcStart);
 			button.setText(R.string.login_ui);
-			st=null; // TODO: can we stop it instead?
+			st.SocketStop();
+			st=null;
 		}
 		else
 		{
@@ -492,7 +501,7 @@ public class EntryActivity extends Activity {
 			}
 			st.Server = telnetServer;
 			st.Port = telnetPort;
-			st.Logon = telnetLogon; // TODO: fire it up.
+			st.Logon = telnetLogon+"\r\n"; // TODO: fire it up.
 			st.SocketStart();
 			state = loggingIn; // TODO: if it fails to log in, start over
 			// TODO: once logged in, log out on inactivity for x minutes - config
