@@ -57,9 +57,12 @@ public class ConfigActivity extends Activity {
     	EditText server_edit = (EditText) findViewById(R.id.cluster_edit);
 		String server = server_edit.getEditableText().toString();
 		int port = 23;
+		EditText rserver_edit = (EditText) findViewById(R.id.piglet_edit);
+		String rserver = rserver_edit.getEditableText().toString();
+		int rport = 7373;
 		boolean preferred = true;
 		
-		TelnetConfig cfg = new TelnetConfig(_id, call, server, port, preferred);
+		TelnetConfig cfg = new TelnetConfig(_id, call, server, port, rserver, rport, preferred);
 		LocalDBHandler ldb = new LocalDBHandler(getBaseContext());
 		if (_id == 0)
 			ldb.addConfig(cfg);
@@ -93,6 +96,7 @@ public class ConfigActivity extends Activity {
 	
     public void done(View view) {    	
     	Intent resultIntent = new Intent();
+    	/*
     	EditText server_edit = (EditText) findViewById(R.id.cluster_edit);
     	String server = server_edit.getEditableText().toString();
     	EditText logon_edit = (EditText) findViewById(R.id.yourcall_edit);
@@ -102,6 +106,8 @@ public class ConfigActivity extends Activity {
     	resultIntent.putExtra(PORT_NUMBER, port);
     	resultIntent.putExtra(LOGON_CALL, logon);
     	// TODO Add extras or a data URI to this intent as appropriate.
+    	 * 
+    	 */
     	setResult(Activity.RESULT_OK, resultIntent);
     	finish();
     }

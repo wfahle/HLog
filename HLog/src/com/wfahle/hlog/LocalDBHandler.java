@@ -12,7 +12,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class LocalDBHandler extends SQLiteOpenHelper {
 	  // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
  
     // Database Name
     private static final String DATABASE_NAME = "HLogConfig";
@@ -45,8 +45,10 @@ public class LocalDBHandler extends SQLiteOpenHelper {
 	        do {
 	        	TelnetConfig config = new TelnetConfig( cursor.getInt(0),
 	        			cursor.getString(1),cursor.getString(2), 
-	        			Integer.parseInt(cursor.getString(3)), 
-	        			Integer.parseInt(cursor.getString(4))==0);
+	        			Integer.parseInt(cursor.getString(3)),
+	        			cursor.getString(4),
+	        			Integer.parseInt(cursor.getString(5)),
+	        			Integer.parseInt(cursor.getString(6))==0);
 	            // Adding contact to list
 	            configList.add(config);
 	        } while (cursor.moveToNext());
@@ -63,6 +65,8 @@ public class LocalDBHandler extends SQLiteOpenHelper {
 		values.put(ConfigTable.KEY_CALL, config.getCall());
 		values.put(ConfigTable.KEY_SERVER, config.getServer());
 		values.put(ConfigTable.KEY_PORT, config.getPort());
+		values.put(ConfigTable.KEY_RSERVER, config.getRadioServer());
+		values.put(ConfigTable.KEY_RPORT, config.getRadioPort());
 		values.put(ConfigTable.KEY_PREFERRED, config.getPreferred());
 		 
 		    // updating row
@@ -76,6 +80,8 @@ public class LocalDBHandler extends SQLiteOpenHelper {
 	    values.put(ConfigTable.KEY_CALL, config.getCall());
 	    values.put(ConfigTable.KEY_SERVER, config.getServer());
 	    values.put(ConfigTable.KEY_PORT, config.getPort());
+	    values.put(ConfigTable.KEY_RSERVER, config.getRadioServer());
+	    values.put(ConfigTable.KEY_RPORT, config.getRadioPort());
 	    values.put(ConfigTable.KEY_PREFERRED, config.getPreferred()?1:0);
 //		what about id?
 	    

@@ -34,6 +34,7 @@
         android:layout_alignBaseline="@+id/capture_button"
         android:layout_alignBottom="@+id/capture_button"
         android:layout_toRightOf="@+id/capture_button"
+        android:onClick="onConfig"
         android:text="@string/configure_ui" />
 
     <ListView

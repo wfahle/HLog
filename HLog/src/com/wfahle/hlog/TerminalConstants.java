@@ -227,19 +227,135 @@ class MyHandler extends Handler {
 
 }
 
-
-class TerminalSocket implements Runnable {
+class HLogSocket {
+	protected boolean bRunning=false;
 	public Thread tr;
-	private MyHandler hnd;
 	protected Socket sk = null;
-	private InputStream iStream = null;
+	protected  InputStream iStream = null;
 	public OutputStream oStream = null;
+	
+	protected Message StringToMessage(String s) {
+		Message msg = new Message();
+		msg.what = 0;
+		Bundle hm = new Bundle();
+		hm.putString("message", s);
+		msg.setData(hm);
+		return msg;
+	}
+	
+	protected Message ErrorToMessage(String s) {
+		Message msg = new Message();
+		msg.what = 1;
+		Bundle hm = new Bundle();
+		hm.putString("message", s);		
+		msg.setData(hm);
+		return msg;
+	}
+	
+	protected Message InfoToMessage(String s) {
+		Message msg = new Message();
+		msg.what = 2;
+		Bundle hm = new Bundle();
+		hm.putString("message", s);
+		msg.setData(hm);
+		return msg;
+	}
+}
+
+class RadioSocket extends HLogSocket implements Runnable {
+	protected String Server = "";
+	protected int Port = 0;
+	private MyHandler hnd;
+	
+	public RadioSocket(MyHandler h) {
+		hnd = h;
+		tr = new Thread(this);
+	}
+	
+
+	public void SocketStart() {
+		tr.start();
+	}
+
+	public void SocketStop() {
+		bRunning = false;
+		try {
+			sk.close();
+		} catch (IOException e) {
+			hnd.sendMessage(ErrorToMessage("Socket close failed" + Server + ":" + Port));
+		}
+		sk = null;
+	}
+
+	public void run() {
+		InetAddress ia = null;
+		bRunning = true;
+		hnd.sendMessage(InfoToMessage("Resolve server name " + Server));
+		
+		try {
+			ia = InetAddress.getByName(Server);
+		} catch (UnknownHostException ex) {
+			hnd.sendMessage(ErrorToMessage("Unknown host " + Server));
+			return;
+		}
+		hnd.sendMessage(InfoToMessage("Connect to "  + Server + ":" + Port));
+		try {
+			sk = new java.net.Socket(ia, Port);
+		} catch (IOException ex) {
+			hnd.sendMessage(ErrorToMessage("Socket time out for " + Server + ":" + Port));
+			return;
+		}
+
+		try {
+			iStream = sk.getInputStream();
+			oStream = sk.getOutputStream();
+		} catch (IOException ex) {
+			hnd.sendMessage(ErrorToMessage("Protocol error for " + Server + ":" + Port));
+			return;
+		}
+
+		
+		while (bRunning) {
+			try {
+				byte[] buf = new byte[2048];
+				try {
+					int i = iStream.read(buf);
+					Parsing(buf, i);
+				} catch (Exception ex) {
+					hnd.sendMessage(ErrorToMessage("Connection closed read"));
+				}
+				
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// don't care if it can sleep, I can't, that's why I'm up programming
+			}
+		}
+	}
+	
+	private void Parsing(byte[] bData, int count) {
+		for (int i = 0; i < count; i++) {
+			byte curByte = bData[i];
+			//TODO: implement reading from port
+		}
+	}
+
+	protected void SpecialSocketSend(byte[] buff) {
+		try {
+			oStream.write(buff);
+			oStream.flush();
+		} catch (Exception ex) {
+			hnd.sendMessage(ErrorToMessage("Connection closed write"));
+		}
+	}
+}
+
+class TerminalSocket extends HLogSocket implements Runnable {
+	private MyHandler hnd;
 	public byte X = 1;
 	public byte Y = 1;
 	protected String Server = "";
 	protected int Port = 0;
 	protected String Logon = "";
-	private boolean bRunning;
 	
 	public TerminalSocket(MyHandler h) {
 		hnd = h;
@@ -260,36 +376,7 @@ class TerminalSocket implements Runnable {
 		}
 		sk = null;
 	}
-	
-	private Message StringToMessage(String s) {
-		Message msg = new Message();
-		msg.what = 0;
-		Bundle hm = new Bundle();
-		hm.putString("message", s);
-		msg.setData(hm);
-		return msg;
-	}
-	
-	private Message ErrorToMessage(String s) {
-		Message msg = new Message();
-		msg.what = 1;
-		Bundle hm = new Bundle();
-		hm.putString("message", s);		
-		msg.setData(hm);
-		return msg;
-	}
-	
-	private Message InfoToMessage(String s) {
-		Message msg = new Message();
-		msg.what = 2;
-		Bundle hm = new Bundle();
-		hm.putString("message", s);
-		msg.setData(hm);
-		return msg;
-	}
-
-	
-	
+		
 	public void run() {
 		InetAddress ia = null;
 		bRunning = true;

@@ -24,7 +24,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 public class EntryActivity extends Activity {
-	protected final static int config_request = 1; // enum of all the requests would be better
 	protected final static int log_request = 2; // enum of all the requests would be better
 	protected final static int loggedOut = 0;
 	protected final static int loggingIn = 1;
@@ -33,6 +32,8 @@ public class EntryActivity extends Activity {
 	protected String telnetServer="";
 	protected int telnetPort = 23;
 	protected String telnetLogon = "";
+	protected String radioServer="";
+	protected int radioPort = 23;
 	protected String qsoTFreq = "";
 	protected String qsoRFreq = "";
 	protected String qsoCall = "";
@@ -53,9 +54,12 @@ public class EntryActivity extends Activity {
     EditText rrstBox;
     EditText srstBox;
 
-	protected TerminalSocket st = null;
+	protected TerminalSocket telnetsk = null;
+	protected RadioSocket radiosk = null;
 	protected int state=loggedOut;
 	private Uri contactUri;
+	protected final static String LOGIN_STRING = "wasLoggedIn";
+	private boolean wasLoggedIn=false;
 
 	protected String mode(String freq)
 	{
@@ -151,10 +155,19 @@ public class EntryActivity extends Activity {
         rrstBox = (EditText) findViewById(R.id.rrst_edit);
         srstBox = (EditText) findViewById(R.id.srst_edit);
 
-        // check from the saved Instance
-        contactUri = (savedInstanceState == null) ? null : (Uri) savedInstanceState
-            .getParcelable(QSOContactProvider.CONTENT_ITEM_TYPE);
+        if (savedInstanceState == null)
+        {
+        	contactUri = null;
+        	wasLoggedIn = false;
+        }
+        else
+        {
+            // check from the saved Instance
+            contactUri =  (Uri) savedInstanceState.getParcelable(QSOContactProvider.CONTENT_ITEM_TYPE);
+            wasLoggedIn = savedInstanceState.getBoolean(LOGIN_STRING);
+        }
 
+        
         // Or passed from the other activity
         if (extras != null) {
           contactUri = extras
@@ -170,6 +183,8 @@ public class EntryActivity extends Activity {
         	telnetServer = cfg.getServer();
         	telnetPort = cfg.getPort();
         	telnetLogon = cfg.getCall();
+        	radioServer =  cfg.getRadioServer();
+        	radioPort = cfg.getRadioPort();
         }
 
         final ListView lv = (ListView) findViewById(R.id.spot_list);
@@ -233,6 +248,17 @@ public class EntryActivity extends Activity {
             txfreqBox.setText(qsoTFreq);
             rxfreqBox.setText(qsoRFreq);
             qsoMode = mode(qsoRFreq);
+            
+            if (radiosk != null)
+            {
+				try {
+					byte cmd[] = getBCD(qsoRFreq, (byte) 1);
+					radiosk.oStream.write(cmd);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+            }
             modeBox.setText(qsoMode);
             if (qsoMode.equals("SSB") || qsoMode.equals("AM") || qsoMode.equals("FM"))
             {
@@ -250,6 +276,15 @@ public class EntryActivity extends Activity {
         });
     }
     
+	byte[] getBCD(String freqinMhz, byte cmd)
+	{
+		byte[] ret = new byte[5];
+        int posp = freqinMhz.indexOf('.');
+        int mhz = Integer.parseInt(freqinMhz.substring(0, posp));
+        // magically convert string to bcd, put in cmd
+		ret[4] = cmd;
+		return ret;
+	}
 	private void fillData(Uri uri) {
 	    String[] projection = { QSOContactTable.KEY_CALL,
 	        QSOContactTable.KEY_RXFREQ, QSOContactTable.KEY_TXFREQ, QSOContactTable.KEY_MODE, QSOContactTable.KEY_RRST, QSOContactTable.KEY_SRST };
@@ -286,16 +321,49 @@ public class EntryActivity extends Activity {
 	    }
 	}
 
+	@Override 
+	protected void onRestoreInstanceState(Bundle savedInstanceState)
+	{
+		super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState == null)
+        {
+        	contactUri = null;
+        	wasLoggedIn = false;
+        }
+        else
+        {
+            // check from the saved Instance
+            contactUri =  (Uri) savedInstanceState.getParcelable(QSOContactProvider.CONTENT_ITEM_TYPE);
+            wasLoggedIn = savedInstanceState.getBoolean(LOGIN_STRING);
+        }
+
+	}
+	
+	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 	    super.onSaveInstanceState(outState);
 	    saveState();
 	    outState.putParcelable(QSOContactProvider.CONTENT_ITEM_TYPE, contactUri);
+	    outState.putBoolean(LOGIN_STRING, wasLoggedIn);
+	}
+	
+	@Override
+	protected void onResume() {
+	    super.onResume();
+	    if (wasLoggedIn) {
+	    	LogOn(null); // log on.
+	    }
 	}
 
 	@Override
 	protected void onPause() {
 	    super.onPause();
 	    saveState();
+	    if (state == loggedIn)
+	    {
+	    	wasLoggedIn=true;
+	    	LogOn(null); // log off.
+	    }
 	}
 
 	private void saveState() {
@@ -306,10 +374,10 @@ public class EntryActivity extends Activity {
 	    qsoRRST = rrstBox.getText().toString();
 	    qsoSRST = srstBox.getText().toString();
 
-	    // only save if either callsign or frequency
+	    // only save if either call sign or frequency
 	    // is available
 
-	    if (qsoCall.length() == 0 && qsoRFreq.length() == 0) {
+	    if (qsoTimeon.length() == 0 && qsoTimeoff.length() == 0) {
 	      return;
 	    }
 
@@ -374,14 +442,6 @@ public class EntryActivity extends Activity {
             }
     	  break;
       	}
-        case (config_request) : {
-          if (resultCode == Activity.RESULT_OK) {
-        		telnetServer = data.getStringExtra(ConfigActivity.SERVER_NAME);
-        		telnetPort = data.getIntExtra(ConfigActivity.PORT_NUMBER, 23);
-        		telnetLogon = data.getStringExtra(ConfigActivity.LOGON_CALL);
-          }
-          break;
-        } 
       }
     }
 
@@ -456,10 +516,10 @@ public class EntryActivity extends Activity {
 
     public void submitCall()
     {
-    	if (st != null)
+    	if (telnetsk != null)
     	{
 			try {
-				st.oStream.write(st.Logon.getBytes());
+				telnetsk.oStream.write(telnetsk.Logon.getBytes());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -476,10 +536,10 @@ public class EntryActivity extends Activity {
 			return;
 		}
 		else if (state == loggedIn) {
-			if(st != null) {
+			if(telnetsk != null) {
 				try {
 					String quit = "q\r\n";
-					st.oStream.write(quit.getBytes());
+					telnetsk.oStream.write(quit.getBytes());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -487,24 +547,31 @@ public class EntryActivity extends Activity {
 			state = loggedOut;
 			Button button = (Button) findViewById(R.id.dxcStart);
 			button.setText(R.string.login_ui);
-			st.SocketStop();
-			st=null;
+			telnetsk.SocketStop();
+			telnetsk=null;
+			radiosk.SocketStop();
+			radiosk = null;
 		}
 		else
 		{
-			if (st == null)
+			if (telnetsk == null)
 			{
 			    final ListView lv = (ListView) findViewById(R.id.spot_list);
 			    final TextView tv = (TextView) findViewById(R.id.dxc_out);
 				final MyHandler hnd = new MyHandler(this, lv, tv);
-				st = new TerminalSocket(hnd);
+				telnetsk = new TerminalSocket(hnd);
+				radiosk = new RadioSocket(hnd);
 			}
-			st.Server = telnetServer;
-			st.Port = telnetPort;
-			st.Logon = telnetLogon+"\r\n"; // TODO: fire it up.
-			st.SocketStart();
+			telnetsk.Server = telnetServer;
+			telnetsk.Port = telnetPort;
+			telnetsk.Logon = telnetLogon+"\r\n"; // TODO: fire it up.
+			telnetsk.SocketStart();
+			radiosk.Server = radioServer;
+			radiosk.Port = radioPort;
+			radiosk.SocketStart();
 			state = loggingIn; // TODO: if it fails to log in, start over
 			// TODO: once logged in, log out on inactivity for x minutes - config
+			
 		}
 	}
 	
@@ -526,11 +593,6 @@ public class EntryActivity extends Activity {
     	startActivityForResult(intent, log_request);
     }
     
-    public void configureApp(View view) {
-    	saveState();
-    	Intent intent = new Intent(this, ConfigActivity.class);
-    	startActivityForResult(intent, config_request);
-    }
     
 }
 

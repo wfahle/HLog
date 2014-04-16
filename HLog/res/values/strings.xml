@@ -39,5 +39,7 @@
     <string name="edit_ui">Edit</string>
     <string name="tools_ui">Tools</string>
     <string name="menu_delete">Delete</string>
+    <string name="piglet_ui">Piglet IP</string>
+    <string name="default_piglet_ip">10.1.1.1</string>
 
 </resources>

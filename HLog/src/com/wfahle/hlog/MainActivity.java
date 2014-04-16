@@ -2,6 +2,7 @@ package com.wfahle.hlog;
 
 import com.wfahle.hlog.contentprovider.QSOContactProvider;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
@@ -16,12 +17,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 public class MainActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 //	private static final int ACTIVITY_CREATE = 0;
 //  	private static final int ACTIVITY_EDIT = 1;
+	protected final static int config_request = 1; // enum of all the requests would be better
   	private static final int DELETE_ID = Menu.FIRST + 1;
   	// private Cursor cursor;
   	private SimpleCursorAdapter adapter;
@@ -38,6 +41,20 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
           to, 0);
 
       setListAdapter(adapter);
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+      super.onActivityResult(requestCode, resultCode, data);
+      switch(requestCode) {
+        case (config_request) : {
+          if (resultCode == Activity.RESULT_OK) {
+//        		telnetServer = data.getStringExtra(ConfigActivity.SERVER_NAME);
+//        		telnetPort = data.getIntExtra(ConfigActivity.PORT_NUMBER, 23);
+//        		telnetLogon = data.getStringExtra(ConfigActivity.LOGON_CALL);
+          }
+          break;
+        } 
+      }
     }
 
 	@Override
@@ -95,6 +112,11 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     public void onCapture(View view) {
         Intent i = new Intent(this, EntryActivity.class);
         startActivity(i);    	
+    }
+    
+    public void onConfig(View view) {
+    	Intent intent = new Intent(this, ConfigActivity.class);
+    	startActivityForResult(intent, config_request);
     }
 
 	@Override
