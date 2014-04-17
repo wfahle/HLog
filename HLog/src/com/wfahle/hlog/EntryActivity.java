@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.wfahle.hlog.contentprovider.QSOContactProvider;
 
@@ -148,6 +151,147 @@ public class EntryActivity extends Activity {
 			ret = "FM";
 		return ret;
 	}
+	
+	protected int parseanInt(String num) {
+		// apparently Java doesn't like parseInt("1.0");
+		// assume input starts with a number or space
+		int posp = num.indexOf(".");
+		if (posp == -1)
+			posp = num.length();
+		return Integer.parseInt(num.substring(0, posp));
+	}
+	
+	protected String upDown(String rfreq, String comment, boolean ssb) {
+		String ret = rfreq;
+		
+		comment = comment.toLowerCase(Locale.ENGLISH);
+        // Handles: QSX 3.838, QSX 4, UP 5, DOWN 2, U 5, D4, U4, DN4, UP4, DOWN4, QSX7144, u1.8, etc.
+        int posp = rfreq.indexOf('.');
+        int hz = 0;
+        int khz = 0;
+        if (posp < 0)
+            khz = parseanInt(rfreq);
+        else
+        {
+            khz = parseanInt(rfreq.substring(0, posp));
+        	hz = parseanInt(rfreq.substring(posp+1));
+        }
+        int adjust = 0; // adjust tx up or down accordingly
+        int hadjust = 0;
+        if (comment.matches(".*up* *[1-9][0-9]*\\.*[0-9]*.*")) // matches "people, up 10", "u1.8", "u 1", etc.
+        {
+        	 Pattern p = Pattern.compile("up* *([1-9][0-9]*)\\.([0-9])"); // only matches x.y
+        	 Matcher m = p.matcher(comment);
+        	 if (m.find()) { // dot found for sure, like up 1.9
+        	     String num = m.group(1); // Access a submatch group; String can't do this.
+        	     adjust = parseanInt(num);
+        	     String rem = m.group(2);
+        	     hadjust = parseanInt(rem);
+        	 }
+        	 else { // no dot
+	        	 p = Pattern.compile("up* *([1-9][0-9]*)");
+	        	 m = p.matcher(comment);
+	        	 if (m.find()) { // Find each match in turn; String can't do this.
+	        	     String num = m.group(1); 
+	        	     adjust = parseanInt(num);
+	        	 }
+        	 }
+        }
+        else if (comment.matches(".* u") || comment.contains("up") || comment.matches("u .*") ||
+        		comment.matches(".* u .*") || comment.equals("u")) {
+        	adjust = ssb?5:1;
+        }
+        else if (comment.matches(".*d[n:own]* *[1-9][0-9]*\\.*[0-9]*.*")) { // matches "people, dn 10, ok?", "d10", "d 1", "down1" etc.
+        	Pattern p = Pattern.compile("d[n:own]* *([1-9][0-9]*)\\.([0-9])");
+        	Matcher m = p.matcher(comment);
+        	if (m.find()) { // Find each match in turn; String can't do this.
+        		String num = m.group(1); // Access a submatch group; String can't do this.
+        		adjust = -parseanInt(num);
+        		String rem = m.group(2);
+        		int thz = parseanInt(rem); // assumption - one digit
+        		if (thz != 0)
+        		{
+        			adjust -= 1; // borrow
+        			thz = 10 - thz;
+        		}
+        	}
+        	else {
+	        	p = Pattern.compile("d[n:own]* *([1-9][0-9]*)");
+	        	m = p.matcher(comment);
+	        	if (m.find()) { // Find each match in turn; String can't do this.
+	        		String num = m.group(1); // Access a submatch group; String can't do this.
+	        		adjust = -parseanInt(num);
+	        	}
+        	}
+        }
+        else if (comment.contains("dn") || comment.contains("down") || comment.matches(".* d")
+        		|| comment.matches("d .*") || comment.equals("d"))
+        {
+        	adjust = ssb?-5:-1;
+        }
+        else if (comment.contains("qsx"))
+        {
+        	Pattern p = Pattern.compile("qsx *([1-9][0-9]*)\\.([0-9]+)");
+        	Matcher m = p.matcher(comment);
+        	if (m.find()) { // Find each match in turn; String can't do this.
+        		String num = m.group(1); // Access a submatch group; String can't do this.
+        		String rem = m.group(2);
+        		int freqp = parseanInt(num);
+        		if (freqp <= 100) { // it's something like 3.182
+        			int tkhz = freqp*1000+parseanInt(rem);
+        			adjust = tkhz - khz;
+        		}
+        		else {
+        			rem = rem.substring(0,1); // just first sig digit
+        			int thz = parseanInt(rem);
+        			adjust = freqp - khz; // adjust back to the qsx frequency
+        			hadjust = thz - hz;
+        		}
+        	}
+        	else {
+            	p = Pattern.compile("qsx *([1-9][0-9]*)");
+            	m = p.matcher(comment);
+	        	if (m.find()) { // Find each match in turn; String can't do this.
+	        		String num = m.group(1); // Access a submatch group; String can't do this.
+	        		int freqp = parseanInt(num);
+	        		if (freqp <= 1000)
+	        			adjust = freqp;
+	        		else
+	        			adjust = freqp - khz; // adjust back to the qsx frequency
+	        	}
+        	}
+        }
+        if (adjust != 0 || hadjust != 0) {
+        	khz = khz + adjust;
+        	hz = hz + hadjust;
+        	if (hz < 0) {
+        		khz--; // borrow
+        		hz+=10;
+        		if (hz < 0) // wth?
+        			hz = 0; 
+        	}
+        	else if (hz > 10) {
+        		khz++;
+        		hz-=10;
+        		if (hz > 10) { // still?
+        			hz = 0;
+        		}
+        	}
+        	ret = Integer.toString(khz);
+        	if (hz != 0 || posp > 0) {
+        		ret = ret + "." + Integer.toString(hz);
+        	}
+        }		
+		return ret;
+	}
+	
+	void sendAndWait(byte[] cmd)
+	{
+		radiosk.setAck();
+		radiosk.SpecialSocketSend(cmd);
+		radiosk.waitforAck();
+	}
+	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -215,78 +359,25 @@ public class EntryActivity extends Activity {
             int pos2 = text.indexOf(' ', pos+1);
             if (pos2 <=0)
             	pos2 = text.length();
-            qsoRFreq = text.substring(pos+1, pos2);
-            int posp = qsoRFreq.indexOf('.');
-            // TODO: QSX 3.838, QSX 4, UP 5, DOWN 2, U 5, D4, U4, DN4, UP4, DOWN4, QSX7144
+            String kRFreq = text.substring(pos+1, pos2); // receive frequency in khz
+            int posp = kRFreq.indexOf('.');
             String comment ="";
             if (pos2 < text.length())
             	comment = text.substring(pos2);
-            if (comment.contains("up1") || comment.contains("up 1") ) // for now treat as up 1
-            {
-            	int addLoc = -1;
-            	if (posp == -1)
-            		addLoc = qsoRFreq.length()-1;
-            	else
-            		addLoc = posp - 1;
-            	while (addLoc > 0)
-            	{
-            		char t = qsoRFreq.charAt(addLoc);
-            		if (t == '9')
-            		{
-            			t = '0';
-            			qsoTFreq = (qsoRFreq.substring(0, addLoc) + t);
-            			if (addLoc < qsoRFreq.length()-1)
-            				qsoTFreq = qsoTFreq + qsoRFreq.substring(addLoc+1);
-            			
-            			addLoc--;
-            		}
-            		else
-            		{
-            			t++;
-            			qsoTFreq = (qsoRFreq.substring(0, addLoc) + t);
-                    	if (addLoc < qsoRFreq.length()-1)
-            				qsoTFreq = qsoTFreq + qsoRFreq.substring(addLoc+1);
-            			addLoc = 0;
-            		}
-            	}
-            		
-            }
-            else
-            	qsoTFreq = qsoRFreq;
-            qsoRFreq = convertToMHz(qsoRFreq, posp);
-            qsoTFreq = convertToMHz(qsoTFreq, posp);
-            txfreqBox.setText(qsoTFreq);
+             
+            qsoRFreq = convertToMHz(kRFreq, posp);
             rxfreqBox.setText(qsoRFreq);
             qsoMode = mode(qsoRFreq);
-            
+            boolean voice = qsoMode.equals("USB") || qsoMode.equals("SSB") || qsoMode.equals("LSB") ||
+            		qsoMode.equals("AM") || qsoMode.equals("FM");
+            String kTFreq = upDown(kRFreq, comment, voice); // get tx freq from "up 1", e.g.
+            qsoTFreq = convertToMHz(kTFreq, posp);
+            txfreqBox.setText(qsoTFreq);
+            modeBox.setText(qsoMode);
+
             if (radiosk != null)
             {
             	byte cmd[] = new byte[5];
-            	if (!qsoTFreq.equals(qsoRFreq))
-            	{
-    				cmd[0] = 0;
-    				cmd[1] = 0;
-    				cmd[2] = 0;
-    				cmd[3] = 0;
-    				cmd[4] = (byte)0x81; // split on
-    				radiosk.SpecialSocketSend(cmd);
-            		byte frecmd[] = getBCD(qsoTFreq, (byte)1);
-    				radiosk.SpecialSocketSend(frecmd);
-    				radiosk.SpecialSocketSend(cmd);
-    				cmd[4] = (byte)2;
-    				radiosk.SpecialSocketSend(cmd);
-            	}
-            	else
-            	{
-    				cmd[0] = 0;
-    				cmd[1] = 0;
-    				cmd[2] = 0;
-    				cmd[3] = 0;
-    				cmd[4] = (byte)0x82; // split off
-    				radiosk.SpecialSocketSend(cmd);            		
-            	}
-				cmd = getBCD(qsoRFreq, (byte) 1);
-				radiosk.SpecialSocketSend(cmd);
 				int md = 2; // cw
 				if (qsoMode.equals("USB"))
 					md = 1;
@@ -301,10 +392,38 @@ public class EntryActivity extends Activity {
 				cmd[2] = 0;
 				cmd[3] = 0;
 				cmd[4] = 7; // 
-				radiosk.SpecialSocketSend(cmd);
+				sendAndWait(cmd);
+            	if (!qsoTFreq.equals(qsoRFreq))
+            	{
+	    				cmd[0] = 0;
+	    				cmd[1] = 0;
+	    				cmd[2] = 0;
+	    				cmd[3] = 0;
+	    				cmd[4] = (byte)0x81; // vfo a/b
+	    				sendAndWait(cmd);
+	    				cmd[0]=(byte)md;
+	    				cmd[4]=7;
+	    				sendAndWait(cmd);
+	            		byte frecmd[] = getBCD(qsoTFreq, (byte)1);
+	            		sendAndWait(frecmd);
+	            		cmd[4] = (byte)0x81; // vfo a/b
+	            		sendAndWait(cmd);
+	    				cmd[4] = (byte)2; // split on
+	    				sendAndWait(cmd);
+            	}
+            	else
+            	{
+	    				cmd[0] = 0;
+	    				cmd[1] = 0;
+	    				cmd[2] = 0;
+	    				cmd[3] = 0;
+	    				cmd[4] = (byte)0x82; // split off
+	    				sendAndWait(cmd);
+            	}
+				cmd = getBCD(qsoRFreq, (byte) 1);
+				sendAndWait(cmd);
             }
-            modeBox.setText(qsoMode);
-            if (qsoMode.equals("SSB") || qsoMode.equals("AM") || qsoMode.equals("FM"))
+            if (voice)
             {
             	qsoRRST = "59";
             	qsoSRST = "59";
@@ -328,7 +447,7 @@ public class EntryActivity extends Activity {
         if (posp == -1)
         	posp = len;
         // magically convert string to bcd, put in cmd
-        int mhz = Integer.parseInt(freqinMhz.substring(0, posp));
+        int mhz = parseanInt(freqinMhz.substring(0, posp));
         posp++;
         if (posp<len)
         {
@@ -350,9 +469,11 @@ public class EntryActivity extends Activity {
 		ret[4] = cmd;
 		return ret;
 	}
+	
 	private void fillData(Uri uri) {
 	    String[] projection = { QSOContactTable.KEY_CALL,
-	        QSOContactTable.KEY_RXFREQ, QSOContactTable.KEY_TXFREQ, QSOContactTable.KEY_MODE, QSOContactTable.KEY_RRST, QSOContactTable.KEY_SRST };
+	        QSOContactTable.KEY_RXFREQ, QSOContactTable.KEY_TXFREQ, QSOContactTable.KEY_MODE, 
+	        QSOContactTable.KEY_RRST, QSOContactTable.KEY_SRST };
 	    Cursor cursor = getContentResolver().query(uri, projection, null, null,
 	        null);
 	    if (cursor != null) {
@@ -510,6 +631,37 @@ public class EntryActivity extends Activity {
       }
     }
 
+    public void pollRig()
+    {
+        if (radiosk != null)
+        {
+        	radiosk.setPoll(true);
+	        byte[] cmd = new byte[5];
+			cmd[0] = 0;
+			cmd[1] = 0;
+			cmd[2] = 0;
+			cmd[3] = 0;
+			cmd[4] = (byte)0x3; // read freq and mode
+			radiosk.SpecialSocketSend(cmd);
+        }
+    }
+    
+    public void rigRXFreq(String rx)
+    {
+        EditText rxfreqBox = (EditText) findViewById(R.id.rxfreq_edit);
+    	qsoRFreq = rx;
+        rxfreqBox.setText(qsoRFreq);    	
+    }
+    
+    public void rigMode(String mode)
+    {
+        EditText modeBox = (EditText) findViewById(R.id.mode_edit);
+    	qsoMode = mode;
+        modeBox.setText(qsoMode);
+        if (radiosk != null)
+        	radiosk.setPoll(false);
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -570,13 +722,26 @@ public class EntryActivity extends Activity {
       }
     
     public void newContact(View view) {
-	      callBox.setText("");
-	      txfreqBox.setText("");
-	      rxfreqBox.setText("");
-	      modeBox.setText("");
-	      rrstBox.setText("");
-	      srstBox.setText("");
-	      contactUri = null;
+    	callBox.setText("");
+	    txfreqBox.setText("");
+	    rxfreqBox.setText("");
+	    modeBox.setText("");
+	    rrstBox.setText("");
+	    srstBox.setText("");
+	    contactUri = null;
+	  	qsoTFreq = "";
+		qsoRFreq = "";
+		qsoCall = "";
+		qsoMode = "";
+		qsoRRST = "";
+		qsoSRST = "";
+		qsoTimeon = "";
+		qsoTimeoff = "";
+		qsoName = "";
+		qsoQTH = "";
+		qsoState = "";
+		qsoCountry = "";
+		qsoGrid = "";
     }
 
     public void submitCall()
@@ -586,7 +751,6 @@ public class EntryActivity extends Activity {
 			try {
 				telnetsk.oStream.write(telnetsk.Logon.getBytes());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			state = loggedIn;
@@ -639,7 +803,6 @@ public class EntryActivity extends Activity {
 				radiosk.SocketStart();
 			}
 			state = loggingIn; // TODO: if it fails to log in, start over
-			// TODO: once logged in, log out on inactivity for x minutes - config
 			
 		}
 	}
@@ -651,6 +814,7 @@ public class EntryActivity extends Activity {
     	setResult(Activity.RESULT_OK, resultIntent);
     	finish();
 	}
+	
     public void logContact(View view) {
     	saveState();
     	Intent intent = new Intent(this, LogActivity.class);

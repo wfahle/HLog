@@ -156,6 +156,13 @@ class MyHandler extends Handler {
 	ListView lv;
 	TextView txt;
 
+	public static final int mnormal = 0;
+	public static final int merror = 1;
+	public static final int minfo = 2;
+	public static final int mrigpoll = 3;
+	public static final int mrigrx = 4;
+	public static final int mrigmode = 5;
+	
 	MyHandler(EntryActivity entryActivity, ListView listView, TextView txt) {
 		super();
 		this.main = entryActivity;
@@ -168,11 +175,12 @@ class MyHandler extends Handler {
 			return true;
 		return false;
 	}
+	
 	public void handleMessage(android.os.Message msg) {
-		Bundle hm = msg.getData(); // TODO put error messages out to the screen
+		Bundle hm = msg.getData(); 
 		String msgText = hm.getString("message");
 		System.out.println(msgText);
-		if(msg.what == 0)
+		if(msg.what == mnormal)
 		{
 			final StableArrayAdapter adapter = (StableArrayAdapter)lv.getAdapter();
 			if (msgText.indexOf("DX de ")==0) // starts dx
@@ -210,18 +218,30 @@ class MyHandler extends Handler {
 				main.submitCall();
 			}
 		}
-		else if(msg.what == 1)
+		else if (msg.what == merror)
 		{
 			txt.setText(msgText);
 			txt.setTextColor(0xFFFF0000);
 			txt.setVisibility(View.VISIBLE);
 			
 		}
-		else if(msg.what == 2)
+		else if(msg.what == minfo)
 		{
 			txt.setText(msgText);
 			txt.setTextColor(0xFF00FF00);
 			txt.setVisibility(View.VISIBLE);			
+		}
+		else if (msg.what == mrigpoll)
+		{
+			main.pollRig();
+		}
+		else if (msg.what == mrigrx)
+		{
+			main.rigRXFreq(msgText);
+		}
+		else if (msg.what == mrigmode)
+		{
+			main.rigMode(msgText);
 		}
 	}
 
@@ -236,7 +256,7 @@ class HLogSocket {
 	
 	protected Message StringToMessage(String s) {
 		Message msg = new Message();
-		msg.what = 0;
+		msg.what = MyHandler.mnormal;
 		Bundle hm = new Bundle();
 		hm.putString("message", s);
 		msg.setData(hm);
@@ -245,7 +265,7 @@ class HLogSocket {
 	
 	protected Message ErrorToMessage(String s) {
 		Message msg = new Message();
-		msg.what = 1;
+		msg.what = MyHandler.merror;
 		Bundle hm = new Bundle();
 		hm.putString("message", s);		
 		msg.setData(hm);
@@ -254,25 +274,70 @@ class HLogSocket {
 	
 	protected Message InfoToMessage(String s) {
 		Message msg = new Message();
-		msg.what = 2;
+		msg.what = MyHandler.minfo;
 		Bundle hm = new Bundle();
 		hm.putString("message", s);
 		msg.setData(hm);
 		return msg;
 	}
+	
+	protected Message SpecialToMessage(String s, int what) {
+		Message msg = new Message();
+		msg.what = what;
+		Bundle hm = new Bundle();
+		hm.putString("message", s);
+		msg.setData(hm);
+		return msg;
+	}	
 }
 
 class RadioSocket extends HLogSocket implements Runnable {
 	protected String Server = "";
 	protected int Port = 0;
 	private MyHandler hnd;
-	
+	public static final int ackOK = 0;
+	public static final int ackERR = -1;
+	private volatile boolean wantingAck=false;
+	private volatile boolean bAckwait = false;
+	private volatile int ack;
+	private volatile boolean pollingrig = false;
+	private byte[] rigFreq=null;
+	private volatile int curRigByte = 0;
+
 	public RadioSocket(MyHandler h) {
 		hnd = h;
 		tr = new Thread(this);
 	}
 	
-
+	public synchronized void setPoll(boolean poll)
+	{
+		pollingrig = poll;
+		if (pollingrig = false)
+			curRigByte = 0; // it's been reset, ok to return to normal mode
+	}
+	
+	public synchronized void setAck()
+	{
+		if (bRunning && sk != null && iStream != null)
+			wantingAck = true; // else ignore request and return error later
+		else
+			wantingAck = false;
+	}
+	
+	public synchronized int waitforAck()
+	{
+		if (!wantingAck)
+			return ackERR;
+		bAckwait = true;
+		do {
+			try {
+				Thread.sleep(5);
+			} catch (InterruptedException e) {
+			}
+		} while (wantingAck);
+		return ack;
+	}
+	
 	public void SocketStart() {
 		tr.start();
 	}
@@ -316,7 +381,7 @@ class RadioSocket extends HLogSocket implements Runnable {
 			return;
 		}
 
-		
+		int pollcount = 0;
 		while (bRunning) {
 			try {
 				byte[] buf = new byte[2048];
@@ -326,18 +391,106 @@ class RadioSocket extends HLogSocket implements Runnable {
 				} catch (Exception ex) {
 					hnd.sendMessage(ErrorToMessage("Connection closed read"));
 				}
-				
-				Thread.sleep(500);
+				Thread.sleep(5);
+				pollcount++;
+				if (pollcount > 100 && !wantingAck)
+				{
+					pollcount = 0;
+					hnd.sendMessage(SpecialToMessage("", MyHandler.mrigpoll));
+				}
 			} catch (InterruptedException e) {
 				// don't care if it can sleep, I can't, that's why I'm up programming
 			}
+		}
+	}
+
+	private synchronized void checkAck(byte ackbyte)
+	{
+		if (wantingAck)
+		{
+			while (!bAckwait) {
+				try {
+					Thread.sleep(5);
+				} catch (InterruptedException e) {
+				}
+			}
+			if (ackbyte == 0)
+				ack = ackOK;
+			else
+				ack = ackERR;
+			bAckwait = false;
+			wantingAck = false;
 		}
 	}
 	
 	private void Parsing(byte[] bData, int count) {
 		for (int i = 0; i < count; i++) {
 			byte curByte = bData[i];
-			//TODO: implement reading from port
+			if (pollingrig)
+			{
+				if (rigFreq == null) // just reuse it
+				{
+					rigFreq = new byte[5]; // store up until we have them all
+				}
+				if (curRigByte >= 0)
+				{
+					rigFreq[curRigByte] = curByte;
+					curRigByte++;
+					if (curRigByte > 4) // got them all
+					{
+						curRigByte = -1;
+						int mhz = (rigFreq[0]>>4) * 100 + (rigFreq[0]& 0xF ) * 10 + (rigFreq[1]>>4);
+						int khz = (rigFreq[1] & 0xF) * 100 + (rigFreq[2] >> 4) * 10 + 
+								(rigFreq[2] & 0xF);
+						String kstring = "00"+Integer.toString(khz);
+						kstring = kstring.substring(kstring.length()-3);
+						String extra = "";
+						if (rigFreq[3] != 0)
+						{
+							extra = Integer.toString(rigFreq[3]>>4);
+							if ((rigFreq[3] & 0xF) != 0)
+								extra += Integer.toString(rigFreq[3] & 0xF);
+						}
+						String rfreq = Integer.toString(mhz)+"."+kstring+extra;
+						hnd.sendMessage(SpecialToMessage(rfreq, MyHandler.mrigrx));
+						int mode = rigFreq[4];
+						String modemsg = "";
+						switch (mode)
+						{
+							case 0:
+								modemsg = "LSB";
+								break;
+							case 1:
+								modemsg = "USB";
+								break;
+							case 2:
+								modemsg = "CW";
+								break;
+							case 3:
+								modemsg = "CWR";
+								break;
+							case 4:
+								modemsg = "AM";
+								break;
+							case 6:
+								modemsg = "WFM";
+								break;
+							case 8:
+								modemsg = "FM";
+								break;
+							case 10:
+								modemsg = "DIG";
+								break;
+							case 12:
+								modemsg = "PKT";
+								break;
+						}
+						hnd.sendMessage(SpecialToMessage(modemsg, MyHandler.mrigmode));
+					}
+				}
+			}
+			else
+				checkAck(curByte);
 		}
 	}
 

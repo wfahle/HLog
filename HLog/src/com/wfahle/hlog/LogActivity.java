@@ -38,9 +38,16 @@ public class LogActivity extends Activity {
     	EditText edit = (EditText) findViewById(R.id.timeon_edit);
     	TimeZone tz = TimeZone.getTimeZone("GMT+0");
     	Calendar cal = Calendar.getInstance(tz);
-    	
-    	CharSequence text = ""+cal.get(Calendar.YEAR)+"-"+(cal.get(Calendar.MONTH)+1)+"-"+
-    			cal.get(Calendar.DATE)+" "+cal.get(Calendar.HOUR_OF_DAY)+":"+cal.get(Calendar.MINUTE);
+    	String month = "0"+(cal.get(Calendar.MONTH)+1);
+    	String day = "0"+cal.get(Calendar.DATE);
+    	String hour = "0"+cal.get(Calendar.HOUR_OF_DAY);
+    	String minute = "0"+cal.get(Calendar.MINUTE);
+    	month = month.substring(month.length()-2); // makes 3 into 03, e.g.
+    	day = day.substring(day.length()-2);
+    	hour = hour.substring(hour.length()-2);
+    	minute = minute.substring(minute.length()-2);
+    	CharSequence text = ""+cal.get(Calendar.YEAR)+"-"+month+"-"+
+    			day+" "+ hour +":"+minute;
     	edit.setText(text); 
     	Intent intent = getIntent();
     	String call = intent.getStringExtra(LogActivity.QSO_CALL);
