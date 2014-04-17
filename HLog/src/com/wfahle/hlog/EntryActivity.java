@@ -300,7 +300,10 @@ public class EntryActivity extends Activity {
         int mhz = Integer.parseInt(freqinMhz.substring(0, posp));
         posp++;
         if (posp<len)
+        {
         	mhz = mhz*10+freqinMhz.charAt(posp)-'0';
+        	posp++;
+        }
         else
         	mhz = mhz*10;
         int dig[] = {0,0,0,0};
@@ -310,7 +313,7 @@ public class EntryActivity extends Activity {
         	posp++;
         }
         ret[0]= (byte)((mhz/1000)*16+(mhz%1000)/100);
-        ret[1]= (byte)((mhz%100/10) + mhz%10);
+        ret[1]= (byte)((mhz%100/10)*16 + mhz%10);
         ret[2] = (byte)(dig[0]*16+dig[1]);
         ret[3] = (byte)(dig[2]*16+dig[3]);
 		ret[4] = cmd;
