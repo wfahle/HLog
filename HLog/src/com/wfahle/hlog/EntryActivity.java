@@ -17,6 +17,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -67,6 +68,7 @@ public class EntryActivity extends Activity {
 	protected int state=loggedOut;
 	private Uri contactUri;
 	protected final static String LOGIN_STRING = "wasLoggedIn";
+	protected final static String SCROLL_STRINGS = "formerStrings";
 	private boolean wasLoggedIn=false;
 
 	protected String mode(String freq)
@@ -304,6 +306,7 @@ public class EntryActivity extends Activity {
         rrstBox = (EditText) findViewById(R.id.rrst_edit);
         srstBox = (EditText) findViewById(R.id.srst_edit);
 
+        String[] strarray = null;
         if (savedInstanceState == null)
         {
         	contactUri = null;
@@ -314,6 +317,11 @@ public class EntryActivity extends Activity {
             // check from the saved Instance
             contactUri =  (Uri) savedInstanceState.getParcelable(QSOContactProvider.CONTENT_ITEM_TYPE);
             wasLoggedIn = savedInstanceState.getBoolean(LOGIN_STRING);
+            if (savedInstanceState.getString(SCROLL_STRINGS, null) != null)
+            {
+            	strarray = TextUtils.split(savedInstanceState.getString(SCROLL_STRINGS, null), ",");
+            	savedInstanceState.putString(SCROLL_STRINGS, null);
+            }
         }
 
         
@@ -344,6 +352,10 @@ public class EntryActivity extends Activity {
         final ListView lv = (ListView) findViewById(R.id.spot_list);
         lv.setClickable(true);
         final ArrayList<String> list = new ArrayList<String>();
+        if (strarray != null) {
+        	for (int i=0; i<strarray.length; i++)
+        		list.add(strarray[i]);
+        }
         final StableArrayAdapter adapter = new StableArrayAdapter(this, R.layout.spotview, list);
         lv.setAdapter(adapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -521,8 +533,20 @@ public class EntryActivity extends Activity {
             // check from the saved Instance
             contactUri =  (Uri) savedInstanceState.getParcelable(QSOContactProvider.CONTENT_ITEM_TYPE);
             wasLoggedIn = savedInstanceState.getBoolean(LOGIN_STRING);
+            if (savedInstanceState.getString(SCROLL_STRINGS, null) != null)
+            {
+	            String[] strarray = TextUtils.split(savedInstanceState.getString(SCROLL_STRINGS, null), ",");
+	            if (strarray != null)
+	            {
+		            final ListView lv = (ListView) findViewById(R.id.spot_list);
+		            StableArrayAdapter adapter = (StableArrayAdapter)lv.getAdapter();
+		            if (strarray != null) {
+		            	for (int i=0; i<strarray.length; i++)
+		            		adapter.add(strarray[i]); // can't use addAll here - add is overridden
+		            }
+	            }
+            }
         }
-
 	}
 	
 	@Override
@@ -531,6 +555,16 @@ public class EntryActivity extends Activity {
 	    saveState();
 	    outState.putParcelable(QSOContactProvider.CONTENT_ITEM_TYPE, contactUri);
 	    outState.putBoolean(LOGIN_STRING, wasLoggedIn);
+        final ListView lv = (ListView) findViewById(R.id.spot_list);
+        StableArrayAdapter adapter = (StableArrayAdapter)lv.getAdapter();
+
+        int len = adapter.getCount();
+        String[] strarray = new String[len];
+        for (int i=0; i<len; i++)
+        	strarray[i] = adapter.getItem(i);
+        
+	    String value = TextUtils.join(",", strarray);
+	    outState.putString(SCROLL_STRINGS, value);
 	}
 	
 	@Override
