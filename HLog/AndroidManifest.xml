@@ -43,7 +43,8 @@
         </activity>
         <activity
             android:name="com.wfahle.hlog.EntryActivity"
-            android:label="@string/title_activity_entry" >
+            android:label="@string/title_activity_entry" 
+            android:windowSoftInputMode="stateUnchanged">
         </activity>
         
         <provider

@@ -81,7 +81,6 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/txfreq_edit"
         android:layout_below="@+id/txfreq_edit" >
-
     </ListView>
 
     <Button
@@ -131,8 +130,6 @@
         android:layout_toRightOf="@+id/call_edit"
         android:ems="10"
         android:inputType="textCapCharacters" >
-
-        <requestFocus />
     </EditText>
 
     <TextView
