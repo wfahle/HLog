@@ -261,14 +261,45 @@ public class EntryActivity extends Activity {
             
             if (radiosk != null)
             {
-				byte cmd[] = getBCD(qsoRFreq, (byte) 1);
+            	byte cmd[] = new byte[5];
+            	if (!qsoTFreq.equals(qsoRFreq))
+            	{
+    				cmd[0] = 0;
+    				cmd[1] = 0;
+    				cmd[2] = 0;
+    				cmd[3] = 0;
+    				cmd[4] = (byte)0x81; // split on
+    				radiosk.SpecialSocketSend(cmd);
+            		byte frecmd[] = getBCD(qsoTFreq, (byte)1);
+    				radiosk.SpecialSocketSend(frecmd);
+    				radiosk.SpecialSocketSend(cmd);
+    				cmd[4] = (byte)2;
+    				radiosk.SpecialSocketSend(cmd);
+            	}
+            	else
+            	{
+    				cmd[0] = 0;
+    				cmd[1] = 0;
+    				cmd[2] = 0;
+    				cmd[3] = 0;
+    				cmd[4] = (byte)0x82; // split off
+    				radiosk.SpecialSocketSend(cmd);            		
+            	}
+				cmd = getBCD(qsoRFreq, (byte) 1);
 				radiosk.SpecialSocketSend(cmd);
 				int md = 2; // cw
 				if (qsoMode.equals("USB"))
 					md = 1;
 				else if (qsoMode.equals("LSB"))
 					md = 0;
+				else if (qsoMode.equals("AM"))
+					md = 4;
+				else if (qsoMode.equals("FM"))
+					md = 8;
 				cmd[0] = (byte)md;
+				cmd[1] = 0;
+				cmd[2] = 0;
+				cmd[3] = 0;
 				cmd[4] = 7; // 
 				radiosk.SpecialSocketSend(cmd);
             }
