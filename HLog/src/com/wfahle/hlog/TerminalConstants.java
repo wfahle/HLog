@@ -231,8 +231,8 @@ class HLogSocket {
 	protected boolean bRunning=false;
 	public Thread tr;
 	protected Socket sk = null;
-	protected  InputStream iStream = null;
-	public OutputStream oStream = null;
+	protected InputStream iStream = null;
+	protected OutputStream oStream = null;
 	
 	protected Message StringToMessage(String s) {
 		Message msg = new Message();
@@ -279,14 +279,16 @@ class RadioSocket extends HLogSocket implements Runnable {
 
 	public void SocketStop() {
 		bRunning = false;
-		try {
-			sk.close();
-		} catch (IOException e) {
-			hnd.sendMessage(ErrorToMessage("Socket close failed" + Server + ":" + Port));
+		if (sk != null) {
+			try {
+				sk.close();
+			} catch (IOException e) {
+				hnd.sendMessage(ErrorToMessage("Socket close failed" + Server + ":" + Port));
+			}
 		}
 		sk = null;
 	}
-
+	
 	public void run() {
 		InetAddress ia = null;
 		bRunning = true;
@@ -341,8 +343,11 @@ class RadioSocket extends HLogSocket implements Runnable {
 
 	protected void SpecialSocketSend(byte[] buff) {
 		try {
-			oStream.write(buff);
-			oStream.flush();
+			if (oStream != null)
+			{
+				oStream.write(buff);
+				oStream.flush();
+			}
 		} catch (Exception ex) {
 			hnd.sendMessage(ErrorToMessage("Connection closed write"));
 		}
@@ -518,8 +523,10 @@ class TerminalSocket extends HLogSocket implements Runnable {
 
 	protected void SpecialSocketSend(byte[] buff) {
 		try {
-			oStream.write(buff);
-			oStream.flush();
+			if (oStream != null) {
+				oStream.write(buff);
+				oStream.flush();
+			}
 		} catch (Exception ex) {
 			hnd.sendMessage(ErrorToMessage("Connection closed write"));
 		}

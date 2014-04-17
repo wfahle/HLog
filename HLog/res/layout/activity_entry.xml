@@ -90,8 +90,8 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/call"
         android:layout_alignRight="@+id/spot_list"
-        android:onClick="configureApp"
-        android:text="@string/configure_ui" />
+        android:onClick="done"
+        android:text="@string/done_ui" />
 
     <Button
         android:id="@+id/dxcStart"

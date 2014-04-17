@@ -23,7 +23,8 @@ import android.widget.SimpleCursorAdapter;
 public class MainActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 //	private static final int ACTIVITY_CREATE = 0;
 //  	private static final int ACTIVITY_EDIT = 1;
-	protected final static int config_request = 1; // enum of all the requests would be better
+	protected final static int config_request = 1; 
+	protected final static int log_request = 2;
   	private static final int DELETE_ID = Menu.FIRST + 1;
   	// private Cursor cursor;
   	private SimpleCursorAdapter adapter;
@@ -45,6 +46,10 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
       super.onActivityResult(requestCode, resultCode, data);
       switch(requestCode) {
+		case (log_request) : {
+	          if (resultCode == Activity.RESULT_OK) {
+	          }			  
+		}
         case (config_request) : {
           if (resultCode == Activity.RESULT_OK) {
 //        		telnetServer = data.getStringExtra(ConfigActivity.SERVER_NAME);
@@ -110,7 +115,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	
     public void onCapture(View view) {
         Intent i = new Intent(this, EntryActivity.class);
-        startActivity(i);    	
+        startActivityForResult(i, log_request);
     }
     
     public void onConfig(View view) {

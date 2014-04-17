@@ -53,7 +53,12 @@ public class EntryActivity extends Activity {
     EditText modeBox;
     EditText rrstBox;
     EditText srstBox;
-
+    /* Change Mode:
+     * P1  x x x 07 
+     * P1 = 00 : LSB, P1 = 01 : USB, P1 = 02 : CW,
+     * P1 = 03 : CWR, P1 = 04 : AM, P1 = 08 : FM,
+     * P1 = 0A : DIG, P1 = 0C : PKT P1 = 88 : FMN,
+     */
 	protected TerminalSocket telnetsk = null;
 	protected RadioSocket radiosk = null;
 	protected int state=loggedOut;
@@ -68,19 +73,19 @@ public class EntryActivity extends Activity {
 		if (f > 1.8 && f < 1.843 )
 			ret = "CW";
 		else if (f >= 1.843 && f < 2.0 )
-			ret = "SSB";
+			ret = "LSB";
 		else if (f >= 3.5 && f < 3.57)
 			ret = "CW";
 		else if (f >= 3.57 && f < 3.6)
 			ret = "RTTY";
 		else if (f >= 3.6 && f < 3.845)
-			ret = "SSB";
+			ret = "LSB";
 		else if (f >= 3.845 && f <= 3.88)
 			ret = "SSTV";
 		else if (f>3.88 && f < 3.9)
 			ret = "AM";
 		else if (f > 3.9 && f < 4.0)
-			ret = "SSB";
+			ret = "LSB";
 		else if (f >= 7.0 && f < 7.04)
 			ret = "CW";
 		else if (f >= 7.04 && f <= 7.045)
@@ -94,7 +99,7 @@ public class EntryActivity extends Activity {
 		else if (f > 7.08 && f < 7.125)
 			ret = "CW";
 		else if (f >= 7.125 && f < 7.290)
-			ret = "SSB";
+			ret = "LSB";
 		else if (f >= 7.290 && f <= 7.3)
 			ret = "AM";
 		else if (f>=10.1 && f < 10.13)
@@ -110,11 +115,11 @@ public class EntryActivity extends Activity {
 		else if (f >= 14.095 && f < 14.15)
 			ret = "CW";
 		else if (f >= 14.15 && f < 14.35)
-			ret = "SSB";
+			ret = "USB";
 		else if (f >= 18.068 && f < 18.11)
 			ret = "CW";
 		else if (f >= 18.11 && f <= 18.168)
-			ret = "SSB";
+			ret = "USB";
 		else if (f >= 21.0 && f < 21.07)
 			ret = "CW";
 		else if (f >= 21.07 && f < 21.11)
@@ -122,15 +127,15 @@ public class EntryActivity extends Activity {
 		else if (f >= 21.11 && f < 21.2)
 			ret = "CW";
 		else if (f >= 21.2 && f <= 21.45)
-			ret = "SSB";
+			ret = "USB";
 		else if (f >= 24.890 && f < 24.93)
 			ret = "CW";
 		else if (f >= 24.93 && f <= 24.99)
-			ret = "SSB";
+			ret = "USB";
 		else if (f >= 28.0 && f <= 28.3)
 			ret = "CW";
 		else if (f >= 28.3 && f < 29.0)
-			ret = "SSB";
+			ret = "USB";
 		else if (f >= 29.0 && f < 29.2)
 			ret = "AM";
 		else if (f >= 29.2 && f < 29.7)
@@ -138,7 +143,7 @@ public class EntryActivity extends Activity {
 		else if (f >= 50.0 && f < 50.1)
 			ret = "CW";
 		else if (f >= 50.1 && f < 52.0)
-			ret = "SSB";
+			ret = "USB";
 		else if (f >= 52.0 && f <= 54.0)
 			ret = "FM";
 		return ret;
@@ -179,12 +184,17 @@ public class EntryActivity extends Activity {
         List<TelnetConfig> tlist = ldb.getAllConfigs();
         if (!tlist.isEmpty())
         {
-        	TelnetConfig cfg = tlist.get(0);
-        	telnetServer = cfg.getServer();
-        	telnetPort = cfg.getPort();
-        	telnetLogon = cfg.getCall();
-        	radioServer =  cfg.getRadioServer();
-        	radioPort = cfg.getRadioPort();
+        	for (int i=0; i<tlist.size(); i++)
+        	{
+	        	TelnetConfig cfg = tlist.get(i);
+	        	telnetServer = cfg.getServer();
+	        	telnetPort = cfg.getPort();
+	        	telnetLogon = cfg.getCall();
+	        	radioServer =  cfg.getRadioServer();
+	        	radioPort = cfg.getRadioPort();
+	        	if (cfg.getPreferred())
+	        		break;
+        	}
         }
 
         final ListView lv = (ListView) findViewById(R.id.spot_list);
@@ -251,13 +261,16 @@ public class EntryActivity extends Activity {
             
             if (radiosk != null)
             {
-				try {
-					byte cmd[] = getBCD(qsoRFreq, (byte) 1);
-					radiosk.oStream.write(cmd);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				byte cmd[] = getBCD(qsoRFreq, (byte) 1);
+				radiosk.SpecialSocketSend(cmd);
+				int md = 2; // cw
+				if (qsoMode.equals("USB"))
+					md = 1;
+				else if (qsoMode.equals("LSB"))
+					md = 0;
+				cmd[0] = (byte)md;
+				cmd[4] = 7; // 
+				radiosk.SpecialSocketSend(cmd);
             }
             modeBox.setText(qsoMode);
             if (qsoMode.equals("SSB") || qsoMode.equals("AM") || qsoMode.equals("FM"))
@@ -561,13 +574,14 @@ public class EntryActivity extends Activity {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				Button button = (Button) findViewById(R.id.dxcStart);
+				button.setText(R.string.login_ui);
+				telnetsk.SocketStop();
+				telnetsk=null;
 			}
+			if (radiosk != null)
+				radiosk.SocketStop();
 			state = loggedOut;
-			Button button = (Button) findViewById(R.id.dxcStart);
-			button.setText(R.string.login_ui);
-			telnetsk.SocketStop();
-			telnetsk=null;
-			radiosk.SocketStop();
 			radiosk = null;
 		}
 		else
@@ -584,15 +598,25 @@ public class EntryActivity extends Activity {
 			telnetsk.Port = telnetPort;
 			telnetsk.Logon = telnetLogon+"\r\n"; // TODO: fire it up.
 			telnetsk.SocketStart();
-			radiosk.Server = radioServer;
-			radiosk.Port = radioPort;
-			radiosk.SocketStart();
+			if (radiosk != null)
+			{
+				radiosk.Server = radioServer;
+				radiosk.Port = radioPort;
+				radiosk.SocketStart();
+			}
 			state = loggingIn; // TODO: if it fails to log in, start over
 			// TODO: once logged in, log out on inactivity for x minutes - config
 			
 		}
 	}
 	
+	public void done(View view) {
+		if (state == loggedIn)
+			LogOn(null); // log off
+		Intent resultIntent = new Intent();
+    	setResult(Activity.RESULT_OK, resultIntent);
+    	finish();
+	}
     public void logContact(View view) {
     	saveState();
     	Intent intent = new Intent(this, LogActivity.class);

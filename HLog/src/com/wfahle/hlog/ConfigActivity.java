@@ -28,12 +28,21 @@ public class ConfigActivity extends Activity {
 		if (!configs.isEmpty())
 		{
 			EditText server_edit = (EditText) findViewById(R.id.cluster_edit);
-			String server = configs.get(0).getServer();
-			server_edit.setText(server);
 			EditText logon_edit = (EditText) findViewById(R.id.yourcall_edit);
-			String call = configs.get(0).getCall();
-			logon_edit.setText(call);
-			_id = configs.get(0).getId();
+			EditText rserver_edit = (EditText) findViewById(R.id.piglet_edit);
+			for (int i=0; i<configs.size(); i++)
+			{
+				TelnetConfig tf = configs.get(i);
+				String server = tf.getServer();
+				server_edit.setText(server);
+				String call = tf.getCall();
+				logon_edit.setText(call);
+				String rserver = tf.getRadioServer();
+				rserver_edit.setText(rserver);
+				_id = tf.getId();
+				if (tf.getPreferred())
+					break;
+			}
 		}
 		// Show the Up button in the action bar.
 		setupActionBar();
@@ -47,11 +56,8 @@ public class ConfigActivity extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 
 	}
-	
-	@Override
-	protected void onPause()
+	protected void saveConfig(boolean preferred)
 	{
-		super.onPause();
     	EditText logon_edit = (EditText) findViewById(R.id.yourcall_edit);
 		String call = logon_edit.getEditableText().toString();
     	EditText server_edit = (EditText) findViewById(R.id.cluster_edit);
@@ -60,14 +66,19 @@ public class ConfigActivity extends Activity {
 		EditText rserver_edit = (EditText) findViewById(R.id.piglet_edit);
 		String rserver = rserver_edit.getEditableText().toString();
 		int rport = 7373;
-		boolean preferred = true;
 		
 		TelnetConfig cfg = new TelnetConfig(_id, call, server, port, rserver, rport, preferred);
 		LocalDBHandler ldb = new LocalDBHandler(getBaseContext());
 		if (_id == 0)
 			ldb.addConfig(cfg);
 		else
-			ldb.updateConfig(cfg);
+			ldb.updateConfig(cfg);		
+	}
+	@Override
+	protected void onPause()
+	{
+		super.onPause();
+		saveConfig(false);
 	}
 
 	@Override
@@ -94,7 +105,8 @@ public class ConfigActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-    public void done(View view) {    	
+    public void done(View view) {
+    	saveConfig(true);
     	Intent resultIntent = new Intent();
     	/*
     	EditText server_edit = (EditText) findViewById(R.id.cluster_edit);
