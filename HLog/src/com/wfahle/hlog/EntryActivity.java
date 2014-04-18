@@ -289,9 +289,11 @@ public class EntryActivity extends Activity {
 	
 	void sendAndWait(byte[] cmd)
 	{
-		radiosk.setAck();
-		radiosk.SpecialSocketSend(cmd);
-		radiosk.waitforAck();
+		try {
+			radiosk.SpecialSocketSend(cmd);
+			Thread.sleep(150);
+		} catch (InterruptedException e) {
+		}
 	}
 	
 	@Override
