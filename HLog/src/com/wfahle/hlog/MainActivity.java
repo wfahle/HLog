@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -53,15 +54,15 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 				QSOContactTable.KEY_TIMEON, QSOContactTable.KEY_TIMEOFF, QSOContactTable.KEY_MODE, QSOContactTable.KEY_RRST,
 				QSOContactTable.KEY_SRST, QSOContactTable.KEY_NAME, QSOContactTable.KEY_QTH, QSOContactTable.KEY_STATE, 
 				QSOContactTable.KEY_COUNTRY, QSOContactTable.KEY_GRID };
-		String selectionClause = null;
+		String selectionClause = "";
 		String[] selectionArgs = {""};
 		String sortOrder = QSOContactTable.KEY_TIMEON; // in order of qso start
 		// Does a query against the table and returns a Cursor object
 		Cursor mCursor = getContentResolver().query(
 				QSOContactProvider.CONTENT_URI,  // The content URI of the qso table
 		    projection,                       // The columns to return for each row
-		    selectionClause,                   // Either null, or the word the user entered
-		    selectionArgs,                    // Either empty, or the string the user entered
+		    null,                   // Either null, or the word the user entered
+		    null,                    // Either empty, or the string the user entered
 		    sortOrder);                       // The sort order for the returned rows
 		// Some providers return null if an error occurs, others throw an exception
 		if (null == mCursor) {
@@ -98,9 +99,10 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		    	String time2;
 		    	if (dateTime.length == 2 && dateTime2.length == 2)
 		    	{
-		    		date = (String)TextUtils.replace(dateTime[0], dashColon, rdashColon);
-		    		time = (String)TextUtils.replace(dateTime[1], dashColon, rdashColon);
-		    		time2 = (String)TextUtils.replace(dateTime2[1], dashColon, rdashColon);
+		    		date = TextUtils.replace(dateTime[0], dashColon, rdashColon).toString();
+		    		date = TextUtils.replace(date, dashColon, rdashColon).toString();
+		    		time = TextUtils.replace(dateTime[1], dashColon, rdashColon).toString();
+		    		time2 = TextUtils.replace(dateTime2[1], dashColon, rdashColon).toString();
 		    		time += "00";
 		    		time2 += "00";
 		    	}
@@ -140,6 +142,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 
 		        // Insert code here to process the retrieved word.
 		    	ret.add(row);
+		    	Log.d("ADIF", row);
 		        // end of while loop
 		    }
 		}
@@ -219,7 +222,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	
 	public void onTools(View view) {
 		// for now, just export as email, no other tools exist
-		  
+		  getAdifData();
 	}
 	
     public void onCapture(View view) {
