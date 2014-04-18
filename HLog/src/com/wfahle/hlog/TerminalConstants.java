@@ -223,7 +223,7 @@ class MyHandler extends Handler {
 			txt.setText(msgText);
 			txt.setTextColor(0xFFFF0000);
 			txt.setVisibility(View.VISIBLE);
-			
+			main.socketError(hm.getInt("id"));
 		}
 		else if(msg.what == minfo)
 		{
@@ -253,6 +253,12 @@ class HLogSocket {
 	protected Socket sk = null;
 	protected InputStream iStream = null;
 	protected OutputStream oStream = null;
+	private int id=0;
+	
+	HLogSocket(int i)
+	{
+		id = i;
+	}
 	
 	protected Message StringToMessage(String s) {
 		Message msg = new Message();
@@ -267,6 +273,7 @@ class HLogSocket {
 		Message msg = new Message();
 		msg.what = MyHandler.merror;
 		Bundle hm = new Bundle();
+		hm.putInt("id", id);
 		hm.putString("message", s);		
 		msg.setData(hm);
 		return msg;
@@ -305,6 +312,7 @@ class RadioSocket extends HLogSocket implements Runnable {
 	private volatile int curRigByte = 0;
 
 	public RadioSocket(MyHandler h) {
+		super(1); // radio is 1, telnet is 2
 		hnd = h;
 		tr = new Thread(this);
 	}
@@ -390,6 +398,7 @@ class RadioSocket extends HLogSocket implements Runnable {
 					Parsing(buf, i);
 				} catch (Exception ex) {
 					hnd.sendMessage(ErrorToMessage("Connection closed read"));
+					return;
 				}
 				Thread.sleep(5);
 				pollcount++;
@@ -404,8 +413,8 @@ class RadioSocket extends HLogSocket implements Runnable {
 		}
 	}
 
-	private synchronized void checkAck(byte ackbyte)
-	{
+	private void checkAck(byte ackbyte)
+	{ // not synchronized - can't lock a mutex and wait on another thread to do something
 		if (wantingAck)
 		{
 			while (!bAckwait) {
@@ -516,6 +525,7 @@ class TerminalSocket extends HLogSocket implements Runnable {
 	protected String Logon = "";
 	
 	public TerminalSocket(MyHandler h) {
+		super(2);
 		hnd = h;
 		tr = new Thread(this);
 	}
@@ -528,7 +538,8 @@ class TerminalSocket extends HLogSocket implements Runnable {
 	public void SocketStop() {
 		bRunning = false;
 		try {
-			sk.close();
+			if (sk != null)
+				sk.close();
 		} catch (IOException e) {
 			hnd.sendMessage(ErrorToMessage("Socket close failed" + Server + ":" + Port));
 		}
@@ -570,6 +581,7 @@ class TerminalSocket extends HLogSocket implements Runnable {
 				Parsing(buf, i);
 			} catch (Exception ex) {
 				hnd.sendMessage(ErrorToMessage("Connection closed read"));
+				return; // it's not going to open itself
 			}
 		}
 	}

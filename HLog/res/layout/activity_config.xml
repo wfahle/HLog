@@ -52,14 +52,6 @@
         android:onClick="done"
         android:text="@string/done_ui" />
 
-    <TextView
-        android:id="@+id/piglet"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/yourcall_edit"
-        android:layout_below="@+id/yourcall_edit"
-        android:text="@string/piglet_ui" />
-
     <EditText
         android:id="@+id/piglet_edit"
         android:layout_width="wrap_content"
@@ -68,5 +60,30 @@
         android:layout_below="@+id/piglet"
         android:ems="10"
         android:hint="@string/default_piglet_ip" />
+
+    <TextView
+        android:id="@+id/piglet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/qrzpassword_edit"
+        android:layout_below="@+id/qrzpassword_edit"
+        android:text="@string/piglet_ui" />
+
+    <TextView
+        android:id="@+id/qrzpassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/yourcall_edit"
+        android:layout_below="@+id/yourcall_edit"
+        android:text="@string/qrzpassword_ui" />
+
+    <EditText
+        android:id="@+id/qrzpassword_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/qrzpassword"
+        android:layout_below="@+id/qrzpassword"
+        android:ems="10"
+        android:inputType="textPassword" />
 
 </RelativeLayout>

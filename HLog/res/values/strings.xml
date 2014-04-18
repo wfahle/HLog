@@ -41,5 +41,6 @@
     <string name="menu_delete">Delete</string>
     <string name="piglet_ui">Piglet IP</string>
     <string name="default_piglet_ip">10.1.1.1</string>
+    <string name="qrzpassword_ui">QRZ XML password</string>
 
 </resources>

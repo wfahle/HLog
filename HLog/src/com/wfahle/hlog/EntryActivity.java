@@ -166,7 +166,7 @@ public class EntryActivity extends Activity {
 	protected String upDown(String rfreq, String comment, boolean ssb) {
 		String ret = rfreq;
 		
-		comment = comment.toLowerCase(Locale.ENGLISH);
+		comment = comment.toLowerCase(Locale.US);
         // Handles: QSX 3.838, QSX 4, UP 5, DOWN 2, U 5, D4, U4, DN4, UP4, DOWN4, QSX7144, u1.8, etc.
         int posp = rfreq.indexOf('.');
         int hz = 0;
@@ -800,19 +800,19 @@ public class EntryActivity extends Activity {
 		}
 		else if (state == loggedIn) {
 			if(telnetsk != null) {
-				try {
-					String quit = "q\r\n";
-					telnetsk.oStream.write(quit.getBytes());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				String quit = "q\r\n";
+				telnetsk.SpecialSocketSend(quit.getBytes());
 				Button button = (Button) findViewById(R.id.dxcStart);
 				button.setText(R.string.login_ui);
 				telnetsk.SocketStop();
 				telnetsk=null;
 			}
 			if (radiosk != null)
+			{
+				byte[] cmd = {0, 0, 0, 0, (byte) 0xE7}; // read receiver status - cause read loop to unlock
+				radiosk.SpecialSocketSend(cmd);
 				radiosk.SocketStop();
+			}
 			state = loggedOut;
 			radiosk = null;
 		}
@@ -844,9 +844,18 @@ public class EntryActivity extends Activity {
 	public void done(View view) {
 		if (state == loggedIn)
 			LogOn(null); // log off
+		wasLoggedIn=false;
 		Intent resultIntent = new Intent();
     	setResult(Activity.RESULT_OK, resultIntent);
     	finish();
+	}
+	
+	public void socketError(int id) {
+		// if it's an error, don't bother sending any more, just clean up
+		if (id == 1) // radio socket
+			radiosk = null;
+		else if (id == 2) // telnet socket
+			telnetsk = null; 
 	}
 	
     public void logContact(View view) {

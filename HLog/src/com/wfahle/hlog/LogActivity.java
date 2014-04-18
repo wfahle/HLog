@@ -1,15 +1,22 @@
 package com.wfahle.hlog;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
+import android.os.AsyncTask;
+import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class LogActivity extends Activity {
 
@@ -25,8 +32,8 @@ public class LogActivity extends Activity {
 	public static final String QSO_STATE = "com.wfahle.hlog.QSO_STATE";
 	public static final String QSO_COUNTRY = "com.wfahle.hlog.QSO_COUNTRY";
 	public static final String QSO_GRID = "com.wfahle.hlog.QSO_GRID";
-	
-	
+	private AsyncTask<LogActivity, Integer, QRZprofile> updatetask;
+	public ProgressDialog progressDialog;	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +41,6 @@ public class LogActivity extends Activity {
 		setContentView(R.layout.activity_log);
 		// Show the Up button in the action bar.
 		setupActionBar();
-    	// TODO: do lookup of contact in QRZ		
     	EditText edit = (EditText) findViewById(R.id.timeon_edit);
     	TimeZone tz = TimeZone.getTimeZone("GMT+0");
     	Calendar cal = Calendar.getInstance(tz);
@@ -65,6 +71,35 @@ public class LogActivity extends Activity {
     	edit.setText(rrst);
     	edit = (EditText) findViewById(R.id.srstt_edit);
     	edit.setText(srst);
+		SharedPreferences settings = getSharedPreferences(ConfigActivity.PREFS_NAME, 0);
+		final String qrzUser = settings.getString("qrzUser", null);
+		final String qrzPassword = settings.getString("qrzPassword", null);
+
+		if (qrzUser == null || qrzPassword == null || qrzUser.length() == 0
+		    || qrzPassword.length() == 0) {
+			/* could give them the ability to enter just this info through the config activity, but I won't 
+		  LinearLayout searchLL = (LinearLayout) findViewById(R.id.SearchLL01);
+		  searchLL.setVisibility(View.INVISIBLE);
+		  Intent i = new Intent(this, Settings.class);
+		  this.startActivity(i);
+		  this.finish();
+		  */
+			//skip qrz
+		}
+		else {
+	        if (LogActivity.this.updatetask == null) {
+	            Log.d("startDownloading", "task was null, calling execute");
+	            LogActivity.this.updatetask = new GetProfileTask().execute(LogActivity.this);
+	          } else {
+	            Status s = LogActivity.this.updatetask.getStatus();
+	            if (s == Status.FINISHED) {
+	              Log.d("updatetask",
+	                  "task wasn't null, status finished, calling execute");
+	              LogActivity.this.updatetask = new GetProfileTask().execute(LogActivity.this);
+	            }
+	          }
+
+		}
 	}
 
 	/**
@@ -176,4 +211,361 @@ public class LogActivity extends Activity {
     			cal.get(Calendar.DATE)+" "+cal.get(Calendar.HOUR_OF_DAY)+":"+cal.get(Calendar.MINUTE);
     	edit.setText(text);
 	}
+	 private class GetProfileTask extends AsyncTask<LogActivity, Integer, QRZprofile> {
+
+//		    private int linkColor = Color.rgb(Integer.parseInt("66", 16),Integer.parseInt("77", 16),Integer.parseInt("FF", 16));
+
+		    LogActivity that;
+
+		    protected QRZprofile doInBackground(LogActivity... thats) {
+
+		      if (that == null) {
+		        this.that = thats[0];
+		      }
+
+		      QRZprofile profile = null;
+
+		      publishProgress(0);
+
+		      try {
+		        SharedPreferences settings = getSharedPreferences(ConfigActivity.PREFS_NAME, 0);
+		        final String qrzUser = settings.getString("qrzUser", null);
+		        final String qrzPassword = settings.getString("qrzPassword", null);
+
+		        QRZrequest qrzDb = new QRZrequest(qrzUser, qrzPassword);
+
+		        final EditText callsignSearchText = (EditText) findViewById(R.id.callt_edit);
+/*
+		        TableLayout profileTable = (TableLayout) findViewById(R.id.ProfileTable);
+		        profileTable.removeAllViewsInLayout();
+*/
+		        String callsign = callsignSearchText.getText().toString().trim().toLowerCase(Locale.US);
+		        if (callsign.contains(" ")) {
+		          callsign = LogActivity.extractCharsFromPhonetic(callsign);
+		        }
+		        profile = qrzDb.getHamByCallsign(callsign.replace(" ", ""));
+
+		      } catch (Exception e) {
+		        e.printStackTrace();
+		      }
+
+		      publishProgress(100);
+
+		      return profile;
+		    }
+
+		    protected void onProgressUpdate(Integer... progress) {
+		      Log.d("onProgressUpdate", progress[0].toString());
+		      if (progress[0] == 0) {
+		        that.progressDialog = ProgressDialog.show(that, "Ham",
+		            "Querying QRZ.com API", true, false);
+		      }
+		      if (progress[0] == 100) {
+		        that.progressDialog.dismiss();
+		      }
+
+		    }
+
+		    protected void onPostExecute(QRZprofile result) {
+		    	/*
+		      LinearLayout resultsLL = (LinearLayout) findViewById(R.id.ResultsLL);
+
+		      TableLayout profileTable = (TableLayout) findViewById(R.id.ProfileTable);
+		      profileTable.removeAllViewsInLayout();
+              */
+		      if (result == null) {
+		        Toast
+		            .makeText(
+		                that.getBaseContext(),
+		                "No results found, incorrect QRZ.com username/password set or no QRZ.com subscription",
+		                Toast.LENGTH_LONG).show();
+/*		        resultsLL.setVisibility(View.INVISIBLE); */
+		        return;
+		      }
+
+		      EditText nameText = (EditText) findViewById(R.id.name_edit);
+		      if (nameText.getEditableText().toString().length() == 0) {
+			      String displayName = "";
+			      if (result.getFname() != null && result.getFname().length() > 0) {
+			        displayName = result.getFname();
+			        if (result.getName() != null && result.getName().length() > 0) {
+			          displayName += " " + result.getName();
+			        }
+			      } else {
+			        if (result.getName() != null && result.getName().length() > 0) {
+			          displayName = result.getName();
+			        }
+			      }
+	
+			      if (displayName.length() > 0) {
+			        nameText.setText(displayName);
+			      } else {
+	//		        nameText.setText("no name?"); // leave name alone
+			      }
+		      }
+		      /* skip image for now, but hey, cool
+		      if (result.getImage() != null) {
+		        TableRow tr = new TableRow(that);
+		        TextView tv = new TextView(that);
+		        tr.addView(tv);
+		        Spanned htmlString = Html.fromHtml("<img src='" + result.getImage()
+		            + "'>", new ImageGetter() {
+
+		          public Drawable getDrawable(String source) {
+		            // TODO Auto-generated method stub
+
+		            try {
+
+		              Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(
+		                  source).getContent());
+		              Drawable d = new BitmapDrawable(bitmap);
+		              d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+		              return d;
+		            } catch (MalformedURLException e) {
+		              e.printStackTrace();
+		            } catch (IOException e) {
+		              e.printStackTrace();
+		            }
+		            return null;
+		          }
+		        }, null);
+		        tv.setAutoLinkMask(Linkify.ALL);
+		        tv.setText(htmlString);
+		        profileTable.addView(tr);
+		      }
+              */
+		      /* already have call populated, don't overwrite in case we have /p or something
+		      if (result.getCall() != null) {
+		        TableRow tr = new TableRow(that);
+		        TextView tv = new TextView(that);
+		        tr.addView(tv);
+		        tv.setText("Callsign: " + result.getCall());
+		        tv.setTextSize(24);
+		        profileTable.addView(tr);
+		      }
+		      */
+
+		      /* don't use these fields for now
+		      if (result.getEmail() != null) {
+		        TableRow tr = new TableRow(that);
+		        TextView tv = new TextView(that);
+		        tr.addView(tv);
+		        tv.setAutoLinkMask(Linkify.ALL);
+		        tv.setText("Email: " + result.getEmail());
+		        tv.setTextSize(24);
+		        profileTable.addView(tr);
+		      } else {
+		        // emailText.setText("Email: n/a");
+		      }
+		      if (result.getAddr1() != null) {
+		        TableRow tr = new TableRow(that);
+		        TextView tv = new TextView(that);
+		        tr.addView(tv);
+		        tv.setText("Street: " + result.getAddr1());
+		        tv.setTextSize(24);
+		        profileTable.addView(tr);
+		      } else {
+		        // stateText.setText("State: n/a");
+		      }
+		      */
+    		  EditText qth_edit = (EditText) findViewById(R.id.qth_edit);
+		      if (result.getAddr2() != null && qth_edit.getText().length()==0) {
+		    	  qth_edit.setText(result.getAddr2());
+		      } else {
+		        // stateText.setText("State: n/a");
+		      }
+
+		      EditText state_edit = (EditText) findViewById(R.id.state_edit);
+		      if (result.getState() != null && state_edit.getText().length()==0) {
+		      	state_edit.setText(result.getState());
+		      } else {
+		        // stateText.setText("State: n/a");
+		      }
+
+		      EditText country_edit = (EditText) findViewById(R.id.country_edit);
+		      if (result.getCountry() != null && country_edit.getText().length()==0) {
+		      	country_edit.setText(result.getCountry());
+		      } else {
+		        // countryText.setText("Country: n/a");
+		      }
+		      
+		      EditText grid_edit = (EditText) findViewById(R.id.grid_edit);
+
+		      if (result.getGrid() != null && grid_edit.getText().length()==0) {
+			    grid_edit.setText(result.getGrid());
+			    /* ok this would be cool for a button next to the grid
+		        TableRow tr = new TableRow(that);
+		        LinearLayout ll = new LinearLayout(that);
+		        ll.setOrientation(LinearLayout.HORIZONTAL);
+		        TextView tv = new TextView(that);
+		        tv.setText("Grid: ");
+		        tv.setTextSize(24);
+		        TextView tv2 = new TextView(that);
+		        SpannableString gridSpan = new SpannableString(result.getGrid());
+		        gridSpan.setSpan(new UnderlineSpan(), 0, gridSpan.length(), 0);
+		        tv2.setText(gridSpan);
+		        tv2.setTextSize(24);
+		        tv2.setTextColor(linkColor);
+		        tv2.setOnClickListener(new OnClickListener() {
+
+		          public void onClick(View v) {
+		            if (v instanceof TextView) {
+		              TextView tv = (TextView) v;
+		              Intent i = new Intent(Intent.ACTION_VIEW);
+		              String substring = tv.getText().toString();
+		              Location loc = new Location(substring);
+		              String uriString = "geo:"
+		                  + ((int) (loc.getLatitude().toDegrees() * 1000) / 1000.0) + ","
+		                  + ((int) (loc.getLongitude().toDegrees() * 1000) / 1000.0)
+		                  + "?z=15";
+		              Log.d("QRZ", "grid click, launching intent using uri=" + uriString);
+		              i.setData(Uri.parse(uriString));
+		              that.startActivity(i);
+		            } else {
+		              Log.e("QRZ", "v not instanceof TextView");
+		            }
+		          }
+		        });
+		        */
+
+		      } else {
+		        // gridText.setText("Grid: n/a");
+		      }
+
+		      /* bearing and such, nice feature
+		      SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		      boolean lbsEnabled = settings.getBoolean("lbsEnabled", true);
+
+		      if (result.getGrid() != null && lbsEnabled) {
+
+		        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+		        android.location.Location bestLocation = locationManager
+		            .getLastKnownLocation(Geo.getBestProviderWithGPSFallback(locationManager));
+
+
+		        if (bestLocation != null) {
+		          Location theirLocation = new Location(result.getGrid());
+		          Location myLocation = new Location(bestLocation.getLatitude(),
+		              bestLocation.getLongitude());
+		          double distance = myLocation.getDistanceMi(theirLocation);
+		          TableRow tr = new TableRow(that);
+		          TextView tv = new TextView(that);
+		          tr.addView(tv);
+		          tv.setText("Distance: " + ((int) (distance * 100)) / 100.0 + " mi");
+		          tv.setTextSize(24);
+		          profileTable.addView(tr);
+
+		          int bearing = (int) myLocation.getBearing(theirLocation);
+		          tr = new TableRow(that);
+		          tv = new TextView(that);
+		          tr.addView(tv);
+		          tv.setText("Bearing: " + bearing + " deg");
+		          tv.setTextSize(24);
+		          profileTable.addView(tr);
+		        }
+
+
+		      } else {
+		        // gridText.setText("Grid: n/a");
+		      }
+              */
+		      /* not using web link, ham class, etc
+		      if (result.getUrl() != null) {
+		        TableRow tr = new TableRow(that);
+		        TextView tv = new TextView(that);
+		        tr.addView(tv);
+		        // Spanned htmlString = Html.fromHtml("Web: " + "<a href='" +
+		        // result.getUrl() + "'>" + result.getUrl() + "</a>");
+		        tv.setAutoLinkMask(Linkify.ALL);
+		        tv.setText("Web: " + result.getUrl());
+		        tv.setTextSize(24);
+		        profileTable.addView(tr);
+		      }
+
+		      String hamClass = result.getHamclass();
+		      if (hamClass != null) {
+
+		        if (hamClass.equalsIgnoreCase("e")) {
+		          hamClass = "Extra";
+		        } else if (hamClass.equalsIgnoreCase("a")) {
+		          hamClass = "Advanced";
+		        } else if (hamClass.equalsIgnoreCase("t")) {
+		          hamClass = "Tech";
+		        } else if (hamClass.equalsIgnoreCase("g")) {
+		          hamClass = "General";
+		        } else if (hamClass.equalsIgnoreCase("c")) {
+		          hamClass = "Club";
+		        }
+
+		        TableRow tr = new TableRow(that);
+		        TextView tv = new TextView(that);
+		        tr.addView(tv);
+		        tv.setText("Class: " + hamClass);
+		        tv.setTextSize(24);
+		        profileTable.addView(tr);
+		      } else {
+		        // classText.setText("Class: n/a");
+		      }
+
+		      if (result.getEfdate() != null) {
+		        TableRow tr = new TableRow(that);
+		        TextView tv = new TextView(that);
+		        tr.addView(tv);
+		        tv.setText("Effective: " + result.getEfdate());
+		        tv.setTextSize(24);
+		        profileTable.addView(tr);
+		      }
+
+		      if (result.getExpdate() != null) {
+		        TableRow tr = new TableRow(that);
+		        TextView tv = new TextView(that);
+		        tr.addView(tv);
+		        tv.setText("Expires: " + result.getExpdate());
+		        tv.setTextSize(24);
+		        profileTable.addView(tr);
+		      } else {
+		        // expiresText.setText("Expires: n/a");
+		      }
+
+		      if (result.getU_views() != null) {
+		        TableRow tr = new TableRow(that);
+		        TextView tv = new TextView(that);
+		        tr.addView(tv);
+		        tv.setText("Views: " + result.getU_views());
+		        tv.setTextSize(24);
+		        profileTable.addView(tr);
+		      }
+		       */
+		      /*
+		       * if (result.getBio() != null) { TableRow tr = new TableRow(that);
+		       * TextView tv = new TextView(that); TextView tv1 = new TextView(that);
+		       * tr.addView(tv1); tv1.setText("Bio: "); tr.addView(tv); Spanned
+		       * htmlString = Html.fromHtml(result.getBio()); tv.setText(htmlString);
+		       * profileTable.addView(tr); }
+		       */
+
+		    }
+		  }
+
+		  public static String extractCharsFromPhonetic(String input) {
+		    return input.replaceAll("x ray", "x").replaceAll("alpha", "a")
+		        .replaceAll("bravo", "b").replaceAll("charlie", "c")
+		        .replaceAll("delta", "d").replaceAll("echo", "e")
+		        .replaceAll("foxtrot", "f").replaceAll("golf", "g")
+		        .replaceAll("hotel", "h").replaceAll("india", "i")
+		        .replaceAll("juliet", "j").replaceAll("kilo", "k")
+		        .replaceAll("lima", "l").replaceAll("mike", "m")
+		        .replaceAll("november", "n").replaceAll("oscar", "o")
+		        .replaceAll("papa", "p").replaceAll("quebec", "q")
+		        .replaceAll("romeo", "r").replaceAll("sierra", "s")
+		        .replaceAll("tango", "t").replaceAll("uniform", "u")
+		        .replaceAll("victor", "v").replaceAll("whiskey", "w")
+		        .replaceAll("yankee", "y").replaceAll("zulu", "z")
+		        .replaceAll("one", "1").replaceAll("two", "2").replaceAll("three", "3")
+		        .replaceAll("four", "4").replaceAll("five", "5").replaceAll("six", "6")
+		        .replaceAll("seven", "7").replaceAll("eight", "8")
+		        .replaceAll("niner", "9").replaceAll("nine", "9")
+		        .replaceAll("zero", "0").replaceAll("x-ray", "x");
+		  }	
 }

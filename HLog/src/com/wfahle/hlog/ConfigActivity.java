@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 
 public class ConfigActivity extends Activity {
 
+	public static final String PREFS_NAME = "com.wfahle.hlog.PREFS_NAME";
 	public static final String SERVER_NAME = "com.wfahle.hlog.SERVER_NAME";
 	public static final String PORT_NUMBER = "com.wfahle.hlog.PORT_NUMBER";
 	public static final String LOGON_CALL = "com.wfahle.hlog.LOGON_CALL";
@@ -22,6 +24,11 @@ public class ConfigActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_config);
+
+	    SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+	    String qrzUser = settings.getString("qrzUser", null);
+	    String qrzPassword = settings.getString("qrzPassword", null);
+
 		Context con = getBaseContext();
 		LocalDBHandler ldb = new LocalDBHandler(con);
 		List<TelnetConfig> configs = ldb.getAllConfigs();
@@ -30,12 +37,15 @@ public class ConfigActivity extends Activity {
 			EditText server_edit = (EditText) findViewById(R.id.cluster_edit);
 			EditText logon_edit = (EditText) findViewById(R.id.yourcall_edit);
 			EditText rserver_edit = (EditText) findViewById(R.id.piglet_edit);
+			EditText qrzpassword_edit = (EditText) findViewById(R.id.qrzpassword_edit);
 			for (int i=0; i<configs.size(); i++)
 			{
 				TelnetConfig tf = configs.get(i);
 				String server = tf.getServer();
 				server_edit.setText(server);
-				String call = tf.getCall();
+				String call = tf.getCall(); //deprecated from table, now in shared prefs
+				if (qrzUser != null)
+					call = qrzUser;
 				logon_edit.setText(call);
 				String rserver = tf.getRadioServer();
 				rserver_edit.setText(rserver);
@@ -43,6 +53,7 @@ public class ConfigActivity extends Activity {
 				if (tf.getPreferred())
 					break;
 			}
+			qrzpassword_edit.setText(qrzPassword);
 		}
 		// Show the Up button in the action bar.
 		setupActionBar();
@@ -66,13 +77,22 @@ public class ConfigActivity extends Activity {
 		EditText rserver_edit = (EditText) findViewById(R.id.piglet_edit);
 		String rserver = rserver_edit.getEditableText().toString();
 		int rport = 7373;
-		
+		EditText qrzpassword_edit = (EditText) findViewById(R.id.qrzpassword_edit);
+
 		TelnetConfig cfg = new TelnetConfig(_id, call, server, port, rserver, rport, preferred);
 		LocalDBHandler ldb = new LocalDBHandler(getBaseContext());
 		if (_id == 0)
 			ldb.addConfig(cfg);
 		else
-			ldb.updateConfig(cfg);		
+			ldb.updateConfig(cfg);
+		// hmm... may change over to this completely, and drop the telnetconfig class
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("qrzUser", call);
+        editor.putString("qrzPassword", qrzpassword_edit.getText().toString());
+//        editor.putBoolean("lbsEnabled", false);
+        editor.commit();
+
 	}
 	@Override
 	protected void onPause()
