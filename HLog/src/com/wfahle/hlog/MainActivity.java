@@ -23,6 +23,22 @@ import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+// TODO: need to clean up the data structures - one callsign, not two
+// TODO: get rid of config db altogether; store all data in thingy
+// TODO: export ADIF file
+// TODO: send ADIF file via e-mail
+// TODO: go direct to edit screen when click on item in MainActivity, not EntryActivity
+// TODO: get rid of "edit" button in EntryActivity - replace with cw skimmer on/off
+// TODO: keep background telnet running when leaving EntryActivity; but
+// TODO: accumulate about 20 or 30 items - then log off.
+// TODO: when coming back, get those 20 or 30 items - wait, isn't that just a sh/dx?
+// TODO: need sh/dx button?
+// TODO: clean up UI to be consistent, etc.
+// TODO: add context menu to EntryActivity - long-click lets you save spot
+// TODO: forward/backward on spots - maybe in the area above
+// TODO: larger type on text in spots list.
+// TODO: load/save of text in spots list breaks some lines up instead of
+// TODO: going all the way to the divider and keeping string intact
 
 public class MainActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 //	private static final int ACTIVITY_CREATE = 0;
@@ -83,13 +99,12 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		} else {
 			ret.add("<ProgramID:6>HLog00<eoh>\r\n");
 		    // Insert code here to do something with the results
-			int index = mCursor.getColumnIndex(QSOContactTable.KEY_CALL);
+			//<QSO_DATE:8>20140415<TIME_ON:6>234909<TIME_OFF:6>234942<FREQ:6>14.218<CALL:6>W1AW/1<RST_RCVD:3>599
+			//<RST_SENT:3>599<GRIDSQUARE:0><NAME:0><QTH:0><STATE:2>MA<COUNTRY:0><MODE:3>USB<TX_PWR:0><QSL_VIA:0><QSL_SENT:1>N<QSL_RCVD:1>N<STATION_CALLSIGN:0><NOTES:0><eor>
 
 		    while (mCursor.moveToNext()) {
-//<QSO_DATE:8>20140415<TIME_ON:6>234909<TIME_OFF:6>234942<FREQ:6>14.218<CALL:6>W1AW/1<RST_RCVD:3>599
-//<RST_SENT:3>599<GRIDSQUARE:0><NAME:0><QTH:0><STATE:2>MA<COUNTRY:0><MODE:3>USB<TX_PWR:0><QSL_VIA:0><QSL_SENT:1>N<QSL_RCVD:1>N<STATION_CALLSIGN:0><NOTES:0><eor>
 		    	String timeOn = mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_TIMEON));
-		    	String timeOff = mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_TIMEON));
+		    	String timeOff = mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_TIMEOFF));
 		    	String[] dateTime = TextUtils.split(timeOn, " ");
 		    	String[] dateTime2 = TextUtils.split(timeOff, " ");
 		    	String[] dashColon = {"-", ":", "/"};
@@ -102,9 +117,9 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		    		date = TextUtils.replace(dateTime[0], dashColon, rdashColon).toString();
 		    		date = TextUtils.replace(date, dashColon, rdashColon).toString();
 		    		time = TextUtils.replace(dateTime[1], dashColon, rdashColon).toString();
+		    		time = TextUtils.replace(time, dashColon, rdashColon).toString();
 		    		time2 = TextUtils.replace(dateTime2[1], dashColon, rdashColon).toString();
-		    		time += "00";
-		    		time2 += "00";
+		    		time2 = TextUtils.replace(time2, dashColon, rdashColon).toString();
 		    	}
 		    	else
 		    	{

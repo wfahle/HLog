@@ -20,7 +20,8 @@ import android.widget.Toast;
 
 public class LogActivity extends Activity {
 
-	public static final String QSO_FREQ = "com.wfahle.hlog.QSO_FREQ";
+	public static final String QSO_RXFREQ = "com.wfahle.hlog.QSO_RXFREQ";
+	public static final String QSO_TXFREQ = "com.wfahle.hlog.QSO_TXFREQ";
 	public static final String QSO_CALL = "com.wfahle.hlog.QSO_CALL";
 	public static final String QSO_RRST = "com.wfahle.hlog.QSO_RRST";
 	public static final String QSO_SRST = "com.wfahle.hlog.QSO_SRST";
@@ -35,32 +36,45 @@ public class LogActivity extends Activity {
 	private AsyncTask<LogActivity, Integer, QRZprofile> updatetask;
 	public ProgressDialog progressDialog;	
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_log);
-		// Show the Up button in the action bar.
-		setupActionBar();
-    	EditText edit = (EditText) findViewById(R.id.timeon_edit);
+	CharSequence now() {
     	TimeZone tz = TimeZone.getTimeZone("GMT+0");
     	Calendar cal = Calendar.getInstance(tz);
     	String month = "0"+(cal.get(Calendar.MONTH)+1);
     	String day = "0"+cal.get(Calendar.DATE);
     	String hour = "0"+cal.get(Calendar.HOUR_OF_DAY);
     	String minute = "0"+cal.get(Calendar.MINUTE);
+    	String second = "0"+cal.get(Calendar.SECOND);
     	month = month.substring(month.length()-2); // makes 3 into 03, e.g.
     	day = day.substring(day.length()-2);
     	hour = hour.substring(hour.length()-2);
     	minute = minute.substring(minute.length()-2);
+    	second = second.substring(second.length()-2);
     	CharSequence text = ""+cal.get(Calendar.YEAR)+"-"+month+"-"+
-    			day+" "+ hour +":"+minute;
-    	edit.setText(text); 
+    			day+" "+ hour +":"+minute+":"+second;
+    	return text;
+	}
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		boolean needslookup=false;
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_log);
+		// Show the Up button in the action bar.
+		setupActionBar();
+    	EditText edit = (EditText) findViewById(R.id.timeon_edit);
     	Intent intent = getIntent();
     	String call = intent.getStringExtra(LogActivity.QSO_CALL);
-    	String freq = intent.getStringExtra(LogActivity.QSO_FREQ);
+    	String freq = intent.getStringExtra(LogActivity.QSO_RXFREQ);
     	String mode = intent.getStringExtra(LogActivity.QSO_MODE);
     	String rrst = intent.getStringExtra(LogActivity.QSO_RRST);
     	String srst = intent.getStringExtra(LogActivity.QSO_SRST);
+    	String timeon = intent.getStringExtra(LogActivity.QSO_TIMEON);
+    	String timeoff = intent.getStringExtra(LogActivity.QSO_TIMEOFF);
+    	String name = intent.getStringExtra(LogActivity.QSO_NAME);
+    	String qth = intent.getStringExtra(LogActivity.QSO_QTH);
+    	String state = intent.getStringExtra(LogActivity.QSO_STATE);
+    	String country = intent.getStringExtra(LogActivity.QSO_COUNTRY);
+    	String grid = intent.getStringExtra(LogActivity.QSO_COUNTRY);
+    	
     	edit = (EditText) findViewById(R.id.callt_edit);
     	edit.setText(call);
     	edit = (EditText) findViewById(R.id.rxfreqt_edit);
@@ -71,11 +85,31 @@ public class LogActivity extends Activity {
     	edit.setText(rrst);
     	edit = (EditText) findViewById(R.id.srstt_edit);
     	edit.setText(srst);
+    	edit = (EditText) findViewById(R.id.timeon_edit);
+    	if (timeon == null || timeon.length() == 0)
+    	{
+    		needslookup = true;
+    		edit.setText(now());
+    	}
+    	else
+        	edit.setText(timeon);
+    	edit = (EditText) findViewById(R.id.timeoff_edit);
+    	edit.setText(timeoff);
+    	edit = (EditText) findViewById(R.id.name_edit);
+    	edit.setText(name);
+    	edit = (EditText) findViewById(R.id.qth_edit);
+    	edit.setText(qth);
+    	edit = (EditText) findViewById(R.id.state_edit);
+    	edit.setText(state);
+    	edit = (EditText) findViewById(R.id.country_edit);
+    	edit.setText(country);
+    	edit = (EditText) findViewById(R.id.grid_edit);
+    	edit.setText(grid);
 		SharedPreferences settings = getSharedPreferences(ConfigActivity.PREFS_NAME, 0);
 		final String qrzUser = settings.getString("qrzUser", null);
 		final String qrzPassword = settings.getString("qrzPassword", null);
 
-		if (qrzUser == null || qrzPassword == null || qrzUser.length() == 0
+		if (!needslookup || qrzUser == null || qrzPassword == null || qrzUser.length() == 0
 		    || qrzPassword.length() == 0) {
 			/* could give them the ability to enter just this info through the config activity, but I won't 
 		  LinearLayout searchLL = (LinearLayout) findViewById(R.id.SearchLL01);
@@ -174,7 +208,11 @@ public class LogActivity extends Activity {
     	String country = country_edit.getEditableText().toString();
     	EditText grid_edit = (EditText) findViewById(R.id.grid_edit);
     	String grid = grid_edit.getEditableText().toString();
-    	resultIntent.putExtra(QSO_FREQ, freq);
+    	
+    	if (timeoff == null || timeoff.length() == 0)
+    		timeoff = now().toString();
+    	resultIntent.putExtra(QSO_RXFREQ, freq);
+    	resultIntent.putExtra(QSO_TXFREQ, freq);
     	resultIntent.putExtra(QSO_CALL, call);
     	resultIntent.putExtra(QSO_RRST, rrst);
     	resultIntent.putExtra(QSO_SRST, srst);    	
@@ -187,28 +225,19 @@ public class LogActivity extends Activity {
     	resultIntent.putExtra(QSO_COUNTRY, country);
     	resultIntent.putExtra(QSO_GRID, grid);
     	
-    	// TODO Add extras or a data URI to this intent as appropriate.
     	setResult(Activity.RESULT_OK, resultIntent);
     	finish();
 	}
 	public void clickNowOn(View view)
 	{
     	EditText edit = (EditText) findViewById(R.id.timeon_edit);
-    	TimeZone tz = TimeZone.getTimeZone("GMT+0");
-    	Calendar cal = Calendar.getInstance(tz);
-    	
-    	CharSequence text = ""+cal.get(Calendar.YEAR)+"-"+(cal.get(Calendar.MONTH)+1)+"-"+
-    			cal.get(Calendar.DATE)+" "+cal.get(Calendar.HOUR_OF_DAY)+":"+cal.get(Calendar.MINUTE);
-    	edit.setText(text); 
+    	CharSequence text = now();
+    	edit.setText(text);
 	}
 	public void clickNowOff(View view)
 	{
-    	EditText edit = (EditText) findViewById(R.id.timeoff_edit);
-    	TimeZone tz = TimeZone.getTimeZone("GMT+0");
-    	Calendar cal = Calendar.getInstance(tz);
-    	
-    	CharSequence text = ""+cal.get(Calendar.YEAR)+"-"+(cal.get(Calendar.MONTH)+1)+"-"+
-    			cal.get(Calendar.DATE)+" "+cal.get(Calendar.HOUR_OF_DAY)+":"+cal.get(Calendar.MINUTE);
+    	EditText edit = (EditText) findViewById(R.id.timeoff_edit);    	
+    	CharSequence text = now();
     	edit.setText(text);
 	}
 	 private class GetProfileTask extends AsyncTask<LogActivity, Integer, QRZprofile> {
@@ -312,7 +341,6 @@ public class LogActivity extends Activity {
 		            + "'>", new ImageGetter() {
 
 		          public Drawable getDrawable(String source) {
-		            // TODO Auto-generated method stub
 
 		            try {
 

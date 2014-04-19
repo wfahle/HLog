@@ -36,7 +36,8 @@
         <activity
             android:name="com.wfahle.hlog.LogActivity"
             android:label="@string/title_activity_log"
-            android:parentActivityName="com.wfahle.hlog.MainActivity" >
+            android:parentActivityName="com.wfahle.hlog.MainActivity"
+            android:windowSoftInputMode="stateUnchanged" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.wfahle.hlog.MainActivity" />

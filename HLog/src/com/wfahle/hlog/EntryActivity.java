@@ -485,39 +485,48 @@ public class EntryActivity extends Activity {
 	}
 	
 	private void fillData(Uri uri) {
-	    String[] projection = { QSOContactTable.KEY_CALL,
-	        QSOContactTable.KEY_RXFREQ, QSOContactTable.KEY_TXFREQ, QSOContactTable.KEY_MODE, 
-	        QSOContactTable.KEY_RRST, QSOContactTable.KEY_SRST };
+		String[] projection = {    QSOContactTable.KEY_ID, QSOContactTable.KEY_CALL, QSOContactTable.KEY_RXFREQ, QSOContactTable.KEY_TXFREQ,
+				QSOContactTable.KEY_TIMEON, QSOContactTable.KEY_TIMEOFF, QSOContactTable.KEY_MODE, QSOContactTable.KEY_RRST,
+				QSOContactTable.KEY_SRST, QSOContactTable.KEY_NAME, QSOContactTable.KEY_QTH, QSOContactTable.KEY_STATE, 
+				QSOContactTable.KEY_COUNTRY, QSOContactTable.KEY_GRID };
 	    Cursor cursor = getContentResolver().query(uri, projection, null, null,
 	        null);
 	    if (cursor != null) {
-	      cursor.moveToFirst();
-
-	      /* this is for a spinner - could be mode, for example, but have to maintain
-	      String category = cursor.getString(cursor
-	          .getColumnIndexOrThrow(QSOContactTable.COLUMN_CATEGORY));
-	      for (int i = 0; i < mCategory.getCount(); i++) {
-
-	        String s = (String) mCategory.getItemAtPosition(i);
-	        if (s.equalsIgnoreCase(category)) {
-	          mCategory.setSelection(i);
-	        }
-	      } */
-
-	      callBox.setText(cursor.getString(cursor
-		          .getColumnIndexOrThrow(QSOContactTable.KEY_CALL)));
-	      txfreqBox.setText(cursor.getString(cursor
-			      .getColumnIndexOrThrow(QSOContactTable.KEY_TXFREQ)));
-	      rxfreqBox.setText(cursor.getString(cursor
-			      .getColumnIndexOrThrow(QSOContactTable.KEY_RXFREQ)));
-	      modeBox.setText(cursor.getString(cursor
-			      .getColumnIndexOrThrow(QSOContactTable.KEY_MODE)));
-	      rrstBox.setText(cursor.getString(cursor
-			      .getColumnIndexOrThrow(QSOContactTable.KEY_RRST)));
-	      srstBox.setText(cursor.getString(cursor
-			      .getColumnIndexOrThrow(QSOContactTable.KEY_SRST)));
-	      // always close the cursor
-	      cursor.close();
+	    	cursor.moveToFirst();
+	      	qsoCall = cursor.getString(cursor
+		          .getColumnIndexOrThrow(QSOContactTable.KEY_CALL));
+	  		qsoTFreq = cursor.getString(cursor
+			      .getColumnIndexOrThrow(QSOContactTable.KEY_TXFREQ));
+	  		qsoRFreq = cursor.getString(cursor
+		          .getColumnIndexOrThrow(QSOContactTable.KEY_RXFREQ));
+	  		qsoMode = cursor.getString(cursor
+		          .getColumnIndexOrThrow(QSOContactTable.KEY_MODE));
+	  		qsoRRST = cursor.getString(cursor
+		          .getColumnIndexOrThrow(QSOContactTable.KEY_RRST));
+	  		qsoSRST = cursor.getString(cursor
+		          .getColumnIndexOrThrow(QSOContactTable.KEY_SRST));
+	  		qsoTimeon = cursor.getString(cursor
+		          .getColumnIndexOrThrow(QSOContactTable.KEY_TIMEON));
+	  		qsoTimeoff = cursor.getString(cursor
+		          .getColumnIndexOrThrow(QSOContactTable.KEY_TIMEOFF));
+	  		qsoName = cursor.getString(cursor
+		          .getColumnIndexOrThrow(QSOContactTable.KEY_NAME));
+	  		qsoQTH = cursor.getString(cursor
+		          .getColumnIndexOrThrow(QSOContactTable.KEY_QTH));
+	  		qsoState = cursor.getString(cursor
+		          .getColumnIndexOrThrow(QSOContactTable.KEY_STATE));
+	  		qsoCountry = cursor.getString(cursor
+		          .getColumnIndexOrThrow(QSOContactTable.KEY_COUNTRY));
+	  		qsoGrid = cursor.getString(cursor
+		          .getColumnIndexOrThrow(QSOContactTable.KEY_GRID));
+		    callBox.setText(qsoCall);	      
+		    txfreqBox.setText(qsoTFreq);
+		    rxfreqBox.setText(qsoRFreq);
+		    modeBox.setText(qsoMode);
+		    rrstBox.setText(qsoRRST);
+		    srstBox.setText(qsoSRST);
+		    // always close the cursor
+		    cursor.close();
 	    }
 	}
 
@@ -633,8 +642,8 @@ public class EntryActivity extends Activity {
       switch(requestCode) {
       	case (log_request) : {
             if (resultCode == Activity.RESULT_OK) {
-            	qsoTFreq = data.getStringExtra(LogActivity.QSO_FREQ);
-            	qsoRFreq = data.getStringExtra(LogActivity.QSO_FREQ);
+            	qsoTFreq = data.getStringExtra(LogActivity.QSO_TXFREQ);
+            	qsoRFreq = data.getStringExtra(LogActivity.QSO_RXFREQ);
             	qsoCall = data.getStringExtra(LogActivity.QSO_CALL);
             	qsoRRST = data.getStringExtra(LogActivity.QSO_RRST);
             	qsoSRST = data.getStringExtra(LogActivity.QSO_SRST);
@@ -864,16 +873,25 @@ public class EntryActivity extends Activity {
     	saveState();
     	Intent intent = new Intent(this, LogActivity.class);
     	EditText call = (EditText) findViewById(R.id.call_edit);
-    	EditText freq = (EditText) findViewById(R.id.rxfreq_edit);
+    	EditText rxfreq = (EditText) findViewById(R.id.rxfreq_edit);
+    	EditText txfreq = (EditText) findViewById(R.id.txfreq_edit);
     	EditText mode = (EditText) findViewById(R.id.mode_edit);
     	EditText rrst = (EditText) findViewById(R.id.rrst_edit);
     	EditText srst = (EditText) findViewById(R.id.srst_edit);
     	
     	intent.putExtra(LogActivity.QSO_CALL, call.getEditableText().toString());
-    	intent.putExtra(LogActivity.QSO_FREQ, freq.getEditableText().toString());
+    	intent.putExtra(LogActivity.QSO_RXFREQ, rxfreq.getEditableText().toString());
+    	intent.putExtra(LogActivity.QSO_TXFREQ, txfreq.getEditableText().toString());
     	intent.putExtra(LogActivity.QSO_MODE, mode.getEditableText().toString());
     	intent.putExtra(LogActivity.QSO_RRST, rrst.getEditableText().toString());
     	intent.putExtra(LogActivity.QSO_SRST, srst.getEditableText().toString());
+    	intent.putExtra(LogActivity.QSO_TIMEON, qsoTimeon);
+    	intent.putExtra(LogActivity.QSO_TIMEOFF, qsoTimeoff);
+    	intent.putExtra(LogActivity.QSO_NAME, qsoName);
+    	intent.putExtra(LogActivity.QSO_QTH, qsoQTH);
+    	intent.putExtra(LogActivity.QSO_STATE, qsoState);
+    	intent.putExtra(LogActivity.QSO_COUNTRY, qsoCountry);
+    	intent.putExtra(LogActivity.QSO_GRID, qsoGrid);
      	
     	startActivityForResult(intent, log_request);
     }
