@@ -54,15 +54,15 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 				QSOContactTable.KEY_TIMEON, QSOContactTable.KEY_TIMEOFF, QSOContactTable.KEY_MODE, QSOContactTable.KEY_RRST,
 				QSOContactTable.KEY_SRST, QSOContactTable.KEY_NAME, QSOContactTable.KEY_QTH, QSOContactTable.KEY_STATE, 
 				QSOContactTable.KEY_COUNTRY, QSOContactTable.KEY_GRID };
-		String selectionClause = "";
-		String[] selectionArgs = {""};
+		String selectionClause = null; // string if selecting
+		String[] selectionArgs = null; // args to clause
 		String sortOrder = QSOContactTable.KEY_TIMEON; // in order of qso start
 		// Does a query against the table and returns a Cursor object
 		Cursor mCursor = getContentResolver().query(
 				QSOContactProvider.CONTENT_URI,  // The content URI of the qso table
 		    projection,                       // The columns to return for each row
-		    null,                   // Either null, or the word the user entered
-		    null,                    // Either empty, or the string the user entered
+		    selectionClause,                   // Either null, or the word the user entered
+		    selectionArgs,                    // Either empty, or the string the user entered
 		    sortOrder);                       // The sort order for the returned rows
 		// Some providers return null if an error occurs, others throw an exception
 		if (null == mCursor) {
