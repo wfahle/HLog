@@ -29,6 +29,7 @@ import android.widget.SimpleCursorAdapter;
 // TODO: send ADIF file via e-mail
 // TODO: go direct to edit screen when click on item in MainActivity, not EntryActivity
 // TODO: get rid of "edit" button in EntryActivity - replace with cw skimmer on/off
+// TODO: need buttons for tune, spot, etc.
 // TODO: keep background telnet running when leaving EntryActivity; but
 // TODO: accumulate about 20 or 30 items - then log off.
 // TODO: when coming back, get those 20 or 30 items - wait, isn't that just a sh/dx?
