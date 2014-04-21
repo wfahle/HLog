@@ -1,5 +1,7 @@
 package com.wfahle.hlog;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import com.wfahle.hlog.contentprovider.QSOContactProvider;
@@ -7,12 +9,14 @@ import com.wfahle.hlog.contentprovider.QSOContactProvider;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -23,17 +27,19 @@ import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
+
+//TODO: keep background telnet running when leaving EntryActivity; but
+//TODO: accumulate about 20 or 30 items - then log off.
+//TODO: when coming back, get those 20 or 30 items - wait, isn't that just a sh/dx?
+//TODO: need sh/dx button?
 // TODO: need to clean up the data structures - one callsign, not two
 // TODO: get rid of config db altogether; store all data in thingy
-// TODO: export ADIF file
-// TODO: send ADIF file via e-mail
+// DONE: export ADIF file
+// DONE: send ADIF file via e-mail
 // TODO: go direct to edit screen when click on item in MainActivity, not EntryActivity
 // TODO: get rid of "edit" button in EntryActivity - replace with cw skimmer on/off
 // TODO: need buttons for tune, spot, etc.
-// TODO: keep background telnet running when leaving EntryActivity; but
-// TODO: accumulate about 20 or 30 items - then log off.
-// TODO: when coming back, get those 20 or 30 items - wait, isn't that just a sh/dx?
-// TODO: need sh/dx button?
 // TODO: clean up UI to be consistent, etc.
 // TODO: add context menu to EntryActivity - long-click lets you save spot
 // TODO: forward/backward on spots - maybe in the area above
@@ -46,9 +52,13 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 //  	private static final int ACTIVITY_EDIT = 1;
 	protected final static int config_request = 1; 
 	protected final static int log_request = 2;
+	protected final static int email_request = 3;
   	private static final int DELETE_ID = Menu.FIRST + 1;
   	// private Cursor cursor;
   	private SimpleCursorAdapter adapter;
+  	public static final String LOG_TAG = "HLog";
+  	public static final String TEMP_ADIF_DIR = "EmailADIF";
+  	public static final String TEMP_ADIF_FILE = "HLog.adif";
     private void fillData() {
 
       // Fields from the database (projection)
@@ -173,6 +183,10 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	          if (resultCode == Activity.RESULT_OK) {
 	          }			  
 		}
+		case (email_request) : { // TODO: should we make toast on these?
+	          if (resultCode == Activity.RESULT_OK) {
+	          }			  
+		}
         case (config_request) : {
           if (resultCode == Activity.RESULT_OK) {
 //        		telnetServer = data.getStringExtra(ConfigActivity.SERVER_NAME);
@@ -236,9 +250,68 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	    menu.add(0, DELETE_ID, 0, R.string.menu_delete);
 	}
 	
+	//file i/o methods
+	/* Checks if external storage is available for read and write */
+	public boolean isExternalStorageWritable() {
+	    String state = Environment.getExternalStorageState();
+	    if (Environment.MEDIA_MOUNTED.equals(state)) {
+	        return true;
+	    }
+	    return false;
+	}
+	
+	public File getTempAdifDir(Context context, String albumName) {
+	    // Get the directory for the app's private pictures directory. 
+	    File file = new File(context.getExternalFilesDir(
+	            Environment.DIRECTORY_PICTURES), albumName);
+	    if (!file.mkdirs()) {
+	        Log.e(LOG_TAG, "Directory not created");
+	    }
+	    return file;
+	}
+	
 	public void onTools(View view) {
 		// for now, just export as email, no other tools exist
-		  getAdifData();
+		ArrayList<String> adif = getAdifData();
+		if (isExternalStorageWritable()) {
+			Context localContext = getBaseContext();
+			 File dir = getTempAdifDir(localContext, TEMP_ADIF_DIR);
+
+			 File fil = new File(dir, TEMP_ADIF_FILE);
+			 
+			 FileOutputStream outputStream;
+
+			 try {
+				 String recipient = "", 
+					  subject = "HLog ADIF file", 
+					  message = "";
+
+				final Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND);
+				emailIntent.setType("message/rfc822");
+
+				emailIntent.putExtra(android.content.Intent.EXTRA_EMAIL, new String[]{recipient});
+				emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, subject);
+				emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, message);
+				 
+			    outputStream = new FileOutputStream(fil);
+			    for (int i=0; i<adif.size(); i++) {
+				   outputStream.write(adif.get(i).getBytes());				   
+			    }
+			    outputStream.close();
+			    if (!fil.exists() || !fil.canRead()) {
+				   Toast.makeText(this, "Problem creating adif", 
+						      Toast.LENGTH_SHORT).show();
+						  return;
+			    }
+			    Uri uri = Uri.parse("file://" + fil.getAbsolutePath());
+			    emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
+			    startActivityForResult(Intent.createChooser(emailIntent, 
+			            "Email adif using..."), 
+			            email_request);
+			 } catch (Exception e) {
+			   e.printStackTrace();
+			 }
+		}
 	}
 	
     public void onCapture(View view) {
