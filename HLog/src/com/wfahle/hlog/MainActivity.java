@@ -29,14 +29,13 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+//TODO: put checkbox for QRZ lookup in config also - check it and save it in the thingy
 //TODO: keep background telnet running when leaving EntryActivity; but
 //TODO: accumulate about 20 or 30 items - then log off.
 //TODO: when coming back, get those 20 or 30 items - wait, isn't that just a sh/dx?
 //TODO: need sh/dx button?
 // TODO: need to clean up the data structures - one callsign, not two
 // TODO: get rid of config db altogether; store all data in thingy
-// DONE: export ADIF file
-// DONE: send ADIF file via e-mail
 // TODO: go direct to edit screen when click on item in MainActivity, not EntryActivity
 // TODO: get rid of "edit" button in EntryActivity - replace with cw skimmer on/off
 // TODO: need buttons for tune, spot, etc.
@@ -44,8 +43,6 @@ import android.widget.Toast;
 // TODO: add context menu to EntryActivity - long-click lets you save spot
 // TODO: forward/backward on spots - maybe in the area above
 // TODO: larger type on text in spots list.
-// TODO: load/save of text in spots list breaks some lines up instead of
-// TODO: going all the way to the divider and keeping string intact
 
 public class MainActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 //	private static final int ACTIVITY_CREATE = 0;
@@ -183,7 +180,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	          if (resultCode == Activity.RESULT_OK) {
 	          }			  
 		}
-		case (email_request) : { // TODO: should we make toast on these?
+		case (email_request) : { 
 	          if (resultCode == Activity.RESULT_OK) {
 	          }			  
 		}

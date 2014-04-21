@@ -37,7 +37,7 @@ public class EntryActivity extends Activity {
 	protected int telnetPort = 23;
 	protected String telnetLogon = "";
 	protected String radioServer="";
-	protected int radioPort = 23;
+	protected int radioPort = 7373;
 	protected String qsoTFreq = "";
 	protected String qsoRFreq = "";
 	protected String qsoCall = "";
@@ -199,6 +199,14 @@ public class EntryActivity extends Activity {
 	        	 }
         	 }
         }
+        else if (comment.matches(".*[1-9][0-9]* *up")) { // matches "worked 5 up", "5-10 up" "2up" etc
+			Pattern p = Pattern.compile("([1-9][0-9]*) *up");
+			Matcher m = p.matcher(comment);
+			if (m.find()) { // Find each match in turn; String can't do this.
+			     String num = m.group(1); 
+			     adjust = parseanInt(num);
+			}
+        }
         else if (comment.matches(".* u") || comment.contains("up") || comment.matches("u .*") ||
         		comment.matches(".* u .*") || comment.equals("u")) {
         	adjust = ssb?5:1;
@@ -321,7 +329,7 @@ public class EntryActivity extends Activity {
             wasLoggedIn = savedInstanceState.getBoolean(LOGIN_STRING);
             if (savedInstanceState.getString(SCROLL_STRINGS, null) != null)
             {
-            	strarray = TextUtils.split(savedInstanceState.getString(SCROLL_STRINGS, null), ",");
+            	strarray = TextUtils.split(savedInstanceState.getString(SCROLL_STRINGS, null), "\n");
             	savedInstanceState.putString(SCROLL_STRINGS, null);
             }
         }
@@ -546,7 +554,8 @@ public class EntryActivity extends Activity {
             wasLoggedIn = savedInstanceState.getBoolean(LOGIN_STRING);
             if (savedInstanceState.getString(SCROLL_STRINGS, null) != null)
             {
-	            String[] strarray = TextUtils.split(savedInstanceState.getString(SCROLL_STRINGS, null), ",");
+	            String[] strarray = TextUtils.split(
+	            		savedInstanceState.getString(SCROLL_STRINGS, null), "\n");
 	            if (strarray != null)
 	            {
 		            final ListView lv = (ListView) findViewById(R.id.spot_list);
@@ -574,7 +583,7 @@ public class EntryActivity extends Activity {
         for (int i=0; i<len; i++)
         	strarray[i] = adapter.getItem(i);
         
-	    String value = TextUtils.join(",", strarray);
+	    String value = TextUtils.join("\n", strarray);
 	    outState.putString(SCROLL_STRINGS, value);
 	}
 	
@@ -757,8 +766,7 @@ public class EntryActivity extends Activity {
           return true;
         }
         
-        public void addItem(String item)
-        {
+        public void addItem(String item) {
         	super.add(item);
         	curId++;
         	mIdMap.put(item,  curId);
@@ -839,7 +847,7 @@ public class EntryActivity extends Activity {
 			}
 			telnetsk.Server = telnetServer;
 			telnetsk.Port = telnetPort;
-			telnetsk.Logon = telnetLogon+"\r\n"; // TODO: fire it up.
+			telnetsk.Logon = telnetLogon+"\r\n"; 
 			telnetsk.SocketStart();
 			if (radiosk != null)
 			{
@@ -847,14 +855,16 @@ public class EntryActivity extends Activity {
 				radiosk.Port = radioPort;
 				radiosk.SocketStart();
 			}
-			state = loggingIn; // TODO: if it fails to log in, start over
+			state = loggingIn; 
 			
 		}
 	}
 	
 	public void done(View view) {
-		if (state == loggedIn)
+		if (state == loggedIn || state == loggingIn) {
+			state = loggedIn; // skip ahead to logged in state; it will log out.
 			LogOn(null); // log off
+		}
 		wasLoggedIn=false;
 		Intent resultIntent = new Intent();
     	setResult(Activity.RESULT_OK, resultIntent);
@@ -864,9 +874,17 @@ public class EntryActivity extends Activity {
 	public void socketError(int id) {
 		// if it's an error, don't bother sending any more, just clean up
 		if (id == 1) // radio socket
+		{
+			if (radiosk != null)
+				radiosk.SocketStop();
 			radiosk = null;
-		else if (id == 2) // telnet socket
-			telnetsk = null; 
+		}
+		else if (id == 2) { // telnet socket
+			if (telnetsk != null)
+				telnetsk.SocketStop();
+			telnetsk = null;
+			state = loggedOut;
+		}
 	}
 	
     public void logContact(View view) {
