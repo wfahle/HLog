@@ -8,20 +8,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:text="K5WL" />
+        android:text="@string/call_ui" />
 
     <TextView
         android:id="@+id/key_rxfreq"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:text="14.032" />
+        android:text="@string/rx_freq" />
 
     <TextView
         android:id="@+id/key_timeon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:text="2014-03-18 14:32" />
+        android:text="@string/start_time_ui" />
 
 </LinearLayout>

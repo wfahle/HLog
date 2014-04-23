@@ -191,17 +191,20 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	        	Uri uri = (Uri)data.getParcelableExtra(QSOContactProvider.CONTENT_ITEM_TYPE);
 	      		if (uri != null) {
 	    			String[] projection = {    QSOContactTable.KEY_ID, 
-	    					QSOContactTable.KEY_TIMEON, QSOContactTable.KEY_TIMEOFF, 
+	    					QSOContactTable.KEY_TIMEON, QSOContactTable.KEY_TIMEOFF,
+	    					QSOContactTable.KEY_COMPLETE
 	    					 };
 	    		    Cursor cursor = getContentResolver().query(uri, projection, null, null,
 	    		        null);
 	    		    if (cursor != null) {
 	    		    	cursor.moveToFirst();
+	    		    	String complete = cursor.getString(cursor
+		    			          .getColumnIndexOrThrow(QSOContactTable.KEY_COMPLETE));
 	    		      	String timeon = cursor.getString(cursor
 	    			          .getColumnIndexOrThrow(QSOContactTable.KEY_TIMEON));
 	    		      	String timeoff = cursor.getString(cursor
 		    			          .getColumnIndexOrThrow(QSOContactTable.KEY_TIMEOFF));
-	    		      	if (timeon.length() == 0 && timeoff.length() == 0) {
+	    		      	if ((timeon.length() == 0 && timeoff.length() == 0) || !complete.equals("Y")) {
 	    		      		getContentResolver().delete(uri, null, null);
 	    		      		fillData();
 	    		      	}

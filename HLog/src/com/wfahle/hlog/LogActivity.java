@@ -133,6 +133,13 @@ public class LogActivity extends Activity {
     			day+" "+ hour +":"+minute+":"+second;
     	return text;
 	}
+	
+	@Override 
+	protected void onPause() {
+		super.onPause();
+		saveItem(false);
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -263,15 +270,21 @@ public class LogActivity extends Activity {
 		setResult(Activity.RESULT_CANCELED, resultIntent);
 		finish();
 	}
-	public void clickSave(View view)
-	{
+	public void clickSave(View view) {
+    	Intent resultIntent = new Intent();
+		saveItem(true);
+    	resultIntent.putExtra(QSOContactProvider.CONTENT_ITEM_TYPE, contactUri);
+
+    	setResult(Activity.RESULT_OK, resultIntent);
+    	finish();
+	}
+	public void saveItem(boolean clicked) {
         /* write you handling code like...
         String st = "sdcard/";
         File f = new File(st+o.toString());
         // do whatever u want to do with 'f' File object
         */ 
     	// on config screen? do export of adif to file and/or email
-    	Intent resultIntent = new Intent();
     	EditText call_edit = (EditText) findViewById(R.id.callt_edit);
     	String call = call_edit.getEditableText().toString();
     	EditText freq_edit = (EditText) findViewById(R.id.rxfreqt_edit);
@@ -313,6 +326,10 @@ public class LogActivity extends Activity {
 		values.put(QSOContactTable.KEY_STATE, state);
 		values.put(QSOContactTable.KEY_COUNTRY, country);
 		values.put(QSOContactTable.KEY_GRID, grid);
+		if (clicked)
+			values.put(QSOContactTable.KEY_COMPLETE, "Y");
+		else
+			values.put(QSOContactTable.KEY_COMPLETE, "?");
 		
 		if (contactUri == null) {
 		      // New qso
@@ -321,10 +338,6 @@ public class LogActivity extends Activity {
 		      // Update qso
 		      getContentResolver().update(contactUri, values, null, null);
 		}
-    	resultIntent.putExtra(QSOContactProvider.CONTENT_ITEM_TYPE, contactUri);
-
-    	setResult(Activity.RESULT_OK, resultIntent);
-    	finish();
 	}
 	
 	public void clickNowOn(View view)
