@@ -36,8 +36,8 @@ import android.widget.Toast;
 //TODO: need sh/dx button?
 // TODO: need to clean up the data structures - one callsign, not two
 // TODO: get rid of config db altogether; store all data in thingy
-// TODO: go direct to edit screen when click on item in MainActivity, not EntryActivity
-// TODO: get rid of "edit" button in EntryActivity - replace with cw skimmer on/off
+// TODO: get rid of "edit" button in EntryActivity
+// TODO: put cwskimmer setting in config - check skimmed items against frequency
 // TODO: need buttons for tune, spot, etc.
 // TODO: clean up UI to be consistent, etc.
 // TODO: add context menu to EntryActivity - long-click lets you save spot
@@ -55,7 +55,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
   	private SimpleCursorAdapter adapter;
   	public static final String LOG_TAG = "HLog";
   	public static final String TEMP_ADIF_DIR = "EmailADIF";
-  	public static final String TEMP_ADIF_FILE = "HLog.adif";
+  	public static final String TEMP_ADIF_FILE = "HLog.adi";
     private void fillData() {
 
       // Fields from the database (projection)
@@ -77,7 +77,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		String[] projection = {    QSOContactTable.KEY_ID, QSOContactTable.KEY_CALL, QSOContactTable.KEY_RXFREQ, QSOContactTable.KEY_TXFREQ,
 				QSOContactTable.KEY_TIMEON, QSOContactTable.KEY_TIMEOFF, QSOContactTable.KEY_MODE, QSOContactTable.KEY_RRST,
 				QSOContactTable.KEY_SRST, QSOContactTable.KEY_NAME, QSOContactTable.KEY_QTH, QSOContactTable.KEY_STATE, 
-				QSOContactTable.KEY_COUNTRY, QSOContactTable.KEY_GRID };
+				QSOContactTable.KEY_COUNTRY, QSOContactTable.KEY_GRID, QSOContactTable.KEY_COMPLETE };
 		String selectionClause = null; // string if selecting
 		String[] selectionArgs = null; // args to clause
 		String sortOrder = QSOContactTable.KEY_TIMEON; // in order of qso start
@@ -105,7 +105,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		     */
 
 		} else {
-			ret.add("<ProgramID:6>HLog00<eoh>\r\n");
+			ret.add("<ProgramID:4>HLog<eoh>\r\n");
 		    // Insert code here to do something with the results
 			//<QSO_DATE:8>20140415<TIME_ON:6>234909<TIME_OFF:6>234942<FREQ:6>14.218<CALL:6>W1AW/1<RST_RCVD:3>599
 			//<RST_SENT:3>599<GRIDSQUARE:0><NAME:0><QTH:0><STATE:2>MA<COUNTRY:0><MODE:3>USB<TX_PWR:0><QSL_VIA:0><QSL_SENT:1>N<QSL_RCVD:1>N<STATION_CALLSIGN:0><NOTES:0><eor>
@@ -118,6 +118,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		    	String[] dashColon = {"-", ":", "/"};
 		    	String[] rdashColon = {"","",""};
 		    	String date;
+		    	String date2;
 		    	String time;
 		    	String time2;
 		    	if (dateTime.length == 2 && dateTime2.length == 2)
@@ -126,12 +127,15 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		    		date = TextUtils.replace(date, dashColon, rdashColon).toString();
 		    		time = TextUtils.replace(dateTime[1], dashColon, rdashColon).toString();
 		    		time = TextUtils.replace(time, dashColon, rdashColon).toString();
+		    		date2 = TextUtils.replace(dateTime2[0], dashColon, rdashColon).toString();
+		    		date2 = TextUtils.replace(date2, dashColon, rdashColon).toString();
 		    		time2 = TextUtils.replace(dateTime2[1], dashColon, rdashColon).toString();
 		    		time2 = TextUtils.replace(time2, dashColon, rdashColon).toString();
 		    	}
 		    	else
 		    	{
 		    		date = timeOn;
+		    		date2= timeOn; // won't get written if same
 		    		time = "";
 		    		time2 = timeOff;
 		    	}
@@ -145,12 +149,17 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		    	String state =  mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_STATE));
 		    	String country =  mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_COUNTRY));
 		    	String mode =  mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_MODE));
+		    	String complete = mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_COMPLETE));
+		    	String date2str = "";
+		    	if (!date2.equals(date))
+		    		date2str = "<QSO_DATE_OFF:"+date2.length()+">" + date2;
 		    	
 		    	String row = 
 		        // Gets the value from the column.
-		        "<QSO_DATE:8>" + date + 
-		    	"<TIME_ON:6>" + time +
-		    	"<TIME_OFF:6>" + time2 +
+		        "<QSO_DATE:" + date.length() + ">" + date + 
+		    	"<TIME_ON:" + time.length() + ">" + time +
+		    	date2str+
+		    	"<TIME_OFF:" + time2.length() + ">" + time2 +
 		    	"<FREQ:" +rxFreq.length() + ">" + rxFreq + 
 		    	"<CALL:" +call.length() + ">" + call + 
 		    	"<RST_RCVD:" +rrst.length() + ">" + rrst +
@@ -161,6 +170,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		    	"<STATE:"+state.length() + ">" + state +
 		    	"<COUNTRY:"+country.length() + ">" + country +
 		    	"<MODE:"+mode.length() + ">" + mode +
+		    	"<QSO_COMPLETE:"+complete.length() + ">" + complete + 
 		        "<eor>\r\n";
 
 		        // Insert code here to process the retrieved word.
@@ -176,9 +186,28 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
       super.onActivityResult(requestCode, resultCode, data);
       switch(requestCode) {
-		case (log_request) : {
-	          if (resultCode == Activity.RESULT_OK) {
-	          }			  
+		  case (log_request) : {
+	          if (resultCode == Activity.RESULT_OK) { // see if we need to delete it - no timeon
+	        	Uri uri = (Uri)data.getParcelableExtra(QSOContactProvider.CONTENT_ITEM_TYPE);
+	      		if (uri != null) {
+	    			String[] projection = {    QSOContactTable.KEY_ID, 
+	    					QSOContactTable.KEY_TIMEON, QSOContactTable.KEY_TIMEOFF, 
+	    					 };
+	    		    Cursor cursor = getContentResolver().query(uri, projection, null, null,
+	    		        null);
+	    		    if (cursor != null) {
+	    		    	cursor.moveToFirst();
+	    		      	String timeon = cursor.getString(cursor
+	    			          .getColumnIndexOrThrow(QSOContactTable.KEY_TIMEON));
+	    		      	String timeoff = cursor.getString(cursor
+		    			          .getColumnIndexOrThrow(QSOContactTable.KEY_TIMEOFF));
+	    		      	if (timeon.length() == 0 && timeoff.length() == 0) {
+	    		      		getContentResolver().delete(uri, null, null);
+	    		      		fillData();
+	    		      	}
+	    		    }
+	            }			  
+		    }
 		}
 		case (email_request) : { 
 	          if (resultCode == Activity.RESULT_OK) {
@@ -233,11 +262,11 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 	    super.onListItemClick(l, v, position, id);
-	    Intent i = new Intent(this, EntryActivity.class);
-	    Uri todoUri = Uri.parse(QSOContactProvider.CONTENT_URI + "/" + id);
-	    i.putExtra(QSOContactProvider.CONTENT_ITEM_TYPE, todoUri);
+	    Intent i = new Intent(this, LogActivity.class);
+	    Uri qsoUri = Uri.parse(QSOContactProvider.CONTENT_URI + "/" + id);
+	    i.putExtra(QSOContactProvider.CONTENT_ITEM_TYPE, qsoUri);
 	
-	    startActivity(i);
+	    startActivity(i); // no result expected - just edit the entry.
 	}
 	
 	@Override

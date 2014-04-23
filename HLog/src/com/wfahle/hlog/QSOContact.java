@@ -4,7 +4,6 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 public class QSOContact {
-	int id;
 	String call;
 	String rxfreq;
 	String txfreq;
@@ -18,13 +17,13 @@ public class QSOContact {
 	String state;
 	String country;
 	String grid;
+	String complete; // Y, N, NIL, ?
 	public QSOContact() {
 	
 	}
-	public QSOContact(int id, String call, String rxfreq, String txfreq, String timeon, String timeoff, String mode, String rrst, String srst, String name,
-			String QTH, String state, String country, String grid)
+	public QSOContact(String call, String rxfreq, String txfreq, String timeon, String timeoff, String mode, String rrst, String srst, String name,
+			String QTH, String state, String country, String grid, boolean complete)
 	{
-		this.id = id;
 		this.call = call;
 		this.rxfreq = rxfreq;
 		this.txfreq = txfreq;
@@ -38,12 +37,12 @@ public class QSOContact {
 		this.state=state;
 		this.country=country;
 		this.grid=grid;
+		this.complete = complete?"Y":"N";
 	}
 	
 	// create contact now
-	public QSOContact(int id, String call, String rxfreq, String mode, String rrst, String srst)
+	public QSOContact(String call, String rxfreq, String mode, String rrst, String srst)
 	{
-		this.id = id;
 		this.call = call;
 		this.rxfreq = rxfreq;
 		this.txfreq = rxfreq;
@@ -57,6 +56,7 @@ public class QSOContact {
     			cal.get(Calendar.DATE)+" "+cal.get(Calendar.HOUR_OF_DAY)+":"+cal.get(Calendar.MINUTE);
     	this.timeon = (String)text;
     	this.timeoff = this.timeon;
+    	this.complete = "?";
 	}
 	public String getCall() { return call; }
 	public String getrxFreq() { return rxfreq; }
@@ -71,7 +71,7 @@ public class QSOContact {
 	public String getGrid() { return grid; }
 	public String getTimeoff() { return timeoff; }
 	public String getTimeon() { return timeon; }
-	public int getId() { return id; }
+	public String getComplete() { return complete; }
 	public void setCall(String call) { this.call = call; }
 	public void setrxFreq(String rxfreq) { this.rxfreq = rxfreq; }
 	public void settxFreq(String txfreq) { this.txfreq = txfreq; }
@@ -85,5 +85,5 @@ public class QSOContact {
 	public void setGrid(String grid) { this.grid = grid; }
 	public void setTimeoff(String timeoff) { this.timeoff = timeoff; }
 	public void setTimeon(String timeon) { this.timeon = timeon; }
-	public void setId(int id) { this.id = id; }
+	public void setComplete(boolean complete) {this.complete = complete?"Y":"N"; }
 }

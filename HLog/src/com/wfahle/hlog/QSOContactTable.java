@@ -22,6 +22,7 @@ public class QSOContactTable {
     public static final String KEY_STATE = "state";
     public static final String KEY_COUNTRY = "country";
     public static final String KEY_GRID = "grid";
+    public static final String KEY_COMPLETE = "complete";
     private static final String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS + "("
             + KEY_ID + " INTEGER PRIMARY KEY," + KEY_CALL + " TEXT,"
             + KEY_RXFREQ + " TEXT," 
@@ -35,7 +36,8 @@ public class QSOContactTable {
             + KEY_QTH + " TEXT," 
             + KEY_STATE + " TEXT," 
             + KEY_COUNTRY + " TEXT," 
-            + KEY_GRID + " TEXT" 
+            + KEY_GRID + " TEXT, "
+            + KEY_COMPLETE + " TEXT"
             + ");";
     public static void onCreate(SQLiteDatabase database) {
         database.execSQL(CREATE_CONTACTS_TABLE);

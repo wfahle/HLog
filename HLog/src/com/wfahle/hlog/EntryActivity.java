@@ -38,6 +38,8 @@ public class EntryActivity extends Activity {
 	protected String telnetLogon = "";
 	protected String radioServer="";
 	protected int radioPort = 7373;
+	protected QSOContact qso=null;
+	/*
 	protected String qsoTFreq = "";
 	protected String qsoRFreq = "";
 	protected String qsoCall = "";
@@ -51,6 +53,8 @@ public class EntryActivity extends Activity {
 	protected String qsoState = "";
 	protected String qsoCountry = "";
 	protected String qsoGrid = "";
+	protected String qsoComplete = "?";
+	*/
     EditText callBox;
     EditText txfreqBox;
     EditText rxfreqBox;
@@ -308,13 +312,13 @@ public class EntryActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entry);
-        Bundle extras = getIntent().getExtras();
         callBox = (EditText) findViewById(R.id.call_edit);
         txfreqBox = (EditText) findViewById(R.id.txfreq_edit);
         rxfreqBox = (EditText) findViewById(R.id.rxfreq_edit);
         modeBox = (EditText) findViewById(R.id.mode_edit);
         rrstBox = (EditText) findViewById(R.id.rrst_edit);
         srstBox = (EditText) findViewById(R.id.srst_edit);
+        qso = null;
 
         String[] strarray = null;
         if (savedInstanceState == null)
@@ -326,6 +330,7 @@ public class EntryActivity extends Activity {
         {
             // check from the saved Instance
             contactUri =  (Uri) savedInstanceState.getParcelable(QSOContactProvider.CONTENT_ITEM_TYPE);
+            fillData(contactUri);
             wasLoggedIn = savedInstanceState.getBoolean(LOGIN_STRING);
             if (savedInstanceState.getString(SCROLL_STRINGS, null) != null)
             {
@@ -335,13 +340,7 @@ public class EntryActivity extends Activity {
         }
 
         
-        // Or passed from the other activity
-        if (extras != null) {
-          contactUri = extras
-              .getParcelable(QSOContactProvider.CONTENT_ITEM_TYPE);
-
-          fillData(contactUri);
-        }
+        
         LocalDBHandler ldb = new LocalDBHandler(getBaseContext());
         List<TelnetConfig> tlist = ldb.getAllConfigs();
         if (!tlist.isEmpty())
@@ -371,6 +370,12 @@ public class EntryActivity extends Activity {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
           @Override
           public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+        		String qsoTFreq = "";
+        		String qsoRFreq = "";
+        		String qsoCall = "";
+        		String qsoMode = "";
+        		String qsoRRST = "";
+        		String qsoSRST = "";
 
             Object o = lv.getItemAtPosition(position);
             
@@ -457,6 +462,8 @@ public class EntryActivity extends Activity {
             }
         	rrstBox.setText(qsoRRST);
         	srstBox.setText(qsoSRST);
+        	qso = new QSOContact(qsoCall, qsoRFreq, qsoTFreq, "", "", qsoMode, qsoRRST, qsoSRST, "",
+        			"", "", "", "", false);
           }
         });
     }
@@ -493,48 +500,63 @@ public class EntryActivity extends Activity {
 	}
 	
 	private void fillData(Uri uri) {
-		String[] projection = {    QSOContactTable.KEY_ID, QSOContactTable.KEY_CALL, QSOContactTable.KEY_RXFREQ, QSOContactTable.KEY_TXFREQ,
-				QSOContactTable.KEY_TIMEON, QSOContactTable.KEY_TIMEOFF, QSOContactTable.KEY_MODE, QSOContactTable.KEY_RRST,
-				QSOContactTable.KEY_SRST, QSOContactTable.KEY_NAME, QSOContactTable.KEY_QTH, QSOContactTable.KEY_STATE, 
-				QSOContactTable.KEY_COUNTRY, QSOContactTable.KEY_GRID };
-	    Cursor cursor = getContentResolver().query(uri, projection, null, null,
-	        null);
-	    if (cursor != null) {
-	    	cursor.moveToFirst();
-	      	qsoCall = cursor.getString(cursor
-		          .getColumnIndexOrThrow(QSOContactTable.KEY_CALL));
-	  		qsoTFreq = cursor.getString(cursor
-			      .getColumnIndexOrThrow(QSOContactTable.KEY_TXFREQ));
-	  		qsoRFreq = cursor.getString(cursor
-		          .getColumnIndexOrThrow(QSOContactTable.KEY_RXFREQ));
-	  		qsoMode = cursor.getString(cursor
-		          .getColumnIndexOrThrow(QSOContactTable.KEY_MODE));
-	  		qsoRRST = cursor.getString(cursor
-		          .getColumnIndexOrThrow(QSOContactTable.KEY_RRST));
-	  		qsoSRST = cursor.getString(cursor
-		          .getColumnIndexOrThrow(QSOContactTable.KEY_SRST));
-	  		qsoTimeon = cursor.getString(cursor
-		          .getColumnIndexOrThrow(QSOContactTable.KEY_TIMEON));
-	  		qsoTimeoff = cursor.getString(cursor
-		          .getColumnIndexOrThrow(QSOContactTable.KEY_TIMEOFF));
-	  		qsoName = cursor.getString(cursor
-		          .getColumnIndexOrThrow(QSOContactTable.KEY_NAME));
-	  		qsoQTH = cursor.getString(cursor
-		          .getColumnIndexOrThrow(QSOContactTable.KEY_QTH));
-	  		qsoState = cursor.getString(cursor
-		          .getColumnIndexOrThrow(QSOContactTable.KEY_STATE));
-	  		qsoCountry = cursor.getString(cursor
-		          .getColumnIndexOrThrow(QSOContactTable.KEY_COUNTRY));
-	  		qsoGrid = cursor.getString(cursor
-		          .getColumnIndexOrThrow(QSOContactTable.KEY_GRID));
-		    callBox.setText(qsoCall);	      
-		    txfreqBox.setText(qsoTFreq);
-		    rxfreqBox.setText(qsoRFreq);
-		    modeBox.setText(qsoMode);
-		    rrstBox.setText(qsoRRST);
-		    srstBox.setText(qsoSRST);
-		    // always close the cursor
-		    cursor.close();
+		if (uri != null)
+		{
+			String[] projection = {    QSOContactTable.KEY_ID, QSOContactTable.KEY_CALL, QSOContactTable.KEY_RXFREQ, QSOContactTable.KEY_TXFREQ,
+					QSOContactTable.KEY_TIMEON, QSOContactTable.KEY_TIMEOFF, QSOContactTable.KEY_MODE, QSOContactTable.KEY_RRST,
+					QSOContactTable.KEY_SRST, QSOContactTable.KEY_NAME, QSOContactTable.KEY_QTH, QSOContactTable.KEY_STATE, 
+					QSOContactTable.KEY_COUNTRY, QSOContactTable.KEY_GRID, QSOContactTable.KEY_COMPLETE };
+		    Cursor cursor = getContentResolver().query(uri, projection, null, null,
+		        null);
+		    String qsoCall = "";
+		    String qsoTFreq = "";
+		    String qsoRFreq = "";
+		    String qsoMode = "";
+		    String qsoRRST = "";
+		    String qsoSRST = "";
+		    	
+		    if (cursor != null) {
+		    	cursor.moveToFirst();
+		      	qsoCall = cursor.getString(cursor
+			          .getColumnIndexOrThrow(QSOContactTable.KEY_CALL));
+		  		qsoTFreq = cursor.getString(cursor
+				      .getColumnIndexOrThrow(QSOContactTable.KEY_TXFREQ));
+		  		qsoRFreq = cursor.getString(cursor
+			          .getColumnIndexOrThrow(QSOContactTable.KEY_RXFREQ));
+		  		qsoMode = cursor.getString(cursor
+			          .getColumnIndexOrThrow(QSOContactTable.KEY_MODE));
+		  		qsoRRST = cursor.getString(cursor
+			          .getColumnIndexOrThrow(QSOContactTable.KEY_RRST));
+		  		qsoSRST = cursor.getString(cursor
+			          .getColumnIndexOrThrow(QSOContactTable.KEY_SRST));
+		  		
+		  		qso = new QSOContact(qsoCall, qsoRFreq, qsoTFreq, 
+		  				cursor.getString(cursor
+				          .getColumnIndexOrThrow(QSOContactTable.KEY_TIMEON)),
+				        cursor.getString(cursor
+						  .getColumnIndexOrThrow(QSOContactTable.KEY_TIMEOFF)), 
+						qsoMode, qsoRRST, qsoSRST,
+						cursor.getString(cursor
+						  .getColumnIndexOrThrow(QSOContactTable.KEY_NAME)),
+						cursor.getString(cursor
+						  .getColumnIndexOrThrow(QSOContactTable.KEY_QTH)),
+						cursor.getString(cursor
+						  .getColumnIndexOrThrow(QSOContactTable.KEY_STATE)),
+						cursor.getString(cursor
+						  .getColumnIndexOrThrow(QSOContactTable.KEY_COUNTRY)),
+						cursor.getString(cursor
+						  .getColumnIndexOrThrow(QSOContactTable.KEY_GRID)), false);
+/*		  		qsoComplete = cursor.getString(cursor
+				          .getColumnIndexOrThrow(QSOContactTable.KEY_COMPLETE));*/
+			    callBox.setText(qsoCall);	      
+			    txfreqBox.setText(qsoTFreq);
+			    rxfreqBox.setText(qsoRFreq);
+			    modeBox.setText(qsoMode);
+			    rrstBox.setText(qsoRRST);
+			    srstBox.setText(qsoSRST);
+			    // always close the cursor
+			    cursor.close();
+		    }
 	    }
 	}
 
@@ -550,7 +572,8 @@ public class EntryActivity extends Activity {
         else
         {
             // check from the saved Instance
-            contactUri =  (Uri) savedInstanceState.getParcelable(QSOContactProvider.CONTENT_ITEM_TYPE);
+            contactUri =  (Uri) savedInstanceState.getParcelable(QSOContactProvider.CONTENT_ITEM_TYPE);            
+            fillData(contactUri);
             wasLoggedIn = savedInstanceState.getBoolean(LOGIN_STRING);
             if (savedInstanceState.getString(SCROLL_STRINGS, null) != null)
             {
@@ -607,20 +630,19 @@ public class EntryActivity extends Activity {
 	}
 
 	private void saveState() {
-	    qsoCall = callBox.getText().toString();
-	    qsoTFreq = txfreqBox.getText().toString();
-	    qsoRFreq = rxfreqBox.getText().toString();
-	    qsoMode = modeBox.getText().toString();
-	    qsoRRST = rrstBox.getText().toString();
-	    qsoSRST = srstBox.getText().toString();
+	    String qsoCall = callBox.getText().toString();
+	    String qsoTFreq = txfreqBox.getText().toString();
+	    String qsoRFreq = rxfreqBox.getText().toString();
+	    String qsoMode = modeBox.getText().toString();
+	    String qsoRRST = rrstBox.getText().toString();
+	    String qsoSRST = srstBox.getText().toString();
 
-	    // only save if either call sign or frequency
-	    // is available
-
-	    if (qsoTimeon.length() == 0 && qsoTimeoff.length() == 0) {
-	      return;
+	    if (qsoTFreq.length() == 0 && qsoRFreq.length() == 0 && qsoCall.length() == 0 && 
+	    		qsoMode.length() == 0 && qsoRRST.length() == 0 && qsoSRST.length() == 0)
+	    	return;
+	    if (qso == null) {
+	    	qso = new QSOContact();
 	    }
-
 		ContentValues values = new ContentValues();
 		values.put(QSOContactTable.KEY_CALL, qsoCall);
 		values.put(QSOContactTable.KEY_TXFREQ, qsoTFreq);
@@ -628,13 +650,14 @@ public class EntryActivity extends Activity {
 		values.put(QSOContactTable.KEY_MODE, qsoMode);
 		values.put(QSOContactTable.KEY_RRST, qsoRRST);
 		values.put(QSOContactTable.KEY_SRST, qsoSRST);
-		values.put(QSOContactTable.KEY_TIMEON, qsoTimeon);
-		values.put(QSOContactTable.KEY_TIMEOFF, qsoTimeoff);
-		values.put(QSOContactTable.KEY_NAME, qsoName);
-		values.put(QSOContactTable.KEY_QTH, qsoQTH);
-		values.put(QSOContactTable.KEY_STATE, qsoState);
-		values.put(QSOContactTable.KEY_COUNTRY, qsoCountry);
-		values.put(QSOContactTable.KEY_GRID, qsoGrid);
+		values.put(QSOContactTable.KEY_TIMEON, qso.getTimeon());
+		values.put(QSOContactTable.KEY_TIMEOFF, qso.getTimeoff());
+		values.put(QSOContactTable.KEY_NAME, qso.getName());
+		values.put(QSOContactTable.KEY_QTH, qso.getQTH());
+		values.put(QSOContactTable.KEY_STATE, qso.getState());
+		values.put(QSOContactTable.KEY_COUNTRY, qso.getCountry());
+		values.put(QSOContactTable.KEY_GRID, qso.getGrid());
+		values.put(QSOContactTable.KEY_COMPLETE, qso.getComplete());
 		
 		if (contactUri == null) {
 		      // New qso
@@ -651,33 +674,6 @@ public class EntryActivity extends Activity {
       switch(requestCode) {
       	case (log_request) : {
             if (resultCode == Activity.RESULT_OK) {
-            	qsoTFreq = data.getStringExtra(LogActivity.QSO_TXFREQ);
-            	qsoRFreq = data.getStringExtra(LogActivity.QSO_RXFREQ);
-            	qsoCall = data.getStringExtra(LogActivity.QSO_CALL);
-            	qsoRRST = data.getStringExtra(LogActivity.QSO_RRST);
-            	qsoSRST = data.getStringExtra(LogActivity.QSO_SRST);
-            	qsoMode = data.getStringExtra(LogActivity.QSO_MODE);
-            	qsoTimeon = data.getStringExtra(LogActivity.QSO_TIMEON);
-            	qsoTimeoff = data.getStringExtra(LogActivity.QSO_TIMEOFF);
-            	qsoName = data.getStringExtra(LogActivity.QSO_NAME);
-            	qsoQTH = data.getStringExtra(LogActivity.QSO_QTH);
-            	qsoState = data.getStringExtra(LogActivity.QSO_STATE);
-            	qsoCountry = data.getStringExtra(LogActivity.QSO_COUNTRY);
-            	qsoGrid = data.getStringExtra(LogActivity.QSO_GRID);
-            	
-                EditText callBox = (EditText) findViewById(R.id.call_edit);
-                EditText txfreqBox = (EditText) findViewById(R.id.txfreq_edit);
-                EditText rxfreqBox = (EditText) findViewById(R.id.rxfreq_edit);
-                EditText modeBox = (EditText) findViewById(R.id.mode_edit);
-                EditText rrstBox = (EditText) findViewById(R.id.rrst_edit);
-                EditText srstBox = (EditText) findViewById(R.id.srst_edit);
-                callBox.setText(qsoCall);
-                txfreqBox.setText(qsoTFreq);
-                rxfreqBox.setText(qsoRFreq);
-                modeBox.setText(qsoMode);
-            	rrstBox.setText(qsoRRST);
-            	srstBox.setText(qsoSRST);
-            	saveState();
             	newContact(null);
             }
     	  break;
@@ -703,14 +699,14 @@ public class EntryActivity extends Activity {
     public void rigRXFreq(String rx)
     {
         EditText rxfreqBox = (EditText) findViewById(R.id.rxfreq_edit);
-    	qsoRFreq = rx;
+    	String qsoRFreq = rx;
         rxfreqBox.setText(qsoRFreq);    	
     }
     
     public void rigMode(String mode)
     {
         EditText modeBox = (EditText) findViewById(R.id.mode_edit);
-    	qsoMode = mode;
+    	String qsoMode = mode;
         modeBox.setText(qsoMode);
         if (radiosk != null)
         	radiosk.setPoll(false);
@@ -782,19 +778,7 @@ public class EntryActivity extends Activity {
 	    rrstBox.setText("");
 	    srstBox.setText("");
 	    contactUri = null;
-	  	qsoTFreq = "";
-		qsoRFreq = "";
-		qsoCall = "";
-		qsoMode = "";
-		qsoRRST = "";
-		qsoSRST = "";
-		qsoTimeon = "";
-		qsoTimeoff = "";
-		qsoName = "";
-		qsoQTH = "";
-		qsoState = "";
-		qsoCountry = "";
-		qsoGrid = "";
+	    qso = null;
     }
 
     public void submitCall()
@@ -867,6 +851,8 @@ public class EntryActivity extends Activity {
 		}
 		wasLoggedIn=false;
 		Intent resultIntent = new Intent();
+		// return current contact - may need to be deleted.
+		resultIntent.putExtra(QSOContactProvider.CONTENT_ITEM_TYPE, contactUri);
     	setResult(Activity.RESULT_OK, resultIntent);
     	finish();
 	}
@@ -890,6 +876,7 @@ public class EntryActivity extends Activity {
     public void logContact(View view) {
     	saveState();
     	Intent intent = new Intent(this, LogActivity.class);
+    	/*
     	EditText call = (EditText) findViewById(R.id.call_edit);
     	EditText rxfreq = (EditText) findViewById(R.id.rxfreq_edit);
     	EditText txfreq = (EditText) findViewById(R.id.txfreq_edit);
@@ -909,8 +896,11 @@ public class EntryActivity extends Activity {
     	intent.putExtra(LogActivity.QSO_QTH, qsoQTH);
     	intent.putExtra(LogActivity.QSO_STATE, qsoState);
     	intent.putExtra(LogActivity.QSO_COUNTRY, qsoCountry);
-    	intent.putExtra(LogActivity.QSO_GRID, qsoGrid);
-     	
+    	intent.putExtra(LogActivity.QSO_GRID, qsoGrid); */
+    	
+//	    Uri qsoUri = Uri.parse(QSOContactProvider.CONTENT_URI + "/" + id);
+	    intent.putExtra(QSOContactProvider.CONTENT_ITEM_TYPE, contactUri);
+
     	startActivityForResult(intent, log_request);
     }
     

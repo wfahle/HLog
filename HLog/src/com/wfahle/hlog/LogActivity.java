@@ -4,13 +4,18 @@ import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import com.wfahle.hlog.contentprovider.QSOContactProvider;
+
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,7 +40,82 @@ public class LogActivity extends Activity {
 	public static final String QSO_GRID = "com.wfahle.hlog.QSO_GRID";
 	private AsyncTask<LogActivity, Integer, QRZprofile> updatetask;
 	public ProgressDialog progressDialog;	
-
+	private Uri contactUri=null;
+	private boolean needsLookup=false;
+	
+	private void fillData(Uri uri) {
+		if (uri != null)
+		{
+			String[] projection = {    QSOContactTable.KEY_ID, QSOContactTable.KEY_CALL, QSOContactTable.KEY_RXFREQ, QSOContactTable.KEY_TXFREQ,
+					QSOContactTable.KEY_TIMEON, QSOContactTable.KEY_TIMEOFF, QSOContactTable.KEY_MODE, QSOContactTable.KEY_RRST,
+					QSOContactTable.KEY_SRST, QSOContactTable.KEY_NAME, QSOContactTable.KEY_QTH, QSOContactTable.KEY_STATE, 
+					QSOContactTable.KEY_COUNTRY, QSOContactTable.KEY_GRID };
+		    Cursor cursor = getContentResolver().query(uri, projection, null, null,
+		        null);
+		    if (cursor != null) {
+		    	cursor.moveToFirst();
+	
+		    	EditText edit = (EditText) findViewById(R.id.timeon_edit);
+		    	String call = cursor.getString(cursor
+				          .getColumnIndexOrThrow(QSOContactTable.KEY_CALL));
+		    	String freq = cursor.getString(cursor
+				          .getColumnIndexOrThrow(QSOContactTable.KEY_RXFREQ));
+		    	String mode = cursor.getString(cursor
+				          .getColumnIndexOrThrow(QSOContactTable.KEY_MODE));
+		    	String rrst = cursor.getString(cursor
+				          .getColumnIndexOrThrow(QSOContactTable.KEY_RRST));
+		    	String srst = cursor.getString(cursor
+				          .getColumnIndexOrThrow(QSOContactTable.KEY_SRST));
+		    	String timeon = cursor.getString(cursor
+				          .getColumnIndexOrThrow(QSOContactTable.KEY_TIMEON));
+		    	String timeoff = cursor.getString(cursor
+				          .getColumnIndexOrThrow(QSOContactTable.KEY_TIMEOFF));
+		    	String name = cursor.getString(cursor
+				          .getColumnIndexOrThrow(QSOContactTable.KEY_NAME));
+		    	String qth = cursor.getString(cursor
+				          .getColumnIndexOrThrow(QSOContactTable.KEY_QTH));
+		    	String state = cursor.getString(cursor
+				          .getColumnIndexOrThrow(QSOContactTable.KEY_STATE));
+		    	String country = cursor.getString(cursor
+				          .getColumnIndexOrThrow(QSOContactTable.KEY_COUNTRY));
+		    	String grid = cursor.getString(cursor
+				          .getColumnIndexOrThrow(QSOContactTable.KEY_GRID));
+		    	
+		    	edit = (EditText) findViewById(R.id.callt_edit);
+		    	edit.setText(call);
+		    	edit = (EditText) findViewById(R.id.rxfreqt_edit);
+		    	edit.setText(freq);
+		    	edit = (EditText) findViewById(R.id.modet_edit);
+		    	edit.setText(mode);
+		    	edit = (EditText) findViewById(R.id.rrstt_edit);
+		    	edit.setText(rrst);
+		    	edit = (EditText) findViewById(R.id.srstt_edit);
+		    	edit.setText(srst);
+		    	edit = (EditText) findViewById(R.id.timeon_edit);
+		    	if (timeon == null || timeon.length() == 0)
+		    	{
+		    		needsLookup = true;
+		    		edit.setText(now());
+		    	}
+		    	else
+		        	edit.setText(timeon);
+		    	edit = (EditText) findViewById(R.id.timeoff_edit);
+		    	edit.setText(timeoff);
+		    	edit = (EditText) findViewById(R.id.name_edit);
+		    	edit.setText(name);
+		    	edit = (EditText) findViewById(R.id.qth_edit);
+		    	edit.setText(qth);
+		    	edit = (EditText) findViewById(R.id.state_edit);
+		    	edit.setText(state);
+		    	edit = (EditText) findViewById(R.id.country_edit);
+		    	edit.setText(country);
+		    	edit = (EditText) findViewById(R.id.grid_edit);
+		    	edit.setText(grid);
+			    // always close the cursor
+			    cursor.close();
+		    }
+	    }
+	}
 	CharSequence now() {
     	TimeZone tz = TimeZone.getTimeZone("GMT+0");
     	Calendar cal = Calendar.getInstance(tz);
@@ -55,12 +135,20 @@ public class LogActivity extends Activity {
 	}
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		boolean needslookup=false;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_log);
 		// Show the Up button in the action bar.
 		setupActionBar();
-    	EditText edit = (EditText) findViewById(R.id.timeon_edit);
+        // Or passed from the other activity
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+          contactUri = extras
+              .getParcelable(QSOContactProvider.CONTENT_ITEM_TYPE);
+
+          fillData(contactUri);
+        }
+
+/*    	EditText edit = (EditText) findViewById(R.id.timeon_edit);
     	Intent intent = getIntent();
     	String call = intent.getStringExtra(LogActivity.QSO_CALL);
     	String freq = intent.getStringExtra(LogActivity.QSO_RXFREQ);
@@ -88,7 +176,7 @@ public class LogActivity extends Activity {
     	edit = (EditText) findViewById(R.id.timeon_edit);
     	if (timeon == null || timeon.length() == 0)
     	{
-    		needslookup = true;
+    		needsLookup = true;
     		edit.setText(now());
     	}
     	else
@@ -104,12 +192,12 @@ public class LogActivity extends Activity {
     	edit = (EditText) findViewById(R.id.country_edit);
     	edit.setText(country);
     	edit = (EditText) findViewById(R.id.grid_edit);
-    	edit.setText(grid);
+    	edit.setText(grid);*/
 		SharedPreferences settings = getSharedPreferences(ConfigActivity.PREFS_NAME, 0);
 		final String qrzUser = settings.getString("qrzUser", null);
 		final String qrzPassword = settings.getString("qrzPassword", null);
 
-		if (!needslookup || qrzUser == null || qrzPassword == null || qrzUser.length() == 0
+		if (!needsLookup || qrzUser == null || qrzPassword == null || qrzUser.length() == 0
 		    || qrzPassword.length() == 0) {
 			/* could give them the ability to enter just this info through the config activity, but I won't 
 		  LinearLayout searchLL = (LinearLayout) findViewById(R.id.SearchLL01);
@@ -211,23 +299,34 @@ public class LogActivity extends Activity {
     	
     	if (timeoff == null || timeoff.length() == 0)
     		timeoff = now().toString();
-    	resultIntent.putExtra(QSO_RXFREQ, freq);
-    	resultIntent.putExtra(QSO_TXFREQ, freq);
-    	resultIntent.putExtra(QSO_CALL, call);
-    	resultIntent.putExtra(QSO_RRST, rrst);
-    	resultIntent.putExtra(QSO_SRST, srst);    	
-    	resultIntent.putExtra(QSO_MODE, mode);
-    	resultIntent.putExtra(QSO_TIMEON, timeon);
-    	resultIntent.putExtra(QSO_TIMEOFF, timeoff);
-    	resultIntent.putExtra(QSO_NAME, name);
-    	resultIntent.putExtra(QSO_QTH, qth);
-    	resultIntent.putExtra(QSO_STATE, state);
-    	resultIntent.putExtra(QSO_COUNTRY, country);
-    	resultIntent.putExtra(QSO_GRID, grid);
-    	
+		ContentValues values = new ContentValues();
+		values.put(QSOContactTable.KEY_CALL, call);
+		values.put(QSOContactTable.KEY_TXFREQ, freq);
+		values.put(QSOContactTable.KEY_RXFREQ, freq);
+		values.put(QSOContactTable.KEY_MODE, mode);
+		values.put(QSOContactTable.KEY_RRST, rrst);
+		values.put(QSOContactTable.KEY_SRST, srst);
+		values.put(QSOContactTable.KEY_TIMEON, timeon);
+		values.put(QSOContactTable.KEY_TIMEOFF, timeoff);
+		values.put(QSOContactTable.KEY_NAME, name);
+		values.put(QSOContactTable.KEY_QTH, qth);
+		values.put(QSOContactTable.KEY_STATE, state);
+		values.put(QSOContactTable.KEY_COUNTRY, country);
+		values.put(QSOContactTable.KEY_GRID, grid);
+		
+		if (contactUri == null) {
+		      // New qso
+		      contactUri = getContentResolver().insert(QSOContactProvider.CONTENT_URI, values);
+		} else {
+		      // Update qso
+		      getContentResolver().update(contactUri, values, null, null);
+		}
+    	resultIntent.putExtra(QSOContactProvider.CONTENT_ITEM_TYPE, contactUri);
+
     	setResult(Activity.RESULT_OK, resultIntent);
     	finish();
 	}
+	
 	public void clickNowOn(View view)
 	{
     	EditText edit = (EditText) findViewById(R.id.timeon_edit);
