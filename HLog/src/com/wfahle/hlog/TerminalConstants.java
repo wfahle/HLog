@@ -180,11 +180,10 @@ class MyHandler extends Handler {
 		Bundle hm = msg.getData(); 
 		String msgText = hm.getString("message");
 		System.out.println(msgText);
-		if(msg.what == mnormal)
-		{
+		if(msg.what == mnormal) {
 			final StableArrayAdapter adapter = (StableArrayAdapter)lv.getAdapter();
-			if (msgText.indexOf("DX de ")==0) // starts dx
-			{
+			if (msgText.indexOf("DX de ")==0) { // starts dx
+				main.shdxing(false);
 				int pos = msgText.indexOf(':'); // find "DX de W3WW:" location
 				int posf = pos+1;
 				while (posf < msgText.length() && whiteSpace(msgText.charAt(posf)))
@@ -209,42 +208,62 @@ class MyHandler extends Handler {
 				adapter.addItem(item); // strip "DX de "
 		    	adapter.notifyDataSetChanged();
 			}
-			else if (msgText.indexOf("call:") >= 0)
-			{
+			else if (msgText.indexOf("call:") >= 0) {
 				main.submitCall();
 			}
-			else if (msgText.indexOf("login:") >= 0)
-			{
+			else if (msgText.indexOf("login:") >= 0) {
 				main.submitCall();
+			}
+			else if (main.shdxing()) {
+				int posf = 0;
+				while (posf < msgText.length() && whiteSpace(msgText.charAt(posf)))
+					posf++;
+				int endf = posf;
+				while (endf < msgText.length() && !whiteSpace(msgText.charAt(endf)))
+					endf++;
+				int poscall = endf;
+				while (poscall < msgText.length() && whiteSpace(msgText.charAt(poscall)))
+					poscall++;
+				int endcall = poscall;
+				while (endcall < msgText.length() && !whiteSpace(msgText.charAt(endcall)))
+					endcall++;
+				int posmsg = endcall+10;
+				int endmsg = posmsg;
+				while (endmsg < msgText.length() && !whiteSpace(msgText.charAt(endmsg))) {
+					endmsg++;
+					if (endmsg < msgText.length() && whiteSpace(msgText.charAt(endmsg)))
+						endmsg++; // stop on multiple whitespace.
+				}
+				
+				String item = msgText.substring(poscall, endcall) + " " +
+						msgText.substring(posf, endf) +  " " +
+						msgText.substring(posmsg, endmsg);
+				adapter.addItem(item); // strip "DX de "
+		    	adapter.notifyDataSetChanged();
+				
 			}
 		}
-		else if (msg.what == merror)
-		{
+		else if (msg.what == merror) {
 			txt.setText(msgText);
 			txt.setTextColor(0xFFFF0000);
 			txt.setVisibility(View.VISIBLE);
 			main.socketError(hm.getInt("id"));
 		}
-		else if(msg.what == minfo)
-		{
+		else if(msg.what == minfo) {
 			txt.setText(msgText);
 			txt.setTextColor(0xFF00FF00);
 			txt.setVisibility(View.VISIBLE);			
 		}
-		else if (msg.what == mrigpoll)
-		{
+		else if (msg.what == mrigpoll) {
 			main.pollRig();
 		}
-		else if (msg.what == mrigrx)
-		{
+		else if (msg.what == mrigrx) {
 			main.rigRXFreq(msgText);
 		}
-		else if (msg.what == mrigmode)
-		{
+		else if (msg.what == mrigmode) {
 			main.rigMode(msgText);
 		}
 	}
-
 }
 
 class HLogSocket {

@@ -9,19 +9,19 @@
     tools:context=".MainActivity" >
 
     <Button
-        android:id="@+id/new_button"
+        android:id="@+id/shdx_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="22dp"
-        android:onClick="newContact"
-        android:text="@string/edit_ui" />
+        android:onClick="shdx"
+        android:text="@string/shdx_ui" />
 
     <TextView
         android:id="@+id/call"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/new_button"
+        android:layout_below="@+id/shdx_button"
         android:layout_marginLeft="14dp"
         android:text="@string/call_ui" />
 
@@ -115,7 +115,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@+id/call"
-        android:layout_toRightOf="@+id/new_button"
+        android:layout_toRightOf="@+id/shdx_button"
         android:contentDescription="@string/log_contact"
         android:onClick="logContact"
         android:text="@string/log_ui" />

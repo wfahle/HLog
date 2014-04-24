@@ -39,6 +39,7 @@ public class EntryActivity extends Activity {
 	protected String radioServer="";
 	protected int radioPort = 7373;
 	protected QSOContact qso=null;
+	private boolean sent_shdx=false;
 	/*
 	protected String qsoTFreq = "";
 	protected String qsoRFreq = "";
@@ -306,6 +307,14 @@ public class EntryActivity extends Activity {
 			Thread.sleep(150);
 		} catch (InterruptedException e) {
 		}
+	}
+	
+	boolean shdxing() {
+		return sent_shdx;
+	}
+	
+	void shdxing(boolean set) {
+		sent_shdx = false; // shdx run is over
 	}
 	
 	@Override
@@ -674,7 +683,7 @@ public class EntryActivity extends Activity {
       switch(requestCode) {
       	case (log_request) : {
             if (resultCode == Activity.RESULT_OK) {
-            	newContact(null);
+            	newContact();
             }
     	  break;
       	}
@@ -770,7 +779,7 @@ public class EntryActivity extends Activity {
 
       }
     
-    public void newContact(View view) {
+    public void newContact() {
     	callBox.setText("");
 	    txfreqBox.setText("");
 	    rxfreqBox.setText("");
@@ -781,15 +790,17 @@ public class EntryActivity extends Activity {
 	    qso = null;
     }
 
-    public void submitCall()
-    {
-    	if (telnetsk != null)
-    	{
-			try {
-				telnetsk.oStream.write(telnetsk.Logon.getBytes());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+    public void shdx(View v) {
+    	if (telnetsk != null) {
+    		sent_shdx=true;
+    		String shdxstr = "sh/dx\r\n";
+			telnetsk.SpecialSocketSend(shdxstr.getBytes());
+    	}
+    }
+
+    public void submitCall() {
+    	if (telnetsk != null) {
+			telnetsk.SpecialSocketSend(telnetsk.Logon.getBytes());
 			state = loggedIn;
 			Button button = (Button) findViewById(R.id.dxcStart);
 			button.setText("Stop");

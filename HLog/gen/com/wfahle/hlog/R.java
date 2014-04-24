@@ -55,7 +55,6 @@ public final class R {
         public static final int modet_edit=0x7f080026;
         public static final int name=0x7f08002a;
         public static final int name_edit=0x7f08002b;
-        public static final int new_button=0x7f080009;
         public static final int nowoff_button=0x7f080020;
         public static final int nowon_button=0x7f08001c;
         public static final int piglet=0x7f080006;
@@ -71,6 +70,7 @@ public final class R {
         public static final int rxfreqt=0x7f08000c;
         public static final int rxfreqt_edit=0x7f080021;
         public static final int save_button=0x7f08001b;
+        public static final int shdx_button=0x7f080009;
         public static final int spot_list=0x7f080010;
         public static final int srst_edit=0x7f080019;
         public static final int srstt=0x7f08001a;
@@ -130,6 +130,7 @@ public final class R {
         public static final int rx_freq=0x7f050011;
         public static final int save_ui=0x7f05001d;
         public static final int server_ui=0x7f05000d;
+        public static final int shdx_ui=0x7f050029;
         public static final int srst_ui=0x7f050014;
         public static final int start_time=0x7f050004;
         public static final int start_time_ui=0x7f050005;
