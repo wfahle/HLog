@@ -12,6 +12,7 @@ import com.wfahle.hlog.EntryActivity.StableArrayAdapter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -176,6 +177,20 @@ class MyHandler extends Handler {
 		return false;
 	}
 	
+	int skipWhitespace(String msgText, int startPos){
+		// skip whitespace if any
+		while (startPos < msgText.length() && whiteSpace(msgText.charAt(startPos)))
+			startPos++;
+		return startPos;
+	}
+
+	int skipText(String msgText, int startPos){
+		// skip whitespace if any
+		while (startPos < msgText.length() && !whiteSpace(msgText.charAt(startPos)))
+			startPos++;
+		return startPos;
+	}
+	
 	public void handleMessage(android.os.Message msg) {
 		Bundle hm = msg.getData(); 
 		String msgText = hm.getString("message");
@@ -183,19 +198,13 @@ class MyHandler extends Handler {
 		if(msg.what == mnormal) {
 			final StableArrayAdapter adapter = (StableArrayAdapter)lv.getAdapter();
 			if (msgText.indexOf("DX de ")==0) { // starts dx
-				main.shdxing(false);
 				int pos = msgText.indexOf(':'); // find "DX de W3WW:" location
-				int posf = pos+1;
-				while (posf < msgText.length() && whiteSpace(msgText.charAt(posf)))
-					posf++;
-				int endf = msgText.indexOf(' ', posf); // find end of freq
-				int poscall = endf;
-				while (poscall < msgText.length() && whiteSpace(msgText.charAt(poscall)))
-					poscall++;
-				int endcall = msgText.indexOf(' ', poscall);
-				int posmsg = endcall;
-				while (posmsg < msgText.length() && whiteSpace(msgText.charAt(posmsg)))
-					posmsg++;
+				int posf = skipWhitespace(msgText, pos+1);
+				int endf = skipText(msgText, posf); // find end of freq
+				int poscall = skipWhitespace(msgText, endf);
+				
+				int endcall = skipText(msgText, poscall);
+				int posmsg = skipWhitespace(msgText, endcall);
 				int endmsg = posmsg;
 				while (endmsg < msgText.length() && !whiteSpace(msgText.charAt(endmsg))) {
 					endmsg++;
@@ -215,32 +224,37 @@ class MyHandler extends Handler {
 				main.submitCall();
 			}
 			else if (main.shdxing()) {
-				int posf = 0;
-				while (posf < msgText.length() && whiteSpace(msgText.charAt(posf)))
-					posf++;
-				int endf = posf;
-				while (endf < msgText.length() && !whiteSpace(msgText.charAt(endf)))
-					endf++;
-				int poscall = endf;
-				while (poscall < msgText.length() && whiteSpace(msgText.charAt(poscall)))
-					poscall++;
-				int endcall = poscall;
-				while (endcall < msgText.length() && !whiteSpace(msgText.charAt(endcall)))
-					endcall++;
-				int posmsg = endcall+10;
-				int endmsg = posmsg;
-				while (endmsg < msgText.length() && !whiteSpace(msgText.charAt(endmsg))) {
-					endmsg++;
-					if (endmsg < msgText.length() && whiteSpace(msgText.charAt(endmsg)))
-						endmsg++; // stop on multiple whitespace.
+				//" 28020.1  6W1SR       24-Apr-2014 1951Z  Heard in MD               <W3LPL>\n"
+				String[] msgs = TextUtils.split(msgText, "\n");
+				for (int i=0; i<msgs.length; i++) {
+					msgText = msgs[i];
+					int posf = skipWhitespace(msgText, 0);
+					int endf = skipText(msgText, posf);
+					int poscall = skipWhitespace(msgText, endf);
+					int endcall = skipText(msgText, poscall);
+					// skip whitespace up to date
+					int posmsg = skipWhitespace(msgText, endcall);
+					// skip date
+					posmsg = skipText(msgText, posmsg);
+					// skip whitespace up to time
+					posmsg = skipWhitespace(msgText, posmsg);
+					// skip time
+					posmsg = skipText(msgText, posmsg);
+					// skip whitespace after time
+					posmsg = skipWhitespace(msgText, posmsg);
+					int endmsg = posmsg;
+					while (endmsg < msgText.length() && !whiteSpace(msgText.charAt(endmsg))) {
+						endmsg++;
+						if (endmsg < msgText.length() && whiteSpace(msgText.charAt(endmsg)))
+							endmsg++; // stop on multiple whitespace.
+					}
+					String item = msgText.substring(poscall, endcall) + " " +
+							msgText.substring(posf, endf) +  " " +
+							msgText.substring(posmsg, endmsg);
+					adapter.addItem(item);
 				}
-				
-				String item = msgText.substring(poscall, endcall) + " " +
-						msgText.substring(posf, endf) +  " " +
-						msgText.substring(posmsg, endmsg);
-				adapter.addItem(item); // strip "DX de "
-		    	adapter.notifyDataSetChanged();
-				
+		    	adapter.notifyDataSetChanged();		
+		    	main.shdxing(false);
 			}
 		}
 		else if (msg.what == merror) {

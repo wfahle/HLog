@@ -605,7 +605,7 @@ public class EntryActivity extends Activity {
 	@Override
 	protected void onResume() {
 	    super.onResume();
-	    if (wasLoggedIn) {
+	    if (/*wasLoggedIn*/ true) {
 	    	LogOn(null); // log on.
 	    }
 	}
@@ -708,7 +708,7 @@ public class EntryActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+	    return super.onCreateOptionsMenu(menu);
     }
 
     protected String convertToMHz(String freq, int posp)

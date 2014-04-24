@@ -42,6 +42,7 @@ public class LogActivity extends Activity {
 	public ProgressDialog progressDialog;	
 	private Uri contactUri=null;
 	private boolean needsLookup=false;
+	private boolean itemSaved = false;
 	
 	private void fillData(Uri uri) {
 		if (uri != null)
@@ -49,7 +50,7 @@ public class LogActivity extends Activity {
 			String[] projection = {    QSOContactTable.KEY_ID, QSOContactTable.KEY_CALL, QSOContactTable.KEY_RXFREQ, QSOContactTable.KEY_TXFREQ,
 					QSOContactTable.KEY_TIMEON, QSOContactTable.KEY_TIMEOFF, QSOContactTable.KEY_MODE, QSOContactTable.KEY_RRST,
 					QSOContactTable.KEY_SRST, QSOContactTable.KEY_NAME, QSOContactTable.KEY_QTH, QSOContactTable.KEY_STATE, 
-					QSOContactTable.KEY_COUNTRY, QSOContactTable.KEY_GRID };
+					QSOContactTable.KEY_COUNTRY, QSOContactTable.KEY_GRID, QSOContactTable.KEY_COMPLETE };
 		    Cursor cursor = getContentResolver().query(uri, projection, null, null,
 		        null);
 		    if (cursor != null) {
@@ -155,51 +156,6 @@ public class LogActivity extends Activity {
           fillData(contactUri);
         }
 
-/*    	EditText edit = (EditText) findViewById(R.id.timeon_edit);
-    	Intent intent = getIntent();
-    	String call = intent.getStringExtra(LogActivity.QSO_CALL);
-    	String freq = intent.getStringExtra(LogActivity.QSO_RXFREQ);
-    	String mode = intent.getStringExtra(LogActivity.QSO_MODE);
-    	String rrst = intent.getStringExtra(LogActivity.QSO_RRST);
-    	String srst = intent.getStringExtra(LogActivity.QSO_SRST);
-    	String timeon = intent.getStringExtra(LogActivity.QSO_TIMEON);
-    	String timeoff = intent.getStringExtra(LogActivity.QSO_TIMEOFF);
-    	String name = intent.getStringExtra(LogActivity.QSO_NAME);
-    	String qth = intent.getStringExtra(LogActivity.QSO_QTH);
-    	String state = intent.getStringExtra(LogActivity.QSO_STATE);
-    	String country = intent.getStringExtra(LogActivity.QSO_COUNTRY);
-    	String grid = intent.getStringExtra(LogActivity.QSO_COUNTRY);
-    	
-    	edit = (EditText) findViewById(R.id.callt_edit);
-    	edit.setText(call);
-    	edit = (EditText) findViewById(R.id.rxfreqt_edit);
-    	edit.setText(freq);
-    	edit = (EditText) findViewById(R.id.modet_edit);
-    	edit.setText(mode);
-    	edit = (EditText) findViewById(R.id.rrstt_edit);
-    	edit.setText(rrst);
-    	edit = (EditText) findViewById(R.id.srstt_edit);
-    	edit.setText(srst);
-    	edit = (EditText) findViewById(R.id.timeon_edit);
-    	if (timeon == null || timeon.length() == 0)
-    	{
-    		needsLookup = true;
-    		edit.setText(now());
-    	}
-    	else
-        	edit.setText(timeon);
-    	edit = (EditText) findViewById(R.id.timeoff_edit);
-    	edit.setText(timeoff);
-    	edit = (EditText) findViewById(R.id.name_edit);
-    	edit.setText(name);
-    	edit = (EditText) findViewById(R.id.qth_edit);
-    	edit.setText(qth);
-    	edit = (EditText) findViewById(R.id.state_edit);
-    	edit.setText(state);
-    	edit = (EditText) findViewById(R.id.country_edit);
-    	edit.setText(country);
-    	edit = (EditText) findViewById(R.id.grid_edit);
-    	edit.setText(grid);*/
 		SharedPreferences settings = getSharedPreferences(ConfigActivity.PREFS_NAME, 0);
 		final String qrzUser = settings.getString("qrzUser", null);
 		final String qrzPassword = settings.getString("qrzPassword", null);
@@ -244,7 +200,7 @@ public class LogActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.log, menu);
-		return true;
+	    return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
@@ -264,21 +220,29 @@ public class LogActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
 	public void clickCancel(View view)
 	{
 		Intent resultIntent = new Intent();
+    	resultIntent.putExtra(QSOContactProvider.CONTENT_ITEM_TYPE, contactUri);
 		setResult(Activity.RESULT_CANCELED, resultIntent);
 		finish();
 	}
+	
 	public void clickSave(View view) {
     	Intent resultIntent = new Intent();
 		saveItem(true);
+		itemSaved = true; // don't save it again in onPause or whatever
+		contactUri = null; // we saved it, it's gone.
     	resultIntent.putExtra(QSOContactProvider.CONTENT_ITEM_TYPE, contactUri);
 
     	setResult(Activity.RESULT_OK, resultIntent);
     	finish();
 	}
+	
 	public void saveItem(boolean clicked) {
+		if (itemSaved)
+			return;
         /* write you handling code like...
         String st = "sdcard/";
         File f = new File(st+o.toString());
