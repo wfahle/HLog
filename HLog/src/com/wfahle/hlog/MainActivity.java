@@ -27,8 +27,11 @@ import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
+//TODO: complete is ? on export for some reason
+//TODO: Somehow a "N" complete still exscaped notice of the deleter
 //TODO: put checkbox for QRZ lookup in config also - check it and save it in the thingy
 //TODO: keep background telnet running when leaving EntryActivity; but
 //TODO: accumulate about 20 or 30 items - then log off.
@@ -65,10 +68,18 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
       int[] to = new int[] { R.id.key_call, R.id.key_rxfreq, R.id.key_timeon };
 
       getLoaderManager().initLoader(0, null, this);
+      
       adapter = new SimpleCursorAdapter(this, R.layout.log_row, null, from,
           to, 0);
-
       setListAdapter(adapter);
+      Cursor curse = adapter.getCursor();
+      if (curse != null)
+      {
+	      int count = adapter.getCursor().getCount();
+	      String conts = "Contacts(" + count + ")";
+	      TextView tv = (TextView) findViewById(R.id.contacts);
+	      tv.setText(conts);
+      }
     }
     
     private ArrayList<String> getAdifData() {
@@ -218,9 +229,6 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 		}
         case (config_request) : {
           if (resultCode == Activity.RESULT_OK) {
-//        		telnetServer = data.getStringExtra(ConfigActivity.SERVER_NAME);
-//        		telnetPort = data.getIntExtra(ConfigActivity.PORT_NUMBER, 23);
-//        		telnetLogon = data.getStringExtra(ConfigActivity.LOGON_CALL);
           }
           break;
         } 
@@ -289,10 +297,10 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	    return false;
 	}
 	
-	public File getTempAdifDir(Context context, String albumName) {
-	    // Get the directory for the app's private pictures directory. 
+	public File getTempAdifDir(Context context, String folderName) {
+	    // Get the directory for the app's private documents directory. 
 	    File file = new File(context.getExternalFilesDir(
-	            Environment.DIRECTORY_PICTURES), albumName);
+	            Environment.DIRECTORY_DOWNLOADS), folderName);
 	    if (!file.mkdirs()) {
 	        Log.e(LOG_TAG, "Directory not created");
 	    }
@@ -363,7 +371,13 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-	    adapter.swapCursor(data);		
+	    adapter.swapCursor(data);
+	    if (data != null) {
+		    int count = data.getCount();
+		    String conts = "Contacts(" + count + ")";
+		    TextView tv = (TextView) findViewById(R.id.contacts);
+		    tv.setText(conts);
+	    }
 	}
 
 	@Override

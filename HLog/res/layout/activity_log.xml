@@ -230,7 +230,7 @@
 	        android:layout_alignRight="@+id/rrstt"
 	        android:layout_below="@+id/state"
 	        android:ems="10"
-	        android:inputType="textCapWords" />
+	        android:inputType="textCapCharacters" />
 
 	    <EditText
 	        android:id="@+id/country_edit"

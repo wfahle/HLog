@@ -9,7 +9,7 @@
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="19" />
 
     <application
         android:allowBackup="true"
@@ -49,6 +49,7 @@
         </activity>
         
         <provider
+            android:exported="false"
             android:name=".contentprovider.QSOContactProvider"
             android:authorities="com.wfahle.hlog.contentprovider" >
         </provider>

@@ -1,6 +1,5 @@
 package com.wfahle.hlog;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,22 +39,6 @@ public class EntryActivity extends Activity {
 	protected int radioPort = 7373;
 	protected QSOContact qso=null;
 	private boolean sent_shdx=false;
-	/*
-	protected String qsoTFreq = "";
-	protected String qsoRFreq = "";
-	protected String qsoCall = "";
-	protected String qsoMode = "";
-	protected String qsoRRST = "";
-	protected String qsoSRST = "";
-	protected String qsoTimeon = "";
-	protected String qsoTimeoff = "";
-	protected String qsoName = "";
-	protected String qsoQTH = "";
-	protected String qsoState = "";
-	protected String qsoCountry = "";
-	protected String qsoGrid = "";
-	protected String qsoComplete = "?";
-	*/
     EditText callBox;
     EditText txfreqBox;
     EditText rxfreqBox;
