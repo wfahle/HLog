@@ -39,6 +39,7 @@ public class EntryActivity extends Activity {
 	protected int radioPort = 7373;
 	protected QSOContact qso=null;
 	private boolean sent_shdx=false;
+	private boolean abandonChanges = false;
     EditText callBox;
     EditText txfreqBox;
     EditText rxfreqBox;
@@ -56,6 +57,7 @@ public class EntryActivity extends Activity {
 	protected int state=loggedOut;
 	private Uri contactUri;
 	protected final static String LOGIN_STRING = "wasLoggedIn";
+	protected final static String DONE_STRING = "abandonChanges";
 	protected final static String SCROLL_STRINGS = "formerStrings";
 	private boolean wasLoggedIn=false;
 
@@ -587,7 +589,8 @@ public class EntryActivity extends Activity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 	    super.onSaveInstanceState(outState);
-	    saveState();
+	    if (abandonChanges) // user hit done button or back button, just bail from this activity
+	    	return;
 	    outState.putParcelable(QSOContactProvider.CONTENT_ITEM_TYPE, contactUri);
 	    outState.putBoolean(LOGIN_STRING, wasLoggedIn);
         final ListView lv = (ListView) findViewById(R.id.spot_list);
@@ -613,6 +616,8 @@ public class EntryActivity extends Activity {
 	@Override
 	protected void onPause() {
 	    super.onPause();
+	    if (abandonChanges)
+	    	return;
 	    saveState();
 	    if (state == loggedIn)
 	    {
@@ -838,18 +843,29 @@ public class EntryActivity extends Activity {
 		}
 	}
 	
-	public void done(View view) {
+	private void abandon(int resultCode) {
 		if (state == loggedIn || state == loggingIn) {
 			state = loggedIn; // skip ahead to logged in state; it will log out.
 			LogOn(null); // log off
 		}
 		wasLoggedIn=false;
+		abandonChanges = true; // state was deliberately cancelled by back or done button
 		Intent resultIntent = new Intent();
 		// return current contact - may need to be deleted.
 		resultIntent.putExtra(QSOContactProvider.CONTENT_ITEM_TYPE, contactUri);
-    	setResult(Activity.RESULT_OK, resultIntent);
+    	setResult(resultCode, resultIntent);
+	}
+	
+	public void done(View view) {
+		abandon(Activity.RESULT_OK);
     	finish();
 	}
+	
+    @Override
+    public void onBackPressed() {
+    	abandon(Activity.RESULT_OK);
+    	super.onBackPressed(); // just calls finish()?
+    }
 	
 	public void socketError(int id) {
 		// if it's an error, don't bother sending any more, just clean up
@@ -870,29 +886,6 @@ public class EntryActivity extends Activity {
     public void logContact(View view) {
     	saveState();
     	Intent intent = new Intent(this, LogActivity.class);
-    	/*
-    	EditText call = (EditText) findViewById(R.id.call_edit);
-    	EditText rxfreq = (EditText) findViewById(R.id.rxfreq_edit);
-    	EditText txfreq = (EditText) findViewById(R.id.txfreq_edit);
-    	EditText mode = (EditText) findViewById(R.id.mode_edit);
-    	EditText rrst = (EditText) findViewById(R.id.rrst_edit);
-    	EditText srst = (EditText) findViewById(R.id.srst_edit);
-    	
-    	intent.putExtra(LogActivity.QSO_CALL, call.getEditableText().toString());
-    	intent.putExtra(LogActivity.QSO_RXFREQ, rxfreq.getEditableText().toString());
-    	intent.putExtra(LogActivity.QSO_TXFREQ, txfreq.getEditableText().toString());
-    	intent.putExtra(LogActivity.QSO_MODE, mode.getEditableText().toString());
-    	intent.putExtra(LogActivity.QSO_RRST, rrst.getEditableText().toString());
-    	intent.putExtra(LogActivity.QSO_SRST, srst.getEditableText().toString());
-    	intent.putExtra(LogActivity.QSO_TIMEON, qsoTimeon);
-    	intent.putExtra(LogActivity.QSO_TIMEOFF, qsoTimeoff);
-    	intent.putExtra(LogActivity.QSO_NAME, qsoName);
-    	intent.putExtra(LogActivity.QSO_QTH, qsoQTH);
-    	intent.putExtra(LogActivity.QSO_STATE, qsoState);
-    	intent.putExtra(LogActivity.QSO_COUNTRY, qsoCountry);
-    	intent.putExtra(LogActivity.QSO_GRID, qsoGrid); */
-    	
-//	    Uri qsoUri = Uri.parse(QSOContactProvider.CONTENT_URI + "/" + id);
 	    intent.putExtra(QSOContactProvider.CONTENT_ITEM_TYPE, contactUri);
 
     	startActivityForResult(intent, log_request);
