@@ -6,17 +6,17 @@
     <TextView
         android:id="@+id/key_call"
         android:layout_width="fill_parent"
-        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_weight="1"
         android:text="@string/call_ui" />
 
     <TextView
         android:id="@+id/key_rxfreq"
         android:layout_width="fill_parent"
-        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_weight="1"
         android:text="@string/rx_freq" />
 
     <TextView

@@ -43,5 +43,7 @@
     <string name="default_piglet_ip">10.1.1.1</string>
     <string name="qrzpassword_ui">QRZ XML password</string>
     <string name="shdx_ui">sh/dx</string>
+    <string name="dxmessage">Message</string>
+    <string name="dx_flag">DX Flag</string>
 
 </resources>

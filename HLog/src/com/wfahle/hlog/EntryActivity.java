@@ -17,12 +17,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -314,7 +317,7 @@ public class EntryActivity extends Activity {
         srstBox = (EditText) findViewById(R.id.srst_edit);
         qso = null;
 
-        String[] strarray = null;
+        ArrayList<SpotDetails> strarray = new ArrayList<SpotDetails>();
         if (savedInstanceState == null)
         {
         	contactUri = null;
@@ -326,14 +329,12 @@ public class EntryActivity extends Activity {
             contactUri =  (Uri) savedInstanceState.getParcelable(QSOContactProvider.CONTENT_ITEM_TYPE);
             fillData(contactUri);
             wasLoggedIn = savedInstanceState.getBoolean(LOGIN_STRING);
-            if (savedInstanceState.getString(SCROLL_STRINGS, null) != null)
+            strarray = savedInstanceState.getParcelableArrayList(SCROLL_STRINGS); 
+            if (strarray!= null)
             {
-            	strarray = TextUtils.split(savedInstanceState.getString(SCROLL_STRINGS, null), "\n");
-            	savedInstanceState.putString(SCROLL_STRINGS, null);
+            	savedInstanceState.putParcelableArrayList(SCROLL_STRINGS, null);
             }
         }
-
-        
         
         LocalDBHandler ldb = new LocalDBHandler(getBaseContext());
         List<TelnetConfig> tlist = ldb.getAllConfigs();
@@ -354,12 +355,8 @@ public class EntryActivity extends Activity {
 
         final ListView lv = (ListView) findViewById(R.id.spot_list);
         lv.setClickable(true);
-        final ArrayList<String> list = new ArrayList<String>();
-        if (strarray != null) {
-        	for (int i=0; i<strarray.length; i++)
-        		list.add(strarray[i]);
-        }
-        final StableArrayAdapter adapter = new StableArrayAdapter(this, R.layout.spotview, list);
+        
+        final StableArrayAdapter adapter = new StableArrayAdapter(this, R.layout.spot_row, strarray);
         lv.setAdapter(adapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
           @Override
@@ -555,33 +552,23 @@ public class EntryActivity extends Activity {
 	}
 
 	@Override 
-	protected void onRestoreInstanceState(Bundle savedInstanceState)
-	{
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState == null)
-        {
+        if (savedInstanceState == null) {
         	contactUri = null;
         	wasLoggedIn = false;
         }
-        else
-        {
+        else {
             // check from the saved Instance
             contactUri =  (Uri) savedInstanceState.getParcelable(QSOContactProvider.CONTENT_ITEM_TYPE);            
             fillData(contactUri);
             wasLoggedIn = savedInstanceState.getBoolean(LOGIN_STRING);
-            if (savedInstanceState.getString(SCROLL_STRINGS, null) != null)
-            {
-	            String[] strarray = TextUtils.split(
-	            		savedInstanceState.getString(SCROLL_STRINGS, null), "\n");
-	            if (strarray != null)
-	            {
-		            final ListView lv = (ListView) findViewById(R.id.spot_list);
-		            StableArrayAdapter adapter = (StableArrayAdapter)lv.getAdapter();
-		            if (strarray != null) {
-		            	for (int i=0; i<strarray.length; i++)
-		            		adapter.add(strarray[i]); // can't use addAll here - add is overridden
-		            }
-	            }
+            ArrayList<SpotDetails> stateList = savedInstanceState.getParcelableArrayList(SCROLL_STRINGS); 
+            if (stateList != null) {
+	            final ListView lv = (ListView) findViewById(R.id.spot_list);
+	            StableArrayAdapter adapter = (StableArrayAdapter)lv.getAdapter();
+            	for (int i=0; i<stateList.size(); i++)
+            		adapter.add(stateList.get(i)); // can't use addAll here - add is overridden
             }
         }
 	}
@@ -597,10 +584,11 @@ public class EntryActivity extends Activity {
         StableArrayAdapter adapter = (StableArrayAdapter)lv.getAdapter();
 
         int len = adapter.getCount();
-        String[] strarray = new String[len];
+        ArrayList<SpotDetails> strarray = new ArrayList<SpotDetails>();
         for (int i=0; i<len; i++)
-        	strarray[i] = adapter.getItem(i);
-        
+        	strarray.add(adapter.getItem(i));
+
+        outState.putParcelableArrayList(SCROLL_STRINGS, strarray);
 	    String value = TextUtils.join("\n", strarray);
 	    outState.putString(SCROLL_STRINGS, value);
 	}
@@ -734,23 +722,31 @@ public class EntryActivity extends Activity {
         return ret;
     }
     
-    public class StableArrayAdapter extends ArrayAdapter<String> {
+    public class StableArrayAdapter extends ArrayAdapter<SpotDetails> {
+    	private Integer[] imgid = {
+    			R.drawable.us,
+    			};
 
     	protected int curId = 0;
-        HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
+    	private LayoutInflater l_Inflater;
+
+        HashMap<SpotDetails, Integer> mIdMap = new HashMap<SpotDetails, Integer>();
     	
         public StableArrayAdapter(Context context, int textViewResourceId,
-            List<String> objects) {
-          super(context, textViewResourceId, objects);
-          for (int i = 0; i < objects.size(); ++i) {
-            mIdMap.put(objects.get(i), i);
-            curId = i;
-          }
+            List<SpotDetails> objects) {
+        	super(context, textViewResourceId, objects);
+  		  	l_Inflater = LayoutInflater.from(context);
+
+	  		for (int i = 0; i < objects.size(); ++i) {
+        	  	SpotDetails sd = objects.get(i);
+        	  	mIdMap.put(sd, i);
+        	  	curId = i;
+          	}
         }
 
         @Override
         public long getItemId(int position) {
-          String item = getItem(position);
+          SpotDetails item = getItem(position);
           return mIdMap.get(item);
         }
 
@@ -759,13 +755,42 @@ public class EntryActivity extends Activity {
           return true;
         }
         
-        public void addItem(String item) {
+        public void addItem(SpotDetails item) {
         	super.add(item);
         	curId++;
         	mIdMap.put(item,  curId);
         }
 
-      }
+        public View getView(int position, View convertView, ViewGroup parent) {
+    		ViewHolder holder;
+    		if (convertView == null) {
+    			convertView = l_Inflater.inflate(R.layout.spot_row, null);
+    			holder = new ViewHolder();
+    			holder.txt_itemName = (TextView) convertView.findViewById(R.id.spot_call);
+    			holder.txt_itemDescription = (TextView) convertView.findViewById(R.id.dx_message);
+    			holder.txt_itemPrice = (TextView) convertView.findViewById(R.id.spot_rxfreq);
+    			holder.itemImage = (ImageView) convertView.findViewById(R.id.spot_flag);
+
+    			convertView.setTag(holder);
+    		} else {
+    			holder = (ViewHolder) convertView.getTag();
+    		}
+    		holder.txt_itemName.setText(getItem(position).getCall());
+    		holder.txt_itemDescription.setText(getItem(position).getItemDescription());
+    		holder.txt_itemPrice.setText(getItem(position).getFrequency());
+    		holder.itemImage.setImageResource(imgid[0 /*getItem(position).getImageNumber() - 1*/ ]);
+//    		imageLoader.DisplayImage("http://192.168.1.28:8082/ANDROID/images/BEVE.jpeg", holder.itemImage);
+
+    		return convertView;
+    	}
+
+    }
+	static class ViewHolder {
+		TextView txt_itemName;
+		TextView txt_itemDescription;
+		TextView txt_itemPrice;
+		ImageView itemImage;
+	}
     
     public void newContact() {
     	callBox.setText("");

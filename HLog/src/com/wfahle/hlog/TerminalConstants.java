@@ -211,10 +211,10 @@ class MyHandler extends Handler {
 					if (endmsg < msgText.length() && whiteSpace(msgText.charAt(endmsg)))
 						endmsg++; // stop on multiple whitespace.
 				}
-				String item = msgText.substring(poscall, endcall) + " " +
-						msgText.substring(posf, endf) +  " " +
-						msgText.substring(posmsg, endmsg);
-				adapter.addItem(item); // strip "DX de "
+				SpotDetails sd = new SpotDetails(msgText.substring(poscall, endcall), 
+						msgText.substring(posf, endf), msgText.substring(posmsg, endmsg),
+						1);
+				adapter.addItem(sd); // strip "DX de "
 		    	adapter.notifyDataSetChanged();
 			}
 			else if (msgText.indexOf("call:") >= 0) {
@@ -248,10 +248,10 @@ class MyHandler extends Handler {
 						if (endmsg < msgText.length() && whiteSpace(msgText.charAt(endmsg)))
 							endmsg++; // stop on multiple whitespace.
 					}
-					String item = msgText.substring(poscall, endcall) + " " +
-							msgText.substring(posf, endf) +  " " +
-							msgText.substring(posmsg, endmsg);
-					adapter.addItem(item);
+					SpotDetails sd = new SpotDetails(msgText.substring(poscall, endcall), 
+							msgText.substring(posf, endf), msgText.substring(posmsg, endmsg),
+							1);
+					adapter.addItem(sd);
 				}
 		    	adapter.notifyDataSetChanged();		
 		    	main.shdxing(false);
