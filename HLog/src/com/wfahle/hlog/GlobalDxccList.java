@@ -252,7 +252,7 @@ public class GlobalDxccList {
     new Entity( 224, "FINLAND", 0, -1, "^O[F-I]", EU, "18", "15", R.drawable.fi ),
     new Entity( 225, "SARDINIA", 0, -1, "^IS", EU, "28", "15", R.drawable.it ),
     new Entity( 226, "SAUDI/IRAQ N.Z.", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
-    new Entity( 227, "FRANCE", 0, -1, "^F|^TM", EU, "27", "14", R.drawable.fr ),
+    new Entity( 227, "FRANCE", 0, -1, "^F[^GHJKMOPRSTWY]|^TM", EU, "27", "14", R.drawable.fr ),
     new Entity( 228, "SERRANA BANK", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 229, "GERMAN DEM. REP.", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 230, "FED REP OF GERMANY", 0, -1, "^D[A-R]", EU, "28", "14", R.drawable.de ),
