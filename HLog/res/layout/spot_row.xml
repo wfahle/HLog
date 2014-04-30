@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/spot_flag"
+        android:layout_width="16dp"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/dx_flag"
+        android:layout_weight="0"
+        android:paddingTop="5dp" />
+
+    <TextView
+        android:id="@+id/spot_call"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_weight="1"
+        android:text="@string/call_ui" />
+
+    <TextView
+        android:id="@+id/spot_rxfreq"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_weight="1"
+        android:text="@string/rx_freq" />
+
+    <TextView
+        android:id="@+id/dx_message"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/dxmessage" />
+
+</LinearLayout>

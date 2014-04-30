@@ -211,9 +211,14 @@ class MyHandler extends Handler {
 					if (endmsg < msgText.length() && whiteSpace(msgText.charAt(endmsg)))
 						endmsg++; // stop on multiple whitespace.
 				}
-				SpotDetails sd = new SpotDetails(msgText.substring(poscall, endcall), 
+				String call = msgText.substring(poscall, endcall);
+				Entity en =GlobalDxccList.dxcc_display(call);
+				int image = R.drawable.zz;
+				if (en != null)
+					image = en.Image;
+				SpotDetails sd = new SpotDetails(call, 
 						msgText.substring(posf, endf), msgText.substring(posmsg, endmsg),
-						1);
+						image);
 				adapter.addItem(sd); // strip "DX de "
 		    	adapter.notifyDataSetChanged();
 			}
@@ -248,9 +253,14 @@ class MyHandler extends Handler {
 						if (endmsg < msgText.length() && whiteSpace(msgText.charAt(endmsg)))
 							endmsg++; // stop on multiple whitespace.
 					}
-					SpotDetails sd = new SpotDetails(msgText.substring(poscall, endcall), 
+					String call = msgText.substring(poscall, endcall);
+					Entity en =GlobalDxccList.dxcc_display(call);
+					int image = R.drawable.zz;
+					if (en != null)
+						image = en.Image;
+					SpotDetails sd = new SpotDetails(call, 
 							msgText.substring(posf, endf), msgText.substring(posmsg, endmsg),
-							1);
+							image);
 					adapter.addItem(sd);
 				}
 		    	adapter.notifyDataSetChanged();		

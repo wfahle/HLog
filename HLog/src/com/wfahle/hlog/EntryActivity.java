@@ -723,9 +723,6 @@ public class EntryActivity extends Activity {
     }
     
     public class StableArrayAdapter extends ArrayAdapter<SpotDetails> {
-    	private Integer[] imgid = {
-    			R.drawable.us,
-    			};
 
     	protected int curId = 0;
     	private LayoutInflater l_Inflater;
@@ -778,7 +775,7 @@ public class EntryActivity extends Activity {
     		holder.txt_itemName.setText(getItem(position).getCall());
     		holder.txt_itemDescription.setText(getItem(position).getItemDescription());
     		holder.txt_itemPrice.setText(getItem(position).getFrequency());
-    		holder.itemImage.setImageResource(imgid[0 /*getItem(position).getImageNumber() - 1*/ ]);
+    		holder.itemImage.setImageResource(getItem(position).getImageNumber());
 //    		imageLoader.DisplayImage("http://192.168.1.28:8082/ANDROID/images/BEVE.jpeg", holder.itemImage);
 
     		return convertView;
