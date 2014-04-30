@@ -378,8 +378,8 @@ public class EntryActivity extends Activity {
             qsoCall = text.substring(0, pos);
             callBox.setText(qsoCall);
             Entity en = GlobalDxccList.dxcc_display(qsoCall);
-            if (en != null)
-            	countryTxt.setText(": "+en.Country);
+            countryTxt.setText(": "+ (en == null?"":en.Country));
+          
             int pos2 = text.indexOf(' ', pos+1);
             if (pos2 <=0)
             	pos2 = text.length();

@@ -115,7 +115,7 @@ public class GlobalDxccList {
     new Entity(  82, "JAMAICA", 0, -1, "^6Y", NA, "11", "08", R.drawable.jm ),
     new Entity(  84, "MARTINIQUE", 0, -1, "^FM", NA, "11", "08", R.drawable.mq ),
     new Entity(  85, "BONAIRE,CURACAO", 1, -1, null, SA, "11", "09", R.drawable.zz ),
-    new Entity(  86, "NICARAGUA", 0, -1, "^YN", NA, "11", "07", R.drawable.ni ),
+    new Entity(  86, "NICARAGUA", 0, -1, "^YN|^HT", NA, "11", "07", R.drawable.ni ),
     new Entity(  88, "PANAMA", 0, -1, "^HO|^HP", NA, "11", "07", R.drawable.pa ),
     new Entity(  89, "TURKS & CAICOS ISLAND", 0, -1, "^VP5", NA, "11", "08", R.drawable.tc ),
     new Entity(  90, "TRINIDAD & TOBAGO", 0, -1, "^9Y|^9Z", SA, "11", "09", R.drawable.tt ),
