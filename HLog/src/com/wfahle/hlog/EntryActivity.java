@@ -49,6 +49,7 @@ public class EntryActivity extends Activity {
     EditText modeBox;
     EditText rrstBox;
     EditText srstBox;
+    TextView countryTxt;
     /* Change Mode:
      * P1  x x x 07 
      * P1 = 00 : LSB, P1 = 01 : USB, P1 = 02 : CW,
@@ -315,6 +316,7 @@ public class EntryActivity extends Activity {
         modeBox = (EditText) findViewById(R.id.mode_edit);
         rrstBox = (EditText) findViewById(R.id.rrst_edit);
         srstBox = (EditText) findViewById(R.id.srst_edit);
+        countryTxt = (TextView) findViewById(R.id.entity);
         qso = null;
 
         ArrayList<SpotDetails> strarray = new ArrayList<SpotDetails>();
@@ -334,6 +336,8 @@ public class EntryActivity extends Activity {
             {
             	savedInstanceState.putParcelableArrayList(SCROLL_STRINGS, null);
             }
+            else
+            	strarray = new ArrayList<SpotDetails>();
         }
         
         LocalDBHandler ldb = new LocalDBHandler(getBaseContext());
@@ -374,6 +378,9 @@ public class EntryActivity extends Activity {
             int pos =  text.indexOf(' ');
             qsoCall = text.substring(0, pos);
             callBox.setText(qsoCall);
+            Entity en = GlobalDxccList.dxcc_display(qsoCall);
+            if (en != null)
+            	countryTxt.setText(": "+en.Country);
             int pos2 = text.indexOf(' ', pos+1);
             if (pos2 <=0)
             	pos2 = text.length();
@@ -589,8 +596,6 @@ public class EntryActivity extends Activity {
         	strarray.add(adapter.getItem(i));
 
         outState.putParcelableArrayList(SCROLL_STRINGS, strarray);
-	    String value = TextUtils.join("\n", strarray);
-	    outState.putString(SCROLL_STRINGS, value);
 	}
 	
 	@Override
