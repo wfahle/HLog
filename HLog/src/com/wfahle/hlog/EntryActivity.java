@@ -805,7 +805,7 @@ public class EntryActivity extends Activity {
     }
 
     public void shdx(View v) {
-    	if (telnetsk != null) {
+    	if (telnetsk != null && state == loggedIn) {
     		sent_shdx=true;
     		String shdxstr = "sh/dx\r\n";
 			telnetsk.SpecialSocketSend(shdxstr.getBytes());
