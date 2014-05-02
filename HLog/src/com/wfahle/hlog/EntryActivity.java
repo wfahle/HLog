@@ -162,7 +162,7 @@ public class EntryActivity extends Activity {
 	protected String upDown(String rfreq, String comment, boolean ssb) {
 		String ret = rfreq;
 		
-		comment = comment.toLowerCase(Locale.US);
+		comment = " "+comment.toLowerCase(Locale.US);
         // Handles: QSX 3.838, QSX 4, UP 5, DOWN 2, U 5, D4, U4, DN4, UP4, DOWN4, QSX7144, u1.8, etc.
         int posp = rfreq.indexOf('.');
         int hz = 0;
@@ -176,7 +176,7 @@ public class EntryActivity extends Activity {
         }
         int adjust = 0; // adjust tx up or down accordingly
         int hadjust = 0;
-        if (comment.matches(".*up* *[1-9][0-9]*\\.*[0-9]*.*")) // matches "people, up 10", "u1.8", "u 1", etc.
+        if (comment.matches(".*\\sup* *[1-9][0-9]*\\.*[0-9]*.*")) // matches "people, up 10", "u1.8", "u 1", etc.
         {
         	 Pattern p = Pattern.compile("up* *([1-9][0-9]*)\\.([0-9])"); // only matches x.y
         	 Matcher m = p.matcher(comment);
@@ -267,6 +267,9 @@ public class EntryActivity extends Activity {
 	        	}
         	}
         }
+        //TODO: check for reasonableness of adjustments - in band, etc.
+        if (adjust == 599 || adjust == 59) //"signals up 599"
+        	adjust = 0;
         if (adjust != 0 || hadjust != 0) {
         	khz = khz + adjust;
         	hz = hz + hadjust;
@@ -606,8 +609,7 @@ public class EntryActivity extends Activity {
 	    super.onResume();
 	    if (/*wasLoggedIn*/ true) {
 	    	LogOn(); // log on.
-	    	if (radiosk != null)
-	    		startRepeatingTask();
+	    	startRepeatingTask();
 	    }
 	}
 
@@ -631,14 +633,13 @@ public class EntryActivity extends Activity {
 	@Override
 	protected void onPause() {
 	    super.onPause();
-	    if (abandonChanges)
-	    	return;
-	    saveState();
 	    stopRepeatingTask();
-	    if (state == loggedIn)
-	    {
-	    	wasLoggedIn=true;
-	    	LogOn(); // log off.
+	    if (!abandonChanges) {
+		    saveState();
+		    if (state == loggedIn) {
+		    	wasLoggedIn=true;
+		    	LogOn(); // log off.
+		    }
 	    }
 	}
 
@@ -929,6 +930,7 @@ public class EntryActivity extends Activity {
 	public void onFilter(View view) {
 		if (state == loggedIn) {
 			//TODO: send configured filter info
+			pollRig(); // manually test this function
 		}
 	}
 	
@@ -946,47 +948,4 @@ public class EntryActivity extends Activity {
     }
     
     
-}
-
-class Params {
-	final int MAX_PARAMS = 10;
-	int[] aParams = new int[MAX_PARAMS];
-	boolean[] aIsUsed = new boolean[MAX_PARAMS];
-	int iCurrent = 0;
-	int iCount = 0;
-
-	Params() {
-		Clear();
-	}
-
-	void Clear() {
-		for (int i = 0; i < MAX_PARAMS; i++) {
-			aParams[i] = 0;
-			aIsUsed[i] = false;
-			iCurrent = 0;
-			iCount = 0;
-		}
-	}
-
-	int getCurrentParam() {
-		return aParams[iCurrent];
-	}
-
-	void setCurrentParam(int val) {
-		aParams[iCurrent] = val;
-		aIsUsed[iCurrent] = true;
-		iCount = iCurrent + 1;
-	}
-
-	int getParam(int i) {
-		return aParams[i];
-	}
-
-	int getCount() {
-		return iCount;
-	}
-
-	void nextParam() {
-		iCurrent++;
-	}
 }

@@ -56,7 +56,7 @@ public class GlobalDxccList {
     new Entity(  14, "ARMENIA", 0, -1, "^EK", AS, "29", "21", R.drawable.am ),
     new Entity(  15, "ASIATIC RUSSIA", 0, -1, "^[RU][890]|^R[A-Z][890]|^U[A-I][890]", AS, "(F)", "(G)", R.drawable.ru ),
     new Entity(  16, "AUCKLAND & CAMPBELL", 0, -1, "^ZL9", OC, "60", "32", R.drawable.nz ),
-    new Entity(  17, "AVES ISLAND", 0, -1, "^YV0|^4M0", NA, "11", "08", R.drawable.ve ),
+    new Entity(  17, "AVES ISLAND", 0, -1, "^Y[V-Y]0|^4M0", NA, "11", "08", R.drawable.ve ),
     new Entity(  18, "AZERBAIJAN", 0, -1, "^4J|^4K", AS, "29", "21", R.drawable.az ),
     new Entity(  19, "BAJO NUEVO", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity(  20, "BAKER, HOWLAND ISLAND", 0, -1, "^[AKNW]H1", OC, "64", "27", R.drawable.use ),

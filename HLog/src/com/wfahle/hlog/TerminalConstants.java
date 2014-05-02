@@ -152,6 +152,21 @@ public final class TerminalConstants {
 	final static public byte OP_EXOPL = (byte) 255; /* extended-options-list */
 
 }
+
+class MySignal{
+
+	  protected boolean hasDataToProcess = false;
+
+	  public synchronized boolean hasDataToProcess(){
+	    return this.hasDataToProcess;
+	  }
+
+	  public synchronized void setHasDataToProcess(boolean hasData){
+	    this.hasDataToProcess = hasData;  
+	  }
+
+}
+
 class MyHandler extends Handler {
 	EntryActivity main;
 	ListView lv;
@@ -291,7 +306,7 @@ class MyHandler extends Handler {
 }
 
 class HLogSocket {
-	protected boolean bRunning=false;
+	protected volatile boolean bRunning=false;
 	public Thread tr;
 	protected Socket sk = null;
 	protected InputStream iStream = null;
@@ -347,48 +362,24 @@ class RadioSocket extends HLogSocket implements Runnable {
 	private MyHandler hnd;
 	public static final int ackOK = 0;
 	public static final int ackERR = -1;
-	private volatile boolean wantingAck=false;
-	private volatile boolean bAckwait = false;
-	private volatile int ack;
-	private volatile boolean pollingrig = false;
+	private MySignal pollingrig;
 	private byte[] rigFreq=null;
 	private volatile int curRigByte = 0;
 
 	public RadioSocket(MyHandler h) {
 		super(1); // radio is 1, telnet is 2
+		pollingrig = new MySignal();
 		hnd = h;
 		tr = new Thread(this);
 	}
 	
 	public synchronized void setPoll(boolean poll)
 	{
-		pollingrig = poll;
-		if (pollingrig = false)
+		if (!poll)
 			curRigByte = 0; // it's been reset, ok to return to normal mode
+		pollingrig.setHasDataToProcess(poll);
 	}
-	
-	public synchronized void setAck()
-	{
-		if (bRunning && sk != null && iStream != null)
-			wantingAck = true; // else ignore request and return error later
-		else
-			wantingAck = false;
-	}
-	
-	public synchronized int waitforAck()
-	{
-		if (!wantingAck)
-			return ackERR;
-		bAckwait = true;
-		do {
-			try {
-				Thread.sleep(5);
-			} catch (InterruptedException e) {
-			}
-		} while (wantingAck);
-		return ack;
-	}
-	
+			
 	public void SocketStart() {
 		tr.start();
 	}
@@ -404,7 +395,18 @@ class RadioSocket extends HLogSocket implements Runnable {
 		}
 		sk = null;
 	}
-	
+	/*
+Name	P1	P2	P3	P4	Opcode	Notes
+Read EEprom	MSB	LSB	0x00	0x00	0xBB	Returns 2 bytes, the specified address and the 'next' address. 16 bit memory addressing, unused memory returns 1 byte (for me 0xf0).
+Write EEprom	MSB	LSB	byte 1	byte 2	0xBC	Writes 2 bytes to the specified address and the 'next' address. 16 bit memory addressing.
+Get Radio Config	0	0	0	0	0xA7	Returns 9 bytes for the radio config, the byte values are not yet documented
+Get Tx Metering	0	0	0	0	0xBD	4 nybbles are returned, in order power, vswr, alc, modulation
+Factory Reset	0	0	0	0	0xBE	erases alignment data use with caution!
+	 * 
+Address	Name	Values
+0x0068	VFO	0x80=VFO-A 0x81=VFO-B
+0x008D	Split	0x00=No split, 0x80=split
+*/
 	public void run() {
 		InetAddress ia = null;
 		bRunning = true;
@@ -432,7 +434,6 @@ class RadioSocket extends HLogSocket implements Runnable {
 			return;
 		}
 
-		int pollcount = 0;
 		while (bRunning) {
 			try {
 				byte[] buf = new byte[2048];
@@ -444,41 +445,16 @@ class RadioSocket extends HLogSocket implements Runnable {
 					return;
 				}
 				Thread.sleep(5);
-				pollcount++;
-				if (pollcount > 100 && !wantingAck)
-				{
-					pollcount = 0;
-					hnd.sendMessage(SpecialToMessage("", MyHandler.mrigpoll));
-				}
 			} catch (InterruptedException e) {
 				// don't care if it can sleep, I can't, that's why I'm up programming
 			}
 		}
 	}
 
-	private void checkAck(byte ackbyte)
-	{ // not synchronized - can't lock a mutex and wait on another thread to do something
-		if (wantingAck)
-		{
-			while (!bAckwait) {
-				try {
-					Thread.sleep(5);
-				} catch (InterruptedException e) {
-				}
-			}
-			if (ackbyte == 0)
-				ack = ackOK;
-			else
-				ack = ackERR;
-			bAckwait = false;
-			wantingAck = false;
-		}
-	}
-	
 	private void Parsing(byte[] bData, int count) {
 		for (int i = 0; i < count; i++) {
 			byte curByte = bData[i];
-			if (pollingrig)
+			if (pollingrig.hasDataToProcess())
 			{
 				if (rigFreq == null) // just reuse it
 				{
@@ -541,8 +517,6 @@ class RadioSocket extends HLogSocket implements Runnable {
 					}
 				}
 			}
-			else
-				checkAck(curByte);
 		}
 	}
 
