@@ -30,25 +30,19 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-// TODO: Somehow a "N" complete still escaped notice of the deleter - maybe fixed
+// TODO: Filters and CW skimmer
+//TODO: put cwskimmer setting in config - check skimmed items against frequency
 // TODO: put check-box for QRZ lookup in config also - check it and save it in the thingy
 // TODO: need to clean up the data structures - one call sign, not two
 // TODO: get rid of config db altogether; store all data in private space where some is already
-// TODO: put cwskimmer setting in config - check skimmed items against frequency
 // TODO: need buttons for tune, spot, etc.
 // TODO: clean up UI to be consistent, etc.
 // TODO: add context menu to EntryActivity - long-click lets you save spot
 // TODO: forward/backward on spots - maybe in the area above
 // TODO: larger type on text in spots list.
-// TODO: even out text field widths in spots list, similar to log list - need multi-string view
-// TODO: Add sh/dx command to config - let user customize filters, etc with it.
-// TODO: change stop button to sh/dx button - done already does stop, and sh/dx does nothing beforehand
-// TODO: get rid of dxc button, just log in at page start, why else are you there?
-// TODO: with freed up button and already logged in, add filter button which calls configured
-// TODO: code in a "toggle" state, i.e., filters on/off, cwskim on/off, etc.
 // TODO: save multiple configs in a db to let user choose saved operating filters - ListView
-// TODO: consolidate entries in spots list 
-// TODO: track needed entities/bands and highlight appropriately - need better spots db for that
+// TODO: consolidate entries in spots list - same call/freq should update? 
+// TODO: track needed entities/bands and highlight appropriately/filter out
 
 public class MainActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 	protected final static int config_request = 1; 

@@ -3,7 +3,6 @@
 
     <string name="app_name">HLog</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
     <string name="call_ui">Callsign</string>
     <string name="start_time">Start time</string>
     <string name="start_time_ui">Start time</string>
@@ -16,7 +15,7 @@
     <string name="title_activity_config">Configure</string>
     <string name="server_ui">Cluster Server</string>
     <string name="yourcall_ui">Your Callsign</string>
-    <string name="login_ui">Dxc</string>
+    <string name="login_ui">Filter</string>
     <string name="done_ui">Done</string>
     <string name="rx_freq">RX Frequency</string>
     <string name="mode_ui">Mode</string>
@@ -45,5 +44,6 @@
     <string name="shdx_ui">sh/dx</string>
     <string name="dxmessage">Message</string>
     <string name="dx_flag">DX Flag</string>
+    <string name="colon">:</string>
 
 </resources>

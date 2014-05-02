@@ -11,6 +11,7 @@ import com.wfahle.hlog.contentprovider.QSOContactProvider;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -63,6 +64,8 @@ public class EntryActivity extends Activity {
 	protected final static String DONE_STRING = "abandonChanges";
 	protected final static String SCROLL_STRINGS = "formerStrings";
 	private boolean wasLoggedIn=false;
+	private int mInterval = 2000; // 2 seconds by default, can be changed later
+	private Handler mHandler;
 
 	protected String mode(String freq)
 	{
@@ -317,7 +320,8 @@ public class EntryActivity extends Activity {
         srstBox = (EditText) findViewById(R.id.srst_edit);
         countryTxt = (TextView) findViewById(R.id.entity);
         qso = null;
-
+	    mHandler = new Handler();
+        
         ArrayList<SpotDetails> strarray = new ArrayList<SpotDetails>();
         if (savedInstanceState == null)
         {
@@ -601,20 +605,40 @@ public class EntryActivity extends Activity {
 	protected void onResume() {
 	    super.onResume();
 	    if (/*wasLoggedIn*/ true) {
-	    	LogOn(null); // log on.
+	    	LogOn(); // log on.
+	    	if (radiosk != null)
+	    		startRepeatingTask();
 	    }
 	}
 
+
+	  Runnable mStatusChecker = new Runnable() {
+	    @Override 
+	    public void run() {
+	      pollRig(); //this function can change value of mInterval.
+	      mHandler.postDelayed(mStatusChecker, mInterval);
+	    }
+	  };
+
+	  void startRepeatingTask() {
+	    mStatusChecker.run(); 
+	  }
+
+	  void stopRepeatingTask() {
+	    mHandler.removeCallbacks(mStatusChecker);
+	  }
+	  
 	@Override
 	protected void onPause() {
 	    super.onPause();
 	    if (abandonChanges)
 	    	return;
 	    saveState();
+	    stopRepeatingTask();
 	    if (state == loggedIn)
 	    {
 	    	wasLoggedIn=true;
-	    	LogOn(null); // log off.
+	    	LogOn(); // log off.
 	    }
 	}
 
@@ -816,12 +840,10 @@ public class EntryActivity extends Activity {
     	if (telnetsk != null) {
 			telnetsk.SpecialSocketSend(telnetsk.Logon.getBytes());
 			state = loggedIn;
-			Button button = (Button) findViewById(R.id.dxcStart);
-			button.setText("Stop");
     	}
     }
     
-	public void LogOn(View view) { /*telnet login button pressed */	
+	public void LogOn() { /*done will log out */	
 		if (state == loggingIn)
 		{
 			return;
@@ -872,7 +894,7 @@ public class EntryActivity extends Activity {
 	private void abandon(int resultCode) {
 		if (state == loggedIn || state == loggingIn) {
 			state = loggedIn; // skip ahead to logged in state; it will log out.
-			LogOn(null); // log off
+			LogOn(); // log off
 		}
 		wasLoggedIn=false;
 		abandonChanges = true; // state was deliberately cancelled by back or done button
@@ -880,11 +902,6 @@ public class EntryActivity extends Activity {
 		// return current contact - may need to be deleted.
 		resultIntent.putExtra(QSOContactProvider.CONTENT_ITEM_TYPE, contactUri);
     	setResult(resultCode, resultIntent);
-	}
-	
-	public void done(View view) {
-		abandon(Activity.RESULT_OK);
-    	finish();
 	}
 	
     @Override
@@ -907,6 +924,17 @@ public class EntryActivity extends Activity {
 			telnetsk = null;
 			state = loggedOut;
 		}
+	}
+	
+	public void onFilter(View view) {
+		if (state == loggedIn) {
+			//TODO: send configured filter info
+		}
+	}
+	
+	public void done(View view) {
+		abandon(Activity.RESULT_OK);
+    	finish();
 	}
 	
     public void logContact(View view) {

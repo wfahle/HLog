@@ -99,7 +99,7 @@
         android:layout_alignBaseline="@+id/log_button"
         android:layout_alignBottom="@+id/log_button"
         android:layout_toLeftOf="@+id/configure_button"
-        android:onClick="LogOn"
+        android:onClick="onFilter"
         android:text="@string/login_ui" />
 
     <TextView
@@ -182,6 +182,6 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/call_edit"
         android:layout_toRightOf="@+id/call"
-        android:text=":" />
+        android:text="@string/colon" />
 
 </RelativeLayout>
