@@ -873,9 +873,10 @@ public class EntryActivity extends Activity {
 			{
 			    final ListView lv = (ListView) findViewById(R.id.spot_list);
 			    final TextView tv = (TextView) findViewById(R.id.dxc_out);
-				final MyHandler hnd = new MyHandler(this, lv, tv);
+				final THandler hnd = new THandler(this, lv, tv);
+				final RHandler rhnd = new RHandler(this, lv, tv);
 				telnetsk = new TerminalSocket(hnd);
-				radiosk = new RadioSocket(hnd);
+				radiosk = new RadioSocket(rhnd);
 			}
 			telnetsk.Server = telnetServer;
 			telnetsk.Port = telnetPort;

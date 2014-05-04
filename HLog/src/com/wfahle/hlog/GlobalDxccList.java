@@ -52,7 +52,7 @@ public class GlobalDxccList {
     new Entity(  10, "AMSTERDAM & ST PAUL", 0, -1, "^FT[5-8]Z", AF, "68", "39", R.drawable.tf ),
     new Entity(  11, "ANDAMAN & NICOBAR ISLAND", 0, -1, "^V[T-W]4|^8[T-Y]4|^A[T-W]4", AS, "49", "26", R.drawable.in ),
     new Entity(  12, "ANGUILLA", 0, -1, "^VP2E", NA, "11", "08", R.drawable.ai ),
-    new Entity(  13, "ANTARCTICA", 0, -1, "^VP8SIG|^KC4AAA|^RI1AN[CT]|^RI20ANT|^VK0|^LU[0-9]X", AN, "(B)", "(C)", R.drawable.aq),
+    new Entity(  13, "ANTARCTICA", 0, -1, "^VP8SIG|^KC4AAA|^RI1AN[CT]|^RI20ANT|^VK0", AN, "(B)", "(C)", R.drawable.aq),
     new Entity(  14, "ARMENIA", 0, -1, "^EK", AS, "29", "21", R.drawable.am ),
     new Entity(  15, "ASIATIC RUSSIA", 0, -1, "^[RU][890]|^R[A-Z][890]|^U[A-I][890]", AS, "(F)", "(G)", R.drawable.ru ),
     new Entity(  16, "AUCKLAND & CAMPBELL", 0, -1, "^ZL9", OC, "60", "32", R.drawable.nz ),
