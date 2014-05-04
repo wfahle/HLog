@@ -7,12 +7,23 @@ import java.net.Socket;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
+class HSignal{
 
-import com.wfahle.hlog.EntryActivity.StableArrayAdapter;
+	  protected boolean hasDataToProcess = false;
+
+	  public synchronized boolean hasDataToProcess(){
+	    return this.hasDataToProcess;
+	  }
+
+	  public synchronized void setHasDataToProcess(boolean hasData){
+	    this.hasDataToProcess = hasData;  
+	  }
+
+}
+
 class SHandler extends Handler {
 	EntryActivity main;
 	ListView lv;
@@ -21,6 +32,7 @@ class SHandler extends Handler {
 	public static final int mnormal = 0;
 	public static final int merror = 1;
 	public static final int minfo = 2;
+	public static final int lastmsg = 2; // must increase if new msgs are added to base
 	
 	SHandler(EntryActivity entryActivity, ListView listView, TextView txt) {
 		super();

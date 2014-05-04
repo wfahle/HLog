@@ -1,22 +1,5 @@
 package com.wfahle.hlog;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
-import com.wfahle.hlog.EntryActivity.StableArrayAdapter;
-
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.ListView;
-import android.widget.TextView;
-
 public final class TerminalConstants {
 
 	final static public byte CMD_IAC = (byte) 255; /* interpret as command: */
@@ -152,19 +135,4 @@ public final class TerminalConstants {
 	final static public byte OP_EXOPL = (byte) 255; /* extended-options-list */
 
 }
-
-class MySignal{
-
-	  protected boolean hasDataToProcess = false;
-
-	  public synchronized boolean hasDataToProcess(){
-	    return this.hasDataToProcess;
-	  }
-
-	  public synchronized void setHasDataToProcess(boolean hasData){
-	    this.hasDataToProcess = hasData;  
-	  }
-
-}
-
 

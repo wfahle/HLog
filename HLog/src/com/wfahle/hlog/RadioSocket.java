@@ -8,9 +8,9 @@ import android.os.Bundle;
 import android.widget.ListView;
 import android.widget.TextView;
 class RHandler extends SHandler {
-	public static final int mrigpoll = 3;
-	public static final int mrigrx = 4;
-	public static final int mrigmode = 5;
+	public static final int mrigpoll = lastmsg+1;
+	public static final int mrigrx = mrigpoll+1;
+	public static final int mrigmode = mrigrx+1;
 
 	RHandler(EntryActivity entryActivity, ListView listView, TextView txt) {
 		super(entryActivity, listView, txt);
@@ -41,13 +41,13 @@ class RadioSocket extends HSocket implements Runnable {
 	private RHandler hnd;
 	public static final int ackOK = 0;
 	public static final int ackERR = -1;
-	private MySignal pollingrig;
+	private HSignal pollingrig;
 	private int[] rigFreq=null;
 	private volatile int curRigByte = 0;
 
 	public RadioSocket(RHandler h) {
 		super(1); // radio is 1, telnet is 2
-		pollingrig = new MySignal();
+		pollingrig = new HSignal();
 		hnd = h;
 		tr = new Thread(this);
 	}
