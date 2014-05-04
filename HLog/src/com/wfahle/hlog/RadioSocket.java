@@ -58,7 +58,117 @@ class RadioSocket extends HSocket implements Runnable {
 			curRigByte = 0; // it's been reset, ok to return to normal mode
 		pollingrig.setHasDataToProcess(poll);
 	}
-			
+	
+	protected int parseanInt(String num) {
+		// apparently Java doesn't like parseInt("1.0");
+		// assume input starts with a number or space
+		int posp = num.indexOf(".");
+		if (posp == -1)
+			posp = num.length();
+		return Integer.parseInt(num.substring(0, posp));
+	}
+	
+	protected byte[] getBCD(String freqinMhz, byte cmd)
+	{
+		byte[] ret = new byte[5];
+		int len = freqinMhz.length();
+        int posp = freqinMhz.indexOf('.');
+        if (posp == -1)
+        	posp = len;
+        // magically convert string to bcd, put in cmd
+        int mhz = parseanInt(freqinMhz.substring(0, posp));
+        posp++;
+        if (posp<len)
+        {
+        	mhz = mhz*10+freqinMhz.charAt(posp)-'0';
+        	posp++;
+        }
+        else
+        	mhz = mhz*10;
+        int dig[] = {0,0,0,0};
+        for (int i=0; i<dig.length && posp<len; i++)
+        {
+        	dig[i] = freqinMhz.charAt(posp)-'0';
+        	posp++;
+        }
+        ret[0]= (byte)((mhz/1000)*16+(mhz%1000)/100);
+        ret[1]= (byte)((mhz%100/10)*16 + mhz%10);
+        ret[2] = (byte)(dig[0]*16+dig[1]);
+        ret[3] = (byte)(dig[2]*16+dig[3]);
+		ret[4] = cmd;
+		return ret;
+	}
+
+	public void tuneRadio(String mode, String rfreq, String tfreq) {
+		// todo: put in another thread - waits are killing main thread
+    	byte cmd[] = new byte[5];
+		int md = 2; // cw
+		if (mode.equals("USB"))
+			md = 1;
+		else if (mode.equals("LSB"))
+			md = 0;
+		else if (mode.equals("AM"))
+			md = 4;
+		else if (mode.equals("FM"))
+			md = 8;
+		cmd[0] = (byte)md;
+		cmd[1] = 0;
+		cmd[2] = 0;
+		cmd[3] = 0;
+		cmd[4] = 7; // 
+		sendAndWait(cmd);
+    	if (!tfreq.equals(rfreq))
+    	{
+				cmd[0] = 0;
+				cmd[1] = 0;
+				cmd[2] = 0;
+				cmd[3] = 0;
+				cmd[4] = (byte)0x81; // vfo a/b
+				sendAndWait(cmd);
+				cmd[0]=(byte)md;
+				cmd[4]=7;
+				sendAndWait(cmd);
+        		byte frecmd[] = getBCD(tfreq, (byte)1);
+        		sendAndWait(frecmd);
+        		cmd[4] = (byte)0x81; // vfo a/b
+        		sendAndWait(cmd);
+				cmd[4] = (byte)2; // split on
+				sendAndWait(cmd);
+    	}
+    	else
+    	{
+				cmd[0] = 0;
+				cmd[1] = 0;
+				cmd[2] = 0;
+				cmd[3] = 0;
+				cmd[4] = (byte)0x82; // split off
+				sendAndWait(cmd);
+    	}
+		cmd = getBCD(rfreq, (byte) 1);
+		sendAndWait(cmd);
+	}
+
+	void sendAndWait(byte[] cmd)
+	{
+		try {
+			SpecialSocketSend(cmd);
+			Thread.sleep(150);
+		} catch (InterruptedException e) {
+		}
+	}
+	
+
+	public void pollRig() { // get's frequency info from rig - note, not 
+		setPoll(true);
+        byte[] cmd = new byte[5];
+		cmd[0] = 0;
+		cmd[1] = 0;
+		cmd[2] = 0;
+		cmd[3] = 0;
+		cmd[4] = (byte)0x3; // read freq and mode
+		SpecialSocketSend(cmd);
+	}
+	
 	public void SocketStart() {
 		tr.start();
 	}
