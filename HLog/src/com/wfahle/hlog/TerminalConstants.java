@@ -243,43 +243,50 @@ class MyHandler extends Handler {
 			else if (msgText.indexOf("login:") >= 0) {
 				main.submitCall();
 			}
-			else if (main.shdxing()) {
+			else {
 				//" 28020.1  6W1SR       24-Apr-2014 1951Z  Heard in MD               <W3LPL>\n"
-				String[] msgs = TextUtils.split(msgText, "\n");
-				for (int i=0; i<msgs.length; i++) {
-					msgText = msgs[i];
-					int posf = skipWhitespace(msgText, 0);
-					int endf = skipText(msgText, posf);
-					int poscall = skipWhitespace(msgText, endf);
-					int endcall = skipText(msgText, poscall);
-					// skip whitespace up to date
-					int posmsg = skipWhitespace(msgText, endcall);
-					// skip date
-					posmsg = skipText(msgText, posmsg);
-					// skip whitespace up to time
-					posmsg = skipWhitespace(msgText, posmsg);
-					// skip time
-					posmsg = skipText(msgText, posmsg);
-					// skip whitespace after time
-					posmsg = skipWhitespace(msgText, posmsg);
-					int endmsg = posmsg;
-					while (endmsg < msgText.length() && !whiteSpace(msgText.charAt(endmsg))) {
-						endmsg++;
-						if (endmsg < msgText.length() && whiteSpace(msgText.charAt(endmsg)))
-							endmsg++; // stop on multiple whitespace.
+				int pos = msgText.indexOf('.');
+				if (pos != -1 && pos+22 < msgText.length() 
+					&& msgText.charAt(pos+18) == '-' && msgText.charAt(pos+22)== '-') {
+					String[] msgs = TextUtils.split(msgText, "\n");
+					for (int i=0; i<msgs.length; i++) {
+						msgText = msgs[i];
+						pos = msgText.indexOf('.');
+						if (pos != -1 && pos+22 < msgText.length() 
+								&& msgText.charAt(pos+18) == '-' && msgText.charAt(pos+22)== '-') {
+							int posf = skipWhitespace(msgText, 0);
+							int endf = skipText(msgText, posf);
+							int poscall = skipWhitespace(msgText, endf);
+							int endcall = skipText(msgText, poscall);
+							// skip whitespace up to date
+							int posmsg = skipWhitespace(msgText, endcall);
+							// skip date
+							posmsg = skipText(msgText, posmsg);
+							// skip whitespace up to time
+							posmsg = skipWhitespace(msgText, posmsg);
+							// skip time
+							posmsg = skipText(msgText, posmsg);
+							// skip whitespace after time
+							posmsg = skipWhitespace(msgText, posmsg);
+							int endmsg = posmsg;
+							while (endmsg < msgText.length() && !whiteSpace(msgText.charAt(endmsg))) {
+								endmsg++;
+								if (endmsg < msgText.length() && whiteSpace(msgText.charAt(endmsg)))
+									endmsg++; // stop on multiple whitespace.
+							}
+							String call = msgText.substring(poscall, endcall);
+							Entity en =GlobalDxccList.dxcc_display(call);
+							int image = R.drawable.zz;
+							if (en != null)
+								image = en.Image;
+							SpotDetails sd = new SpotDetails(call, 
+									msgText.substring(posf, endf), msgText.substring(posmsg, endmsg),
+									image);
+							adapter.addItem(sd);
+						}
 					}
-					String call = msgText.substring(poscall, endcall);
-					Entity en =GlobalDxccList.dxcc_display(call);
-					int image = R.drawable.zz;
-					if (en != null)
-						image = en.Image;
-					SpotDetails sd = new SpotDetails(call, 
-							msgText.substring(posf, endf), msgText.substring(posmsg, endmsg),
-							image);
-					adapter.addItem(sd);
+			    	adapter.notifyDataSetChanged();		
 				}
-		    	adapter.notifyDataSetChanged();		
-		    	main.shdxing(false);
 			}
 		}
 		else if (msg.what == merror) {
@@ -363,7 +370,7 @@ class RadioSocket extends HLogSocket implements Runnable {
 	public static final int ackOK = 0;
 	public static final int ackERR = -1;
 	private MySignal pollingrig;
-	private byte[] rigFreq=null;
+	private int[] rigFreq=null;
 	private volatile int curRigByte = 0;
 
 	public RadioSocket(MyHandler h) {
@@ -458,24 +465,24 @@ Address	Name	Values
 			{
 				if (rigFreq == null) // just reuse it
 				{
-					rigFreq = new byte[5]; // store up until we have them all
+					rigFreq = new int[5]; // store up until we have them all
 				}
 				if (curRigByte >= 0)
 				{
-					rigFreq[curRigByte] = curByte;
+					rigFreq[curRigByte] = (curByte & 0xFF);
 					curRigByte++;
 					if (curRigByte > 4) // got them all
 					{
 						curRigByte = -1;
-						int mhz = (rigFreq[0]>>4) * 100 + (rigFreq[0]& 0xF ) * 10 + (rigFreq[1]>>4);
-						int khz = (rigFreq[1] & 0xF) * 100 + (rigFreq[2] >> 4) * 10 + 
+						int mhz = (rigFreq[0]>>>4) * 100 + (rigFreq[0]& 0xF ) * 10 + (rigFreq[1]>>>4);
+						int khz = (rigFreq[1] & 0xF) * 100 + (rigFreq[2] >>> 4) * 10 + 
 								(rigFreq[2] & 0xF);
 						String kstring = "00"+Integer.toString(khz);
 						kstring = kstring.substring(kstring.length()-3);
 						String extra = "";
 						if (rigFreq[3] != 0)
 						{
-							extra = Integer.toString(rigFreq[3]>>4);
+							extra = Integer.toString(rigFreq[3]>>>4);
 							if ((rigFreq[3] & 0xF) != 0)
 								extra += Integer.toString(rigFreq[3] & 0xF);
 						}
