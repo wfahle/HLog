@@ -43,6 +43,7 @@ import android.widget.Toast;
 // TODO: save multiple configs in a db to let user choose saved operating filters - ListView
 // TODO: consolidate entries in spots list - same call/freq should update? 
 // TODO: track needed entities/bands and highlight appropriately/filter out
+// TODO: latter task would involve a pseudo-import of ADIF - just gather band/mode/entity info and ignore the rest 
 
 public class MainActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 	protected final static int config_request = 1; 
