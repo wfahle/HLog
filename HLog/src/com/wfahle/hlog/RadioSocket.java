@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -34,6 +35,44 @@ class RHandler extends SHandler {
 	}
 
 }
+class RadioParms {
+	public RadioSocket rsk;
+	public static final int pollRig = 1;
+	public static final int tuneRig = 2;
+	public int command;
+	public String mode;
+	public String rfreq;
+	public String tfreq;
+	RadioParms(RadioSocket rsk, int command, String mode, String rfreq, String tfreq) {
+		this.rsk = rsk;
+		this.command = command;
+		this.mode = mode;
+		this.rfreq=rfreq;
+		this.tfreq=tfreq;
+	}
+}
+
+class CallRadio extends AsyncTask<RadioParms, Void, Void> {
+	@Override
+	protected Void doInBackground(RadioParms... params) {
+		// if needed, we can include a parameter to specify which command on the radio to call.
+		// For now, it calls sendToRadio only. We should use this task only, so that calls are
+		// made serially
+		int count = params.length;
+		for (int i=0; i<count; i++) {
+			switch(params[i].command) {
+			case 1:
+				params[i].rsk.pollRadio();
+			break;
+			case 2:
+				params[i].rsk.sendToRadio(params[i]);
+			break;
+			}
+			
+		}
+		return null;
+	}
+}
 
 class RadioSocket extends HSocket implements Runnable {
 	protected String Server = "";
@@ -51,7 +90,7 @@ class RadioSocket extends HSocket implements Runnable {
 		hnd = h;
 		tr = new Thread(this);
 	}
-	
+// note: These are called from the CallRadio thread only
 	public synchronized void setPoll(boolean poll)
 	{
 		if (!poll)
@@ -99,17 +138,22 @@ class RadioSocket extends HSocket implements Runnable {
 		return ret;
 	}
 
-	public void tuneRadio(String mode, String rfreq, String tfreq) {
-		// todo: put in another thread - waits are killing main thread
+	void sendToRadio(RadioParms rsk) {
+		while (pollingrig.hasDataToProcess())
+			try {
+				Thread.sleep(150);
+			} catch (InterruptedException e) {
+				return; // let's just skip it if it's interrupted
+			}
     	byte cmd[] = new byte[5];
 		int md = 2; // cw
-		if (mode.equals("USB"))
+		if (rsk.mode.equals("USB"))
 			md = 1;
-		else if (mode.equals("LSB"))
+		else if (rsk.mode.equals("LSB"))
 			md = 0;
-		else if (mode.equals("AM"))
+		else if (rsk.mode.equals("AM"))
 			md = 4;
-		else if (mode.equals("FM"))
+		else if (rsk.mode.equals("FM"))
 			md = 8;
 		cmd[0] = (byte)md;
 		cmd[1] = 0;
@@ -117,7 +161,7 @@ class RadioSocket extends HSocket implements Runnable {
 		cmd[3] = 0;
 		cmd[4] = 7; // 
 		sendAndWait(cmd);
-    	if (!tfreq.equals(rfreq))
+    	if (!rsk.tfreq.equals(rsk.rfreq))
     	{
 				cmd[0] = 0;
 				cmd[1] = 0;
@@ -128,7 +172,7 @@ class RadioSocket extends HSocket implements Runnable {
 				cmd[0]=(byte)md;
 				cmd[4]=7;
 				sendAndWait(cmd);
-        		byte frecmd[] = getBCD(tfreq, (byte)1);
+        		byte frecmd[] = getBCD(rsk.tfreq, (byte)1);
         		sendAndWait(frecmd);
         		cmd[4] = (byte)0x81; // vfo a/b
         		sendAndWait(cmd);
@@ -144,21 +188,11 @@ class RadioSocket extends HSocket implements Runnable {
 				cmd[4] = (byte)0x82; // split off
 				sendAndWait(cmd);
     	}
-		cmd = getBCD(rfreq, (byte) 1);
-		sendAndWait(cmd);
-	}
-
-	void sendAndWait(byte[] cmd)
-	{
-		try {
-			SpecialSocketSend(cmd);
-			Thread.sleep(150);
-		} catch (InterruptedException e) {
-		}
+		cmd = getBCD(rsk.rfreq, (byte) 1);
+		sendAndWait(cmd);		
 	}
 	
-
-	public void pollRig() { // get's frequency info from rig - note, not 
+	void pollRadio() {
 		setPoll(true);
         byte[] cmd = new byte[5];
 		cmd[0] = 0;
@@ -167,6 +201,26 @@ class RadioSocket extends HSocket implements Runnable {
 		cmd[3] = 0;
 		cmd[4] = (byte)0x3; // read freq and mode
 		SpecialSocketSend(cmd);
+	}
+	
+	void sendAndWait(byte[] cmd)
+	{
+		try {
+			SpecialSocketSend(cmd);
+			Thread.sleep(150);
+		} catch (InterruptedException e) {
+		}
+	}
+// end bg thread routines	
+
+	public void tuneRadio(String mode, String rfreq, String tfreq) {
+		RadioParms rp = new RadioParms(this, 2, mode, rfreq, tfreq);
+		new CallRadio().execute(rp); // run in bg
+	}
+	
+	public void pollRig() { // get's frequency info from rig - note, not 
+		RadioParms rp = new RadioParms(this, 1, null, null, null);
+		new CallRadio().execute(rp);
 	}
 	
 	public void SocketStart() {
@@ -245,16 +299,13 @@ Address	Name	Values
 			byte curByte = bData[i];
 			if (pollingrig.hasDataToProcess())
 			{
-				if (rigFreq == null) // just reuse it
-				{
+				if (rigFreq == null) { // just reuse it if not null
 					rigFreq = new int[5]; // store up until we have them all
 				}
-				if (curRigByte >= 0)
-				{
+				if (curRigByte >= 0) {
 					rigFreq[curRigByte] = (curByte & 0xFF);
 					curRigByte++;
-					if (curRigByte > 4) // got them all
-					{
+					if (curRigByte > 4) { // got them all
 						curRigByte = -1;
 						int mhz = (rigFreq[0]>>>4) * 100 + (rigFreq[0]& 0xF ) * 10 + (rigFreq[1]>>>4);
 						int khz = (rigFreq[1] & 0xF) * 100 + (rigFreq[2] >>> 4) * 10 + 
@@ -262,47 +313,47 @@ Address	Name	Values
 						String kstring = "00"+Integer.toString(khz);
 						kstring = kstring.substring(kstring.length()-3);
 						String extra = "";
-						if (rigFreq[3] != 0)
-						{
+						if (rigFreq[3] != 0) {
 							extra = Integer.toString(rigFreq[3]>>>4);
 							if ((rigFreq[3] & 0xF) != 0)
 								extra += Integer.toString(rigFreq[3] & 0xF);
 						}
-						String rfreq = Integer.toString(mhz)+"."+kstring+extra;
-						hnd.sendMessage(SpecialToMessage(rfreq, RHandler.mrigrx));
-						int mode = rigFreq[4];
-						String modemsg = "";
-						switch (mode)
-						{
-							case 0:
-								modemsg = "LSB";
-								break;
-							case 1:
-								modemsg = "USB";
-								break;
-							case 2:
-								modemsg = "CW";
-								break;
-							case 3:
-								modemsg = "CWR";
-								break;
-							case 4:
-								modemsg = "AM";
-								break;
-							case 6:
-								modemsg = "WFM";
-								break;
-							case 8:
-								modemsg = "FM";
-								break;
-							case 10:
-								modemsg = "DIG";
-								break;
-							case 12:
-								modemsg = "PKT";
-								break;
+						if (mhz != 305) {// for some reason 305 comes up if the radio is off
+							String rfreq = Integer.toString(mhz)+"."+kstring+extra;
+							hnd.sendMessage(SpecialToMessage(rfreq, RHandler.mrigrx));
+							int mode = rigFreq[4];
+							String modemsg = "";
+							switch (mode) {
+								case 0:
+									modemsg = "LSB";
+									break;
+								case 1:
+									modemsg = "USB";
+									break;
+								case 2:
+									modemsg = "CW";
+									break;
+								case 3:
+									modemsg = "CWR";
+									break;
+								case 4:
+									modemsg = "AM";
+									break;
+								case 6:
+									modemsg = "WFM";
+									break;
+								case 8:
+									modemsg = "FM";
+									break;
+								case 10:
+									modemsg = "DIG";
+									break;
+								case 12:
+									modemsg = "PKT";
+									break;
+							}
+							hnd.sendMessage(SpecialToMessage(modemsg, RHandler.mrigmode));
 						}
-						hnd.sendMessage(SpecialToMessage(modemsg, RHandler.mrigmode));
 					}
 				}
 			}
