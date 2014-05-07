@@ -1,8 +1,10 @@
-package com.wfahle.hlog;
+package com.wfahle.hlog.network;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+
+import com.wfahle.hlog.EntryActivity;
 
 import android.os.Bundle;
 import android.os.Handler;

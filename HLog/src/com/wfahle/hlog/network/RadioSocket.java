@@ -1,40 +1,10 @@
-package com.wfahle.hlog;
+package com.wfahle.hlog.network;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.widget.ListView;
-import android.widget.TextView;
-class RHandler extends SHandler {
-	public static final int mrigpoll = lastmsg+1;
-	public static final int mrigrx = mrigpoll+1;
-	public static final int mrigmode = mrigrx+1;
 
-	RHandler(EntryActivity entryActivity, ListView listView, TextView txt) {
-		super(entryActivity, listView, txt);
-	}
-	public void handleMessage(android.os.Message msg) {
-		Bundle hm = msg.getData(); 
-		String msgText = hm.getString("message");
-		System.out.println(msgText);
-		if (msg.what == mrigpoll) {
-			main.pollRig();
-		}
-		else if (msg.what == mrigrx) {
-			main.rigRXFreq(msgText);
-		}
-		else if (msg.what == mrigmode) {
-			main.rigMode(msgText);
-		}
-		else 
-			super.handleMessage(msg);
-
-	}
-
-}
 class RadioParms {
 	public RadioSocket rsk;
 	public static final int pollRig = 1;
@@ -74,9 +44,9 @@ class CallRadio extends AsyncTask<RadioParms, Void, Void> {
 	}
 }
 
-class RadioSocket extends HSocket implements Runnable {
-	protected String Server = "";
-	protected int Port = 0;
+public class RadioSocket extends HSocket implements Runnable {
+	private String Server = "";
+	private int Port = 0;
 	private RHandler hnd;
 	public static final int ackOK = 0;
 	public static final int ackERR = -1;
@@ -117,16 +87,14 @@ class RadioSocket extends HSocket implements Runnable {
         // magically convert string to bcd, put in cmd
         int mhz = parseanInt(freqinMhz.substring(0, posp));
         posp++;
-        if (posp<len)
-        {
+        if (posp<len) {
         	mhz = mhz*10+freqinMhz.charAt(posp)-'0';
         	posp++;
         }
         else
         	mhz = mhz*10;
         int dig[] = {0,0,0,0};
-        for (int i=0; i<dig.length && posp<len; i++)
-        {
+        for (int i=0; i<dig.length && posp<len; i++) {
         	dig[i] = freqinMhz.charAt(posp)-'0';
         	posp++;
         }
@@ -193,7 +161,7 @@ class RadioSocket extends HSocket implements Runnable {
 		sendAndWait(cmd);		
 	}
 	
-	void pollRig() {
+	public void pollRig() {
 		/*
 		setPoll(true);
         byte[] cmd = new byte[5];
@@ -235,11 +203,28 @@ class RadioSocket extends HSocket implements Runnable {
 			try {
 				sk.close();
 			} catch (IOException e) {
-				hnd.sendMessage(ErrorToMessage("Socket close failed" + Server + ":" + Port));
+				hnd.sendMessage(ErrorToMessage("Socket close failed" + getServer() + ":" + getPort()));
 			}
 		}
 		sk = null;
 	}
+	public void readStatus() {
+		byte[] cmd = {0, 0, 0, 0, (byte) 0xE7}; // read receiver status - cause read loop to unlock
+		SpecialSocketSend(cmd);
+	}
+
+	private void SpecialSocketSend(byte[] buff) {
+		try {
+			if (oStream != null)
+			{
+				oStream.write(buff);
+				oStream.flush();
+			}
+		} catch (Exception ex) {
+			hnd.sendMessage(ErrorToMessage("Connection closed write"));
+		}
+	}
+	
 	/*
 Name	P1	P2	P3	P4	Opcode	Notes
 Read EEprom	MSB	LSB	0x00	0x00	0xBB	Returns 2 bytes, the specified address and the 'next' address. 16 bit memory addressing, unused memory returns 1 byte (for me 0xf0).
@@ -255,19 +240,19 @@ Address	Name	Values
 	public void run() {
 		InetAddress ia = null;
 		bRunning = true;
-		hnd.sendMessage(InfoToMessage("Resolve server name " + Server));
+		hnd.sendMessage(InfoToMessage("Resolve server name " + getServer()));
 		
 		try {
-			ia = InetAddress.getByName(Server);
+			ia = InetAddress.getByName(getServer());
 		} catch (UnknownHostException ex) {
-			hnd.sendMessage(ErrorToMessage("Unknown host " + Server));
+			hnd.sendMessage(ErrorToMessage("Unknown host " + getServer()));
 			return;
 		}
-		hnd.sendMessage(InfoToMessage("Connect to "  + Server + ":" + Port));
+		hnd.sendMessage(InfoToMessage("Connect to "  + getServer() + ":" + getPort()));
 		try {
-			sk = new java.net.Socket(ia, Port);
+			sk = new java.net.Socket(ia, getPort());
 		} catch (IOException ex) {
-			hnd.sendMessage(ErrorToMessage("Socket time out for " + Server + ":" + Port));
+			hnd.sendMessage(ErrorToMessage("Socket time out for " + getServer() + ":" + getPort()));
 			return;
 		}
 
@@ -275,7 +260,7 @@ Address	Name	Values
 			iStream = sk.getInputStream();
 			oStream = sk.getOutputStream();
 		} catch (IOException ex) {
-			hnd.sendMessage(ErrorToMessage("Protocol error for " + Server + ":" + Port));
+			hnd.sendMessage(ErrorToMessage("Protocol error for " + getServer() + ":" + getPort()));
 			return;
 		}
 
@@ -361,16 +346,17 @@ Address	Name	Values
 			}
 		}
 	}
-
-	protected void SpecialSocketSend(byte[] buff) {
-		try {
-			if (oStream != null)
-			{
-				oStream.write(buff);
-				oStream.flush();
-			}
-		} catch (Exception ex) {
-			hnd.sendMessage(ErrorToMessage("Connection closed write"));
-		}
+	public String getServer() {
+		return Server;
 	}
+	public void setServer(String server) {
+		Server = server;
+	}
+	public int getPort() {
+		return Port;
+	}
+	public void setPort(int port) {
+		Port = port;
+	}
+
 }

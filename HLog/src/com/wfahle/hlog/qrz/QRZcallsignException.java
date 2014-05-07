@@ -1,4 +1,4 @@
-package com.wfahle.hlog;
+package com.wfahle.hlog.qrz;
 
 public class QRZcallsignException extends Exception {
 

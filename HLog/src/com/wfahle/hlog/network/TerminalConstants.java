@@ -1,4 +1,4 @@
-package com.wfahle.hlog;
+package com.wfahle.hlog.network;
 
 public final class TerminalConstants {
 

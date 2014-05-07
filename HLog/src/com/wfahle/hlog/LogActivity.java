@@ -1,10 +1,11 @@
 package com.wfahle.hlog;
 
-import java.util.Calendar;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import com.wfahle.hlog.contentprovider.QSOContactProvider;
+import com.wfahle.hlog.qrz.QRZprofile;
+import com.wfahle.hlog.qrz.QRZrequest;
+import com.wfahle.hlog.utils.DateTimeUtils;
 
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -117,22 +118,9 @@ public class LogActivity extends Activity {
 		    }
 	    }
 	}
+	
 	CharSequence now() {
-    	TimeZone tz = TimeZone.getTimeZone("GMT+0");
-    	Calendar cal = Calendar.getInstance(tz);
-    	String month = "0"+(cal.get(Calendar.MONTH)+1);
-    	String day = "0"+cal.get(Calendar.DATE);
-    	String hour = "0"+cal.get(Calendar.HOUR_OF_DAY);
-    	String minute = "0"+cal.get(Calendar.MINUTE);
-    	String second = "0"+cal.get(Calendar.SECOND);
-    	month = month.substring(month.length()-2); // makes 3 into 03, e.g.
-    	day = day.substring(day.length()-2);
-    	hour = hour.substring(hour.length()-2);
-    	minute = minute.substring(minute.length()-2);
-    	second = second.substring(second.length()-2);
-    	CharSequence text = ""+cal.get(Calendar.YEAR)+"-"+month+"-"+
-    			day+" "+ hour +":"+minute+":"+second;
-    	return text;
+		return DateTimeUtils.getDateTime(System.currentTimeMillis());
 	}
 	
 	@Override 

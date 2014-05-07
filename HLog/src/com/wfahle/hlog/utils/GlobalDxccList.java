@@ -1,4 +1,7 @@
-package com.wfahle.hlog;
+package com.wfahle.hlog.utils;
+
+import com.wfahle.hlog.Entity;
+import com.wfahle.hlog.R;
 
 public class GlobalDxccList {
 	// We make a OR with continents, because some countries belong

@@ -1,4 +1,4 @@
-package com.wfahle.hlog;
+package com.wfahle.hlog.qrz;
 
 public class QRZprofile {
  // thanks to smerty for this cut and paste; it saved me a lot of typing.

@@ -1,4 +1,4 @@
-package com.wfahle.hlog;
+package com.wfahle.hlog.qrz;
 
 import java.util.ArrayList;
 import java.util.List;
