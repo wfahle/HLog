@@ -152,7 +152,7 @@ public class GlobalDxccList {
     new Entity( 114, "ISLE OF MAN", 0, -1, "^[GM2][DT]", EU, "27", "14", R.drawable.im ),
     new Entity( 115, "ITALIAN SOMALI", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 116, "COLOMBIA", 0, -1, "^[H5][JK][^0]", SA, "12", "09", R.drawable.co ),
-    new Entity( 117, "ITU GENEVA", 0, -1, "^4U[0-9]ITU", EU, "28", "14", R.drawable.ch ),
+    new Entity( 117, "ITU GENEVA", 0, -1, "^4U[0-9]ITU", EU, "28", "14", R.drawable.uno ),
     new Entity( 118, "JAN MAYEN", 0, -1, "^JX", EU, "18", "40", R.drawable.sj ),
     new Entity( 119, "JAVA", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 120, "ECUADOR", 0, -1, "^H[CD][^8]", SA, "12", "10", R.drawable.ec ),

@@ -139,12 +139,13 @@ class RadioSocket extends HSocket implements Runnable {
 	}
 
 	void sendToRadio(RadioParms rsk) {
-		while (pollingrig.hasDataToProcess())
+		while (pollingrig.hasDataToProcess()) {
 			try {
 				Thread.sleep(150);
 			} catch (InterruptedException e) {
 				return; // let's just skip it if it's interrupted
 			}
+		}
     	byte cmd[] = new byte[5];
 		int md = 2; // cw
 		if (rsk.mode.equals("USB"))
@@ -192,7 +193,8 @@ class RadioSocket extends HSocket implements Runnable {
 		sendAndWait(cmd);		
 	}
 	
-	void pollRadio() {
+	void pollRig() {
+		/*
 		setPoll(true);
         byte[] cmd = new byte[5];
 		cmd[0] = 0;
@@ -200,7 +202,7 @@ class RadioSocket extends HSocket implements Runnable {
 		cmd[2] = 0;
 		cmd[3] = 0;
 		cmd[4] = (byte)0x3; // read freq and mode
-		SpecialSocketSend(cmd);
+		SpecialSocketSend(cmd);*/
 	}
 	
 	void sendAndWait(byte[] cmd)
@@ -218,9 +220,9 @@ class RadioSocket extends HSocket implements Runnable {
 		new CallRadio().execute(rp); // run in bg
 	}
 	
-	public void pollRig() { // get's frequency info from rig - note, not 
-		RadioParms rp = new RadioParms(this, 1, null, null, null);
-		new CallRadio().execute(rp);
+	public void pollRadio() { // get's frequency info from rig - note, not 
+//		RadioParms rp = new RadioParms(this, 1, null, null, null);
+//		new CallRadio().execute(rp);
 	}
 	
 	public void SocketStart() {
