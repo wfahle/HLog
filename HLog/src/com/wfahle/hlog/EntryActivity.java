@@ -27,7 +27,10 @@ import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.KeyEvent;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -93,6 +96,27 @@ public class EntryActivity extends Activity {
         rrstBox = (EditText) findViewById(R.id.rrst_edit);
         srstBox = (EditText) findViewById(R.id.srst_edit);
         countryTxt = (TextView) findViewById(R.id.entity);
+        callBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                	
+                    Entity en = GlobalDxccList.dxcc_display(callBox.getText().toString());
+                    countryTxt.setText(": "+ (en == null?"":en.Country));
+                    return true;
+                }
+                return false;
+            }
+        });
+        callBox.setOnFocusChangeListener(new OnFocusChangeListener() {          
+
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(!hasFocus) {
+                    Entity en = GlobalDxccList.dxcc_display(callBox.getText().toString());
+                    countryTxt.setText(": "+ (en == null?"":en.Country));
+                }
+            }
+        });
         qso = null;
 	    mHandler = new Handler();
         
