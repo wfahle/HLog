@@ -3,6 +3,7 @@ package com.wfahle.hlog;
 import java.util.Locale;
 
 import com.wfahle.hlog.contentprovider.QSOContactProvider;
+import com.wfahle.hlog.contentprovider.QSOContactTable;
 import com.wfahle.hlog.qrz.QRZprofile;
 import com.wfahle.hlog.qrz.QRZrequest;
 import com.wfahle.hlog.utils.DateTimeUtils;
@@ -145,8 +146,8 @@ public class LogActivity extends Activity {
         }
 
 		SharedPreferences settings = getSharedPreferences(ConfigActivity.PREFS_NAME, 0);
-		final String qrzUser = settings.getString("qrzUser", null);
-		final String qrzPassword = settings.getString("qrzPassword", null);
+		final String qrzUser = settings.getString(ConfigActivity.QRZ_USER, null);
+		final String qrzPassword = settings.getString(ConfigActivity.QRZ_PASSWORD, null);
 
 		if (!needsLookup || qrzUser == null || qrzPassword == null || qrzUser.length() == 0
 		    || qrzPassword.length() == 0) {
@@ -322,8 +323,8 @@ public class LogActivity extends Activity {
 
 		      try {
 		        SharedPreferences settings = getSharedPreferences(ConfigActivity.PREFS_NAME, 0);
-		        final String qrzUser = settings.getString("qrzUser", null);
-		        final String qrzPassword = settings.getString("qrzPassword", null);
+		        final String qrzUser = settings.getString(ConfigActivity.QRZ_USER, null);
+		        final String qrzPassword = settings.getString(ConfigActivity.QRZ_PASSWORD, null);
 
 		        QRZrequest qrzDb = new QRZrequest(qrzUser, qrzPassword);
 

@@ -1,6 +1,5 @@
 package com.wfahle.hlog.utils;
 
-import com.wfahle.hlog.Entity;
 import com.wfahle.hlog.R;
 
 public class GlobalDxccList {

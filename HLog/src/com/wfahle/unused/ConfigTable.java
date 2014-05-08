@@ -1,4 +1,6 @@
-package com.wfahle.hlog;
+package com.wfahle.unused;
+import com.wfahle.hlog.contentprovider.QSOContactTable;
+
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 

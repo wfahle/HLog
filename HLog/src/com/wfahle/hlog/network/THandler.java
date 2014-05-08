@@ -5,10 +5,10 @@ import android.text.TextUtils;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.wfahle.hlog.Entity;
 import com.wfahle.hlog.EntryActivity;
 import com.wfahle.hlog.R;
 import com.wfahle.hlog.network.SHandler;
+import com.wfahle.hlog.utils.Entity;
 import com.wfahle.hlog.utils.GlobalDxccList;
 import com.wfahle.hlog.SpotDetails;
 import com.wfahle.hlog.EntryActivity.StableArrayAdapter;

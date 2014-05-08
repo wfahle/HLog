@@ -1,4 +1,4 @@
-package com.wfahle.hlog;
+package com.wfahle.hlog.contentprovider;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

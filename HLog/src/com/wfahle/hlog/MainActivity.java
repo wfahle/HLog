@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 import com.wfahle.hlog.contentprovider.QSOContactProvider;
+import com.wfahle.hlog.contentprovider.QSOContactTable;
 
 import android.app.Activity;
 import android.app.ListActivity;

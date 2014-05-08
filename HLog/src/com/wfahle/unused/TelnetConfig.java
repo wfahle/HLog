@@ -1,4 +1,4 @@
-package com.wfahle.hlog;
+package com.wfahle.unused;
 
 public class TelnetConfig {
 	int _id;

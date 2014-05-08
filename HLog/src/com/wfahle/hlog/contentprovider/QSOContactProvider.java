@@ -3,9 +3,6 @@ package com.wfahle.hlog.contentprovider;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.wfahle.hlog.DatabaseHandler;
-import com.wfahle.hlog.QSOContactTable;
-
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentUris;

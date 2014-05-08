@@ -45,5 +45,9 @@
     <string name="dxmessage">Message</string>
     <string name="dx_flag">DX Flag</string>
     <string name="colon">:</string>
+    <string name="port_ui">Port</string>
+    <string name="def_telnet_port">23</string>
+    <string name="def_pig_port">7373</string>
+    <string name="qrz_uname_ui">QRZ.com user name</string>
 
 </resources>

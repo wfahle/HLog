@@ -5,12 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.wfahle.hlog.contentprovider.QSOContactProvider;
+import com.wfahle.hlog.contentprovider.QSOContactTable;
 import com.wfahle.hlog.network.RHandler;
 import com.wfahle.hlog.network.RadioSocket;
 import com.wfahle.hlog.network.THandler;
 import com.wfahle.hlog.network.TerminalSocket;
+import com.wfahle.hlog.utils.Entity;
 import com.wfahle.hlog.utils.GlobalDxccList;
 import com.wfahle.hlog.utils.RadioUtils;
+import com.wfahle.unused.QSOContact;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +22,7 @@ import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -113,23 +117,12 @@ public class EntryActivity extends Activity {
             	strarray = new ArrayList<SpotDetails>();
         }
         
-        LocalDBHandler ldb = new LocalDBHandler(getBaseContext());
-        List<TelnetConfig> tlist = ldb.getAllConfigs();
-        if (!tlist.isEmpty())
-        {
-        	for (int i=0; i<tlist.size(); i++)
-        	{
-	        	TelnetConfig cfg = tlist.get(i);
-	        	telnetServer = cfg.getServer();
-	        	telnetPort = cfg.getPort();
-	        	telnetLogon = cfg.getCall();
-	        	radioServer =  cfg.getRadioServer();
-	        	radioPort = cfg.getRadioPort();
-	        	if (cfg.getPreferred())
-	        		break;
-        	}
-        }
-
+	    final SharedPreferences settings = getSharedPreferences(ConfigActivity.PREFS_NAME, 0);
+		telnetServer = settings.getString(ConfigActivity.CLUSTER_SERVER, null);
+		telnetPort = settings.getInt(ConfigActivity.TELNET_PORT, 23);
+		telnetLogon = settings.getString(ConfigActivity.TELNET_LOGON, null);
+		radioServer = settings.getString(ConfigActivity.PIGLET_ID, null);
+		radioPort = settings.getInt(ConfigActivity.PIGLET_PORT, 7373);
         final ListView lv = (ListView) findViewById(R.id.spot_list);
         lv.setClickable(true);
         

@@ -39,6 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/yourcall"
+        android:layout_alignRight="@+id/cluster_edit"
         android:layout_below="@+id/yourcall"
         android:ems="10"
         android:inputType="textCapCharacters" />
@@ -50,13 +51,14 @@
         android:layout_alignLeft="@+id/piglet_edit"
         android:layout_below="@+id/piglet_edit"
         android:onClick="done"
-        android:text="@string/done_ui" />
+        android:text="@string/save_ui" />
 
     <EditText
         android:id="@+id/piglet_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/piglet"
+        android:layout_alignRight="@+id/qrzpassword_edit"
         android:layout_below="@+id/piglet"
         android:ems="10"
         android:hint="@string/default_piglet_ip" />
@@ -69,21 +71,77 @@
         android:layout_below="@+id/qrzpassword_edit"
         android:text="@string/piglet_ui" />
 
-    <TextView
-        android:id="@+id/qrzpassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/yourcall_edit"
-        android:layout_below="@+id/yourcall_edit"
-        android:text="@string/qrzpassword_ui" />
-
     <EditText
         android:id="@+id/qrzpassword_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/qrzpassword"
+        android:layout_alignRight="@+id/qrz_user_edit"
         android:layout_below="@+id/qrzpassword"
         android:ems="10"
         android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/cport_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/cluster_edit"
+        android:layout_toRightOf="@+id/cluster_edit"
+        android:ems="10"
+        android:hint="@string/def_telnet_port"
+        android:inputType="number"
+        android:text="@string/def_telnet_port" />
+
+    <TextView
+        android:id="@+id/cport"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/cluster"
+        android:layout_toRightOf="@+id/qrzpassword_edit"
+        android:text="@string/port_ui" />
+
+    <EditText
+        android:id="@+id/pport_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/piglet_edit"
+        android:layout_toRightOf="@+id/piglet_edit"
+        android:ems="10"
+        android:hint="@string/def_pig_port"
+        android:inputType="number"
+        android:text="@string/def_pig_port" />
+
+    <TextView
+        android:id="@+id/pport"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/pport_edit"
+        android:layout_alignLeft="@+id/cport"
+        android:text="@string/port_ui" />
+
+    <TextView
+        android:id="@+id/qrzpassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/qrz_user_edit"
+        android:layout_below="@+id/qrz_user_edit"
+        android:text="@string/qrzpassword_ui" />
+
+    <TextView
+        android:id="@+id/QRZuname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/yourcall_edit"
+        android:layout_below="@+id/yourcall_edit"
+        android:text="@string/qrz_uname_ui" />
+
+    <EditText
+        android:id="@+id/qrz_user_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/QRZuname"
+        android:layout_below="@+id/QRZuname"
+        android:ems="10"
+        android:inputType="textCapCharacters" />
 
 </RelativeLayout>
