@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 public class ConfigActivity extends Activity {
@@ -19,6 +20,7 @@ public class ConfigActivity extends Activity {
 	public static final String TELNET_LOGON = "com.wfahle.hlog.TELNET_LOGON";
 	public static final String QRZ_USER = "com.wfahle.hlog.QRZ_USER";
 	public static final String QRZ_PASSWORD = "com.wfahle.hlog.QRZ_PASSWORD";
+	public static final String QRZ_AUTO = "com.wfahle.hlog.QRZ_AUTO";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class ConfigActivity extends Activity {
 		final EditText pport_edit = (EditText) findViewById(R.id.pport_edit);
 		final EditText qrzpassword_edit = (EditText) findViewById(R.id.qrzpassword_edit);
 		final EditText qrzuser_edit = (EditText) findViewById(R.id.qrz_user_edit);
+		final CheckBox checkBox = (CheckBox) findViewById(R.id.auto_check);
 		server_edit.setText(settings.getString(CLUSTER_SERVER, null));
 		cport_edit.setText(Integer.toString(settings.getInt(TELNET_PORT, 23)));
 		logon_edit.setText(settings.getString(TELNET_LOGON, null));
@@ -40,6 +43,7 @@ public class ConfigActivity extends Activity {
 		pport_edit.setText(Integer.toString(settings.getInt(PIGLET_PORT, 7373)));
 		qrzpassword_edit.setText(settings.getString(QRZ_PASSWORD, null));
 		qrzuser_edit.setText(settings.getString(QRZ_USER, null));
+        checkBox.setChecked(settings.getBoolean(QRZ_AUTO, true));
 
 		// Show the Up button in the action bar.
 		setupActionBar();
@@ -55,17 +59,15 @@ public class ConfigActivity extends Activity {
 	}
 	protected void saveConfig(boolean preferred)
 	{
-    	EditText logon_edit = (EditText) findViewById(R.id.yourcall_edit);
-		String call = logon_edit.getEditableText().toString();
-    	EditText server_edit = (EditText) findViewById(R.id.cluster_edit);
-		String server = server_edit.getEditableText().toString();
-    	EditText cport_edit = (EditText) findViewById(R.id.cport_edit);
-		int port = Integer.parseInt(cport_edit.getText().toString());
-		EditText rserver_edit = (EditText) findViewById(R.id.piglet_edit);
-		String rserver = rserver_edit.getEditableText().toString();
-		EditText pport_edit = (EditText) findViewById(R.id.pport_edit);
-		int rport = Integer.parseInt(pport_edit.getText().toString());;
-		EditText qrzpassword_edit = (EditText) findViewById(R.id.qrzpassword_edit);
+    	final EditText logon_edit = (EditText) findViewById(R.id.yourcall_edit);
+    	final EditText server_edit = (EditText) findViewById(R.id.cluster_edit);
+    	final EditText cport_edit = (EditText) findViewById(R.id.cport_edit);
+		final EditText rserver_edit = (EditText) findViewById(R.id.piglet_edit);
+		final EditText pport_edit = (EditText) findViewById(R.id.pport_edit);
+    	final EditText qrzon_edit = (EditText) findViewById(R.id.qrz_user_edit);
+		final EditText qrzpassword_edit = (EditText) findViewById(R.id.qrzpassword_edit);
+		final CheckBox checkBox = (CheckBox) findViewById(R.id.auto_check);
+		
 /* removing this telent config nonsense - maybe we can use it later for saving interchangable configs
 		TelnetConfig cfg = new TelnetConfig(_id, call, server, port, rserver, rport, preferred);
 		LocalDBHandler ldb = new LocalDBHandler(getBaseContext());
@@ -73,15 +75,16 @@ public class ConfigActivity extends Activity {
 			ldb.addConfig(cfg);
 		else
 			ldb.updateConfig(cfg); */
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString(QRZ_USER, call);
+        final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        final SharedPreferences.Editor editor = settings.edit();
+        editor.putString(QRZ_USER, qrzon_edit.getEditableText().toString());
         editor.putString(QRZ_PASSWORD, qrzpassword_edit.getText().toString());
-        editor.putString(TELNET_LOGON, call);
-        editor.putString(CLUSTER_SERVER, server);
-        editor.putInt(TELNET_PORT, port);
-        editor.putString(PIGLET_ID, rserver);
-        editor.putInt(PIGLET_PORT, rport);
+        editor.putString(TELNET_LOGON, logon_edit.getEditableText().toString());
+        editor.putString(CLUSTER_SERVER, server_edit.getEditableText().toString());
+        editor.putInt(TELNET_PORT, Integer.parseInt(cport_edit.getText().toString()));
+        editor.putString(PIGLET_ID, rserver_edit.getEditableText().toString());
+        editor.putInt(PIGLET_PORT, Integer.parseInt(pport_edit.getText().toString()));
+        editor.putBoolean(QRZ_AUTO, checkBox.isChecked());
         
 //        editor.putBoolean("lbsEnabled", false);
         editor.commit();

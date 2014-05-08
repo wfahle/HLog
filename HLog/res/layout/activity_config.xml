@@ -144,4 +144,12 @@
         android:ems="10"
         android:inputType="textCapCharacters" />
 
+    <CheckBox
+        android:id="@+id/auto_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/cport_edit"
+        android:layout_alignTop="@+id/QRZuname"
+        android:text="@string/auto_ui" />
+
 </RelativeLayout>

@@ -12,13 +12,13 @@
 	    android:paddingRight="@dimen/activity_horizontal_margin"
 	    android:paddingTop="@dimen/activity_vertical_margin"
 	    tools:context=".LogActivity" >
-	
+
 	    <TextView
 	        android:id="@+id/timeon"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:text="@string/timeon_ui" />	
-	        
+	        android:text="@string/timeon_ui" />
+
 	    <Button
 	        android:id="@+id/save_button"
 	        style="@style/AppTheme"
@@ -38,8 +38,8 @@
 	        android:layout_toLeftOf="@+id/save_button"
 	        android:onClick="clickNowOn"
 	        android:text="@string/now_ui" />
-	
-	    	    <EditText
+
+	    <EditText
 	        android:id="@+id/timeon_edit"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
@@ -48,10 +48,10 @@
 	        android:layout_toLeftOf="@id/nowon_button"
 	        android:ems="10"
 	        android:inputType="datetime" >
-	
+
 	        <requestFocus />
 	    </EditText>
-	
+
 	    <TextView
 	        android:id="@+id/timeoff"
 	        android:layout_width="wrap_content"
@@ -59,7 +59,7 @@
 	        android:layout_alignLeft="@+id/timeon_edit"
 	        android:layout_below="@+id/timeon_edit"
 	        android:text="@string/timeoff_ui" />
-	
+
 	    <EditText
 	        android:id="@+id/timeoff_edit"
 	        android:layout_width="wrap_content"
@@ -69,7 +69,7 @@
 	        android:layout_toLeftOf="@+id/nowon_button"
 	        android:ems="10"
 	        android:inputType="datetime" />
-	
+
 	    <Button
 	        android:id="@+id/nowoff_button"
 	        style="?android:attr/buttonStyleSmall"
@@ -88,7 +88,7 @@
 	        android:layout_alignLeft="@+id/timeoff_edit"
 	        android:layout_below="@+id/timeoff_edit"
 	        android:text="@string/rx_freq" />
-	
+
 	    <EditText
 	        android:id="@+id/rxfreqt_edit"
 	        android:layout_width="wrap_content"
@@ -97,7 +97,7 @@
 	        android:layout_below="@+id/rxfreqt"
 	        android:ems="10"
 	        android:inputType="numberDecimal" />
-	
+
 	    <TextView
 	        android:id="@+id/callt"
 	        android:layout_width="wrap_content"
@@ -105,27 +105,16 @@
 	        android:layout_alignLeft="@+id/rxfreqt_edit"
 	        android:layout_below="@+id/rxfreqt_edit"
 	        android:text="@string/call_ui" />
-	
+
 	    <EditText
 	        android:id="@+id/callt_edit"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_alignLeft="@+id/callt"
 	        android:layout_below="@+id/callt"
-	        android:layout_toLeftOf="@+id/lookup_box"
 	        android:ems="10"
-	        android:inputType="textPersonName|numberDecimal" />
-	
-	    <CheckBox
-	        android:id="@+id/lookup_box"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignBaseline="@+id/callt_edit"
-	        android:layout_alignBottom="@+id/callt_edit"
-	        android:layout_alignParentRight="true"
-	        android:checked="true"
-	        android:text="@string/lookup_ui" />
-	
+	        android:inputType="textCapCharacters" />
+
 	    <TextView
 	        android:id="@+id/modet"
 	        android:layout_width="wrap_content"
@@ -133,7 +122,7 @@
 	        android:layout_alignLeft="@+id/callt_edit"
 	        android:layout_below="@+id/callt_edit"
 	        android:text="@string/mode_ui" />
-	
+
 	    <EditText
 	        android:id="@+id/modet_edit"
 	        android:layout_width="wrap_content"
@@ -143,7 +132,7 @@
 	        android:layout_below="@+id/modet"
 	        android:ems="10"
 	        android:inputType="textCapCharacters" />
-	
+
 	    <EditText
 	        android:id="@+id/rrstt_edit"
 	        android:layout_width="wrap_content"
@@ -153,7 +142,7 @@
 	        android:layout_toRightOf="@+id/modet_edit"
 	        android:ems="10"
 	        android:inputType="number" />
-	
+
 	    <TextView
 	        android:id="@+id/rrstt"
 	        android:layout_width="wrap_content"
@@ -161,17 +150,17 @@
 	        android:layout_above="@+id/rrstt_edit"
 	        android:layout_alignLeft="@+id/rrstt_edit"
 	        android:text="@string/rrst_ui" />
-	
+
 	    <EditText
 	        android:id="@+id/srstt_edit"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:layout_alignBottom="@+id/rrstt_edit"
-	        android:layout_alignLeft="@+id/lookup_box"
+	        android:layout_alignLeft="@+id/lookup_button"
 	        android:layout_alignParentRight="true"
 	        android:ems="10"
 	        android:inputType="number" />
-	
+
 	    <TextView
 	        android:id="@+id/srstt"
 	        android:layout_width="wrap_content"
@@ -179,7 +168,7 @@
 	        android:layout_above="@+id/srstt_edit"
 	        android:layout_alignLeft="@+id/srstt_edit"
 	        android:text="@string/srst_ui" />
-	
+
 	    <TextView
 	        android:id="@+id/name"
 	        android:layout_width="wrap_content"
@@ -187,7 +176,7 @@
 	        android:layout_alignLeft="@+id/modet_edit"
 	        android:layout_below="@+id/modet_edit"
 	        android:text="@string/namet_ui" />
-	
+
 	    <EditText
 	        android:id="@+id/name_edit"
 	        android:layout_width="wrap_content"
@@ -196,7 +185,7 @@
 	        android:layout_below="@+id/name"
 	        android:ems="10"
 	        android:inputType="textPersonName" />
-	
+
 	    <TextView
 	        android:id="@+id/qth"
 	        android:layout_width="wrap_content"
@@ -204,7 +193,7 @@
 	        android:layout_alignLeft="@+id/name_edit"
 	        android:layout_below="@+id/name_edit"
 	        android:text="@string/qth_ui" />
-	
+
 	    <EditText
 	        android:id="@+id/qth_edit"
 	        android:layout_width="wrap_content"
@@ -277,5 +266,16 @@
 	        android:ems="10"
 	        android:inputType="textCapCharacters" />
 
+	    <Button
+	        android:id="@+id/lookup_button"
+	        style="?android:attr/buttonStyleSmall"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignBottom="@+id/callt_edit"
+	        android:layout_toRightOf="@+id/callt_edit"
+	        android:onClick="onLookup"
+	        android:text="@string/lookup_ui" />
+
 	</RelativeLayout>
+
 </ScrollView>

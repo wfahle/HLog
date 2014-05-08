@@ -124,6 +124,24 @@ public class LogActivity extends Activity {
 		return DateTimeUtils.getDateTime(System.currentTimeMillis());
 	}
 	
+	void performLookup() {
+        if (LogActivity.this.updatetask == null) {
+            Log.d("startDownloading", "task was null, calling execute");
+            LogActivity.this.updatetask = new GetProfileTask().execute(LogActivity.this);
+          } else {
+            Status s = LogActivity.this.updatetask.getStatus();
+            if (s == Status.FINISHED) {
+              Log.d("updatetask",
+                  "task wasn't null, status finished, calling execute");
+              LogActivity.this.updatetask = new GetProfileTask().execute(LogActivity.this);
+            }
+        }
+	}
+	
+	public void onLookup(View view) {
+		performLookup();
+	}
+	
 	@Override 
 	protected void onPause() {
 		super.onPause();
@@ -148,8 +166,9 @@ public class LogActivity extends Activity {
 		SharedPreferences settings = getSharedPreferences(ConfigActivity.PREFS_NAME, 0);
 		final String qrzUser = settings.getString(ConfigActivity.QRZ_USER, null);
 		final String qrzPassword = settings.getString(ConfigActivity.QRZ_PASSWORD, null);
+		final boolean qrzAuto = settings.getBoolean(ConfigActivity.QRZ_AUTO, false);
 
-		if (!needsLookup || qrzUser == null || qrzPassword == null || qrzUser.length() == 0
+		if (!qrzAuto || !needsLookup || qrzUser == null || qrzPassword == null || qrzUser.length() == 0
 		    || qrzPassword.length() == 0) {
 			/* could give them the ability to enter just this info through the config activity, but I won't 
 		  LinearLayout searchLL = (LinearLayout) findViewById(R.id.SearchLL01);
@@ -161,18 +180,7 @@ public class LogActivity extends Activity {
 			//skip qrz
 		}
 		else {
-	        if (LogActivity.this.updatetask == null) {
-	            Log.d("startDownloading", "task was null, calling execute");
-	            LogActivity.this.updatetask = new GetProfileTask().execute(LogActivity.this);
-	          } else {
-	            Status s = LogActivity.this.updatetask.getStatus();
-	            if (s == Status.FINISHED) {
-	              Log.d("updatetask",
-	                  "task wasn't null, status finished, calling execute");
-	              LogActivity.this.updatetask = new GetProfileTask().execute(LogActivity.this);
-	            }
-	          }
-
+			performLookup();
 		}
 	}
 

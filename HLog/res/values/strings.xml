@@ -49,5 +49,6 @@
     <string name="def_telnet_port">23</string>
     <string name="def_pig_port">7373</string>
     <string name="qrz_uname_ui">QRZ.com user name</string>
+    <string name="auto_ui">Auto</string>
 
 </resources>
