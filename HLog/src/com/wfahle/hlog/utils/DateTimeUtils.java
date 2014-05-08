@@ -8,7 +8,7 @@ import java.text.SimpleDateFormat;
 
 public class DateTimeUtils {
     private static final DateFormat DATE_TIME_OUTPUT_FORMAT =
-            new SimpleDateFormat("MM-dd-yyyy, HH:mm", Locale.US);    
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);    
 
    public static CharSequence getDateTime(long millis) {
            DATE_TIME_OUTPUT_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
