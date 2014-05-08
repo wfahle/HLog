@@ -33,7 +33,6 @@ import android.widget.Toast;
 
 // TODO: Filters and CW skimmer
 // TODO: put cwskimmer setting in config - check skimmed items against frequency
-// TODO: put check-box for QRZ lookup in config also - check it and save it in the sharedprefs
 // TODO: need buttons for tune, spot, etc.
 // TODO: clean up UI to be consistent, etc.
 // TODO: add context menu to EntryActivity - long-click lets you save spot
