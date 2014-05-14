@@ -44,16 +44,24 @@
         </activity>
         <activity
             android:name="com.wfahle.hlog.EntryActivity"
-            android:label="@string/title_activity_entry" 
-            android:windowSoftInputMode="stateUnchanged">
+            android:label="@string/title_activity_entry"
+            android:windowSoftInputMode="stateUnchanged" >
         </activity>
-        
+
         <provider
-            android:exported="false"
-            android:name=".contentprovider.QSOContactProvider"
-            android:authorities="com.wfahle.hlog.contentprovider" >
+            android:name="com.wfahle.hlog.contentprovider.QSOContactProvider"
+            android:authorities="com.wfahle.hlog.contentprovider"
+            android:exported="false" >
         </provider>
-        
+
+        <activity
+            android:name="com.wfahle.hlog.ToolsActivity"
+            android:label="@string/title_activity_tools"
+            android:parentActivityName="com.wfahle.hlog.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.wfahle.hlog.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
