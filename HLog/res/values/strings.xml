@@ -50,5 +50,9 @@
     <string name="def_pig_port">7373</string>
     <string name="qrz_uname_ui">QRZ.com user name</string>
     <string name="auto_ui">Auto</string>
+    <string name="title_activity_tools">ToolsActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="mail_ui">Mail adif</string>
+    <string name="import_ui">Import dx</string>
 
 </resources>
