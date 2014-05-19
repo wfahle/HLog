@@ -34,6 +34,8 @@ public class GlobalDxccList {
 		if (list == null) 
 		{
 		Entity[] ret = { 
+				// Source: https://www.itu.int/online/mms/glad/cga_callsign.sh?lang=en
+				// Source: http://qrz.com
 				// Note: This first regex will match anything starting with C7, 4Y, or anything
 				// starting with 4U except 4U_ITU and 4U_UN, where _ is 0-9
 				// UN operations besides UN HQ and ITU HQ (including ICAO 4Y and WMO C7) are 
