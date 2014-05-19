@@ -1,5 +1,7 @@
 package com.wfahle.hlog.utils;
 
+import java.util.HashMap;
+
 import com.wfahle.hlog.R;
 
 public class GlobalDxccList {
@@ -16,21 +18,205 @@ public class GlobalDxccList {
 	/* Simple function that returns all information about a callsign. */
 	public static Entity dxcc_display( String theCall ){
 
+		int entity = -1;
+		if (exceptions.containsKey(theCall)) {
+			entity = exceptions.get(theCall);
+		}
 		Entity[] dxcc = GlobalDxccList.get_list();
 		for( int myI = 0; myI < dxcc.length ; ++myI ) {
 			Entity myD = dxcc[myI];
-			if (myD.Callsign == null)
-				continue;
-			if (theCall.matches(myD.Callsign)) {
-				return myD;
+			if (entity != -1) { // if the callsign is in the exception list
+				if (myD.Code == entity)
+					return myD;
+			} else { // look at the callsign vs. the regexes in the entity list
+				if (myD.Callsign == null)
+					continue;
+				if (theCall.matches(myD.Callsign)) {
+					return myD;
+				}
 			}
 		  }
 
 		return null;
 	}
+
+	private static final HashMap<String, Integer> exceptions; 
+	static
+	{
+		exceptions = new HashMap<String, Integer>();
+		// Antarctica: 13
+		exceptions.put("VP8SIG", 13);
+		exceptions.put("KC4AAA", 13);
+		exceptions.put("RI1ANC", 13);
+		exceptions.put("RI1ANT", 13);
+		exceptions.put("RI20ANT", 13);
+
+		// Clipperton Island: 36
+		exceptions.put("TX5K", 36);
+
+		// French Guiana: 63
+		exceptions.put("TO2A", 63);
+		exceptions.put("TO7C", 63);
+		exceptions.put("TO7IR", 63);
+
+		// Guadeloupe: 79
+		exceptions.put("TO0MT", 79);
+		exceptions.put("TO1USB", 79);
+		exceptions.put("TO1T", 79);
+		exceptions.put("TO2FG", 79);
+		exceptions.put("TO4T", 79);
+		exceptions.put("TO4D", 79);
+		exceptions.put("TO7T", 79);
+		exceptions.put("TO9T", 79);
+		
+		// Martinique: 84
+		exceptions.put("TO0O", 84);
+		exceptions.put("TO1BT", 84);
+		exceptions.put("TO1N", 84);
+		exceptions.put("TO3GA", 84);
+		exceptions.put("TO3JA", 84);
+		exceptions.put("TO3T", 84);
+		exceptions.put("TO3W", 84);
+		exceptions.put("TO6M", 84);
+		exceptions.put("TO7A", 84);
+		exceptions.put("TO8A", 84);
+		exceptions.put("TO8Z", 84);
+		exceptions.put("TO9A", 84);
+		exceptions.put("TO9R", 84);
+		
+		// St. Lucia: 97
+		exceptions.put("TO4X",  97);
+		
+		// Guantanamo Bay: 105
+		exceptions.put("KG4AI",  105);
+		exceptions.put("KG4AJ",  105);
+		exceptions.put("KG4AM",  105);
+		exceptions.put("KG4AN",  105);
+		exceptions.put("KG4AS",  105);
+		exceptions.put("KG4AU",  105);
+		exceptions.put("KG4BA",  105);
+		exceptions.put("KG4BB",  105);
+		exceptions.put("KG4CM",  105);
+		exceptions.put("KG4CN",  105);
+		exceptions.put("KG4CQ",  105);
+		exceptions.put("KG4CT",  105);
+		exceptions.put("KG4CW",  105);
+		exceptions.put("KG4DP",  105);
+		exceptions.put("KG4DX",  105);
+		exceptions.put("KG4EM",  105);
+		exceptions.put("KF4EME",  105);
+		exceptions.put("KG4FD",  105);
+		exceptions.put("KG4FY",  105);
+		exceptions.put("KG4GJ",  105);
+		exceptions.put("KG4HE",  105);
+		exceptions.put("KG4HF",  105);
+		exceptions.put("KG4JC",  105);
+		exceptions.put("KG4JJ",  105);
+		exceptions.put("KG4JR",  105);
+		exceptions.put("KG4KD",  105);
+		exceptions.put("KG4KL",  105);
+		exceptions.put("KG4LH",  105);
+		exceptions.put("KG4LL",  105);
+		exceptions.put("KG4LP",  105);
+		exceptions.put("KG4ML",  105);
+		exceptions.put("KG4MN",  105);
+		exceptions.put("KG4OX",  105);
+		exceptions.put("KG4PC",  105);
+		exceptions.put("KG4PK",  105);
+		exceptions.put("KG4PL",  105);
+		exceptions.put("KG4PT",  105);
+		exceptions.put("KG4QB",  105);
+		exceptions.put("KG4QD",  105);
+		exceptions.put("KG4QH",  105);
+		exceptions.put("KG4QW",  105);
+		exceptions.put("KG4RB",  105);
+		exceptions.put("KG4RR",  105);
+		exceptions.put("KG4RX",  105);
+		exceptions.put("KG4SB",  105);
+		exceptions.put("KG4SS",  105);
+		exceptions.put("KG4TJ",  105);
+		exceptions.put("KG4TO",  105);
+		exceptions.put("KG4VL",  105);
+		exceptions.put("KG4VN",  105);
+		exceptions.put("KG4WB",  105);
+		exceptions.put("KG4WD",  105);
+		exceptions.put("KG4WV",  105);
+		exceptions.put("KG4WW",  105);
+		exceptions.put("KG4XE",  105);
+		exceptions.put("KG4ZD",  105);
+		exceptions.put("KG4ZE",  105);
+		exceptions.put("KG4ZI",  105);
+		exceptions.put("KG4ZZ",  105);
+
+		// exceptions.put("KG4ZOI",  105); // no longer GB
+		// exceptions.put("KG4MOZ",  105);
+		
+		// Heard Island: 111
+		exceptions.put("VK0CW", 111);
+		exceptions.put("VK0EK", 111);
+		exceptions.put("VK0HM", 111);
+		exceptions.put("VK0HI", 111);
+		exceptions.put("VK0IR", 111);
+		exceptions.put("VK0WR", 111);
+		exceptions.put("VK1RA", 111);
+		exceptions.put("VK1VU", 111);
+		exceptions.put("VK1YG", 111);
+		
+		// Falkland Islands: 141
+		exceptions.put("VP8SCC", 141);
+		
+		// Lord Howe Island: 147
+		exceptions.put("VK0YQS", 147);
+
+		// Macquarie Island: 153
+		exceptions.put("VK0TH", 153);
+		exceptions.put("VK0KEV", 153);
+		
+		// Mayotte: 169
+		exceptions.put("TO7BC", 169);
+		exceptions.put("TO5NED", 169);
+		exceptions.put("TO8MZ", 169);
+		exceptions.put("TO7RJ", 169);
+		exceptions.put("TO2M", 169);
+		exceptions.put("TO4M", 169);
+		
+		//Minami-Torishima: 177
+		exceptions.put("JD1BCK", 177);
+		exceptions.put("JD1BND", 177);
+		exceptions.put("JD1YAA", 177);
+		
+		// San Felix: 217
+		exceptions.put("3G0X", 217);
+		
+		// Spratly Island: 247
+		exceptions.put("9M4SLL", 247);
+		
+		// St. Pierre and Miquelon: 277
+		exceptions.put("TO7I", 277);
+		exceptions.put("TO2FP", 277);
+		exceptions.put("TO2U", 277);
+		exceptions.put("TO0DX", 277);
+
+		// Reunion Island: 453
+		exceptions.put("TO5M", 453);
+		exceptions.put("TO2Z", 453);
+		exceptions.put("TO3R", 453);
+		exceptions.put("TO2R", 453);
+		exceptions.put("TO4WW", 453);
+		exceptions.put("TO4G", 453);
+		exceptions.put("TO4E", 453);
+		exceptions.put("TO7CC", 453);
+
+		// Saint Barthelemy: 516
+		exceptions.put("TO3A", 516);
+		exceptions.put("TO3X", 516);
+		exceptions.put("TO7ZG", 516);
+		exceptions.put("TO2D", 516);
+		exceptions.put("TO8YY", 516);
+	}
 	
-	public static Entity[] list = null;
-	public static Entity[] get_list() {
+	private static Entity[] list = null;
+	private static Entity[] get_list() {
 		if (list == null) 
 		{
 		Entity[] ret = { 
@@ -49,14 +235,14 @@ public class GlobalDxccList {
     new Entity(   3, "AFGHANISTAN", 0, -1, "^YA|^T6", AS, "40", "21", R.drawable.af ),
     new Entity(   4, "AGALEGA & ST BRANDON", 0, -1, "^3B6|^3B7", AF, "53", "39", R.drawable.mu),
     new Entity(   5, "ALAND ISLAND", 0, -1, "^O[FGI]0|^OH0[^M]", EU, "18", "15", R.drawable.ax ),
-    new Entity(   6, "ALASKA", 0, -1, "^[AKNW]L([0-8]|9[^K])", NA, "1,2", "01", R.drawable.use ),
+    new Entity(   6, "ALASKA", 0, -1, "^[AKNW]L([0-8]|9[^K])|^[AKNW].*/KL7", NA, "1,2", "01", R.drawable.use ),
     new Entity(   7, "ALBANIA", 0, -1, "^ZA", EU, "37", "14", R.drawable.al ),
     new Entity(   8, "ALDABRA", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity(   9, "AMERICAN SAMOA", 0, -1, "^[AKNW]H8[^S]", OC, "62", "32", R.drawable.as ),
     new Entity(  10, "AMSTERDAM & ST PAUL", 0, -1, "^FT[5-8]Z", AF, "68", "39", R.drawable.tf ),
     new Entity(  11, "ANDAMAN & NICOBAR ISLAND", 0, -1, "^V[T-W]4|^8[T-Y]4|^A[T-W]4", AS, "49", "26", R.drawable.in ),
     new Entity(  12, "ANGUILLA", 0, -1, "^VP2E", NA, "11", "08", R.drawable.ai ),
-    new Entity(  13, "ANTARCTICA", 0, -1, "^VP8SIG|^KC4AAA|^RI1AN[CT]|^RI20ANT|^VK0", AN, "(B)", "(C)", R.drawable.aq),
+    new Entity(  13, "ANTARCTICA", 0, -1, "^VK0[^M]", AN, "(B)", "(C)", R.drawable.aq),
     new Entity(  14, "ARMENIA", 0, -1, "^EK", AS, "29", "21", R.drawable.am ),
     new Entity(  15, "ASIATIC RUSSIA", 0, -1, "^[RU][890]|^R[A-Z][890]|^U[A-I][890]", AS, "(F)", "(G)", R.drawable.ru ),
     new Entity(  16, "AUCKLAND & CAMPBELL", 0, -1, "^ZL9", OC, "60", "32", R.drawable.nz ),
@@ -79,16 +265,16 @@ public class GlobalDxccList {
     new Entity(  33, "CHAGOS", 0, -1, "^VQ9", AF, "41", "39", R.drawable.io ),
     new Entity(  34, "CHATHAM ISLAND", 0, -1, "^ZL7", OC, "60", "32", R.drawable.nz ),
     new Entity(  35, "CHRISTMAS ISLAND", 0, -1, "^VK9X", NA, "11", "08", R.drawable.cx ),
-    new Entity(  36, "CLIPPERTON ISLAND", 0, -1, "^TX5K|^FO.*/C", NA, "10", "07", R.drawable.tf ),
+    new Entity(  36, "CLIPPERTON ISLAND", 0, -1, "^FO.*/C", NA, "10", "07", R.drawable.tf ),
     new Entity(  37, "COCOS ISLAND", 0, -1, "^TI9", NA, "11", "07", R.drawable.cc ),
     new Entity(  38, "COCOS-KEELING ISLAND", 0, -1, "^VK9C", OC, "54", "29", R.drawable.cc ),
     new Entity(  39, "COMOROS (FB8)", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
-    new Entity(  40, "CRETE", 0, -1, "^S[V-Z]9", EU, "28", "20", R.drawable.gr ),
+    new Entity(  40, "CRETE", 0, -1, "^S[V-Z]9|^S[V-Z].*/9", EU, "28", "20", R.drawable.gr ),
     new Entity(  41, "CROZET", 0, -1, "^FT8W", AF, "68", "39", R.drawable.tf ),
     new Entity(  42, "DAMAO, DIU", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity(  43, "DESECHEO ISLAND", 0, -1, "^[KNW]P5", NA, "11", "08", R.drawable.use ),
     new Entity(  44, "DESROCHES", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
-    new Entity(  45, "DODECANESE", 0, -1, "^S[V-Z]5", EU, "28", "20", R.drawable.gr ),
+    new Entity(  45, "DODECANESE", 0, -1, "^S[V-Z]5|^S[V-Z].*/5", EU, "28", "20", R.drawable.gr ),
     new Entity(  46, "EAST MALAYSIA", 0, -1, "^9[MW]6|^9[MW]8", OC, "54", "28", R.drawable.my ), 
     new Entity(  47, "EASTER ISLAND", 0, -1, "^C[A-E]0[A-WY]|^3G0[A-WY]|^X[QR]0[A-WY]", SA, "63", "12", R.drawable.cl ),
     new Entity(  48, "EASTERN KIRIBATI", 0, -1, "^T32", OC, "61", "31", R.drawable.ki ),
@@ -106,7 +292,7 @@ public class GlobalDxccList {
     new Entity(  59, "FRENCH WEST AFRICA", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity(  60, "BAHAMAS", 0, -1, "^C6", NA, "11", "08", R.drawable.bs ),
     new Entity(  62, "BARBADOS", 0, -1, "^8P", NA, "11", "08", R.drawable.bb ),
-    new Entity(  63, "FRENCH GUIANA", 0, -1, "^FY|^TO7C$|^TO2A", SA, "12", "09", R.drawable.gf ),
+    new Entity(  63, "FRENCH GUIANA", 0, -1, "^FY", SA, "12", "09", R.drawable.gf ),
     new Entity(  64, "BERMUDA", 0, -1, "^VP9", NA, "11", "05", R.drawable.bm ),
     new Entity(  65, "BRITISH VIRGIN ISLAND", 0, -1, "^VP2V", NA, "11", "08", R.drawable.vg ),
     new Entity(  66, "BELIZE", 0, -1, "^V3", NA, "11", "07", R.drawable.bz ),
@@ -121,11 +307,11 @@ public class GlobalDxccList {
     new Entity(  76, "GUATEMALA", 0, -1, "^TD|^TG", NA, "11", "07", R.drawable.gt ),
     new Entity(  77, "GRENADA", 0, -1, "^J3", NA, "11", "08", R.drawable.gd ),
     new Entity(  78, "HAITI", 0, -1, "^HH|^4V", NA, "11", "08", R.drawable.ht ),
-    new Entity(  79, "GUADELOUPE", 0, -1, "^FG|^TO6[^M]|^TO8[^AZMY]|^TO2[^ADFMRUZ]|^TO1USB|^TO2FG|^TO0MT|^TO4T|^TO4D", NA, "11", "08", R.drawable.gp ),
+    new Entity(  79, "GUADELOUPE", 0, -1, "^FG|^TO6[^M]|^TO8[^AZMY]|^TO2[^M]", NA, "11", "08", R.drawable.gp ),
     new Entity(  80, "HONDURAS", 0, -1, "^HQ|^HR", NA, "11", "07", R.drawable.hn ),
     new Entity(  81, "GERMANY", 1, -1, null, EU, "28", "14", R.drawable.de ),
     new Entity(  82, "JAMAICA", 0, -1, "^6Y", NA, "11", "08", R.drawable.jm ),
-    new Entity(  84, "MARTINIQUE", 0, -1, "^FM|^TO6M|^TO5[^MN]|^TO9A|^TO3JA|^TO3W|^TO0O|^TO4[^DEGMTWX]|^TO8A|^TO8Z|^TO7A", NA, "11", "08", R.drawable.mq ),
+    new Entity(  84, "MARTINIQUE", 0, -1, "^FM|^TO5|^TO4[^M]", NA, "11", "08", R.drawable.mq ),
     new Entity(  85, "BONAIRE,CURACAO", 1, -1, null, SA, "11", "09", R.drawable.zz ),
     new Entity(  86, "NICARAGUA", 0, -1, "^YN|^H[67T]", NA, "11", "07", R.drawable.ni ),
     new Entity(  88, "PANAMA", 0, -1, "^H[OP389]|^3[EF]", NA, "11", "07", R.drawable.pa ),
@@ -144,13 +330,13 @@ public class GlobalDxccList {
     new Entity( 102, "GOLD COAST/TOGOLND", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 103, "GUAM", 0, -1, "^[AKNW]H2", OC, "64", "27", R.drawable.gu ),
     new Entity( 104, "BOLIVIA", 0, -1, "^CP", SA, "12", "10", R.drawable.bo ),
-    new Entity( 105, "GUANTANAMO BAY", 0, -1, "^KG4ZOI|^KG4MOZ|^KG4ZD|^KG4TO|^KG4OX|^KG4XE|^KG4QW|^KG4AN|^KG4/", NA, "11", "08", R.drawable.use ),
+    new Entity( 105, "GUANTANAMO BAY", 0, -1, "^KG4/|^[ANKW].*/KG4$", NA, "11", "08", R.drawable.use ),
     new Entity( 106, "GUERNSEY", 0, -1, "^[GM2][PU]", EU, "27", "14", R.drawable.gg ),
     new Entity( 107, "REPUBLIC OF GUINEA", 0, -1, "^3X", AF, "46", "35", R.drawable.gn ),
     new Entity( 108, "BRAZIL", 0, -1, "^P[P-Y][^0]|^Z[V-Z]|^P[P-Y]0[^FRSTZM]", SA, "(D)", "11", R.drawable.br ),
     new Entity( 109, "GUINEA-BISSAU", 0, -1, "^J5", AF, "46", "35", R.drawable.gw ),
-    new Entity( 110, "HAWAII", 0, -1, "^[AKNW]H6|^[AKNW]H7[^K]", OC, "61", "31", R.drawable.use ),
-    new Entity( 111, "HEARD ISLAND", 0, -1, "^VKO", AF, "68", "39", R.drawable.aq ),
+    new Entity( 110, "HAWAII", 0, -1, "^[AKNW]H6|^[AKNW]H7[^K]|^[AKNW].*/KH6", OC, "61", "31", R.drawable.use ),
+    new Entity( 111, "HEARD ISLAND", 0, -1, "^VK0.*/H", AF, "68", "39", R.drawable.aq ),
     new Entity( 112, "CHILE", 0, -1, "^C[A-E][^09]|^3G[^09]|^X[QR][^09]", SA, "14", "12", R.drawable.cl ),
     new Entity( 113, "IFNI", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 114, "ISLE OF MAN", 0, -1, "^[GM2][DT]", EU, "27", "14", R.drawable.im ),
@@ -179,7 +365,7 @@ public class GlobalDxccList {
     new Entity( 138, "KURE ISLAND", 0, -1, "^[AKNW]H7K", OC, "61", "31", R.drawable.use ),
     new Entity( 139, "KURIA MURIA ISLAND", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 140, "SURINAME", 0, -1, "^PZ", SA, "12", "09", R.drawable.sr ),
-    new Entity( 141, "FALKLAND ISLAND", 0, -1, "^VP8[A-EKLNVY]|^VP8SCC", SA, "16", "13", R.drawable.fk ),
+    new Entity( 141, "FALKLAND ISLAND", 0, -1, "^VP8[A-EKLNVY]", SA, "16", "13", R.drawable.fk ),
     new Entity( 142, "LAKSHADWEEP ISLANDS", 0, -1, "^V[T-W]7|^8[T-Y]7|^A[T-W]7", AS, "41", "22", R.drawable.in ),
     new Entity( 143, "LAOS", 0, -1, "^XW", AS, "49", "26", R.drawable.la),
     new Entity( 144, "URUGUAY", 0, -1, "^C[V-X]", SA, "14", "13", R.drawable.uy ),
@@ -191,7 +377,7 @@ public class GlobalDxccList {
     new Entity( 150, "AUSTRALIA", 0, -1, "^AX|^V[H-NZ][^09]", OC, "(I)", "29,30", R.drawable.au ),
     new Entity( 151, "MALYJ VYSOTSKI ISLAND", 1, -1, null, EU, "29", "16", R.drawable.ru ),
     new Entity( 152, "MACAO", 0, -1, "^XX", AS, "49", "26", R.drawable.mo ),
-    new Entity( 153, "MACQUARIE ISLAND", 0, -1, "^VK0M|^VK0TH|^VK0KEV", OC, "60", "30", R.drawable.au ),
+    new Entity( 153, "MACQUARIE ISLAND", 0, -1, "^VK0M", OC, "60", "30", R.drawable.au ),
     new Entity( 154, "YEMEN ARAB REP", 1, -1, null, AS, "39", "21", R.drawable.zz ),
     new Entity( 155, "MALAYA", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 157, "NAURU", 0, -1, "^C2", OC, "65", "31", R.drawable.nr ),
@@ -206,7 +392,7 @@ public class GlobalDxccList {
     new Entity( 166, "MARIANA ISLAND", 0, -1, "^[AKNW]H0", OC, "64", "27", R.drawable.mp ),
     new Entity( 167, "MARKET REEF", 0, -1, "^OH0M|^OJ0", EU, "18", "15", R.drawable.fi ),
     new Entity( 168, "MARSHALL ISLAND", 0, -1, "^V7", OC, "65", "31", R.drawable.mh ),
-    new Entity( 169, "MAYOTTE", 0, -1, "^FH|^TO5NED|^TO8MZ|^TO7RJ|^TO2M|^TO4M", AF, "53", "39", R.drawable.yt ),
+    new Entity( 169, "MAYOTTE", 0, -1, "^FH", AF, "53", "39", R.drawable.yt ),
     new Entity( 170, "NEW ZEALAND", 0, -1, "^ZL[^789]|^ZK[^0123]|^ZM", OC, "60", "32", R.drawable.nz ),
     new Entity( 171, "MELLISH REEF", 0, -1, "^VK9[GMW]", OC, "56", "30", R.drawable.au ),
     new Entity( 172, "PITCAIRN ISLAND", 0, -1, "^VP6", OC, "63", "32", R.drawable.pn ),
@@ -239,7 +425,7 @@ public class GlobalDxccList {
     new Entity( 199, "PETER I ISLAND", 0, -1, "^3Y", AN, "72", "12", R.drawable.no ),
     new Entity( 200, "PORTUGUESE TIMOR", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 201, "PRINCE EDWARD & MARION", 0, -1, "^ZS8", AF, "57", "38", R.drawable.za ),
-    new Entity( 202, "PUERTO RICO", 0, -1, "^[KNW]P[3-4]", NA, "11", "08", R.drawable.pr ),
+    new Entity( 202, "PUERTO RICO", 0, -1, "^[KNW]P[3-4]|^[ANKW].*/KP4", NA, "11", "08", R.drawable.pr ),
     new Entity( 203, "ANDORRA", 0, -1, "^C3", EU, "27", "14", R.drawable.ad ),
     new Entity( 204, "REVILLAGIGEDO ISLANDS", 0, -1, "^X[A-I]4", NA, "10", "06", R.drawable.mx ),
     new Entity( 205, "ASCENSION ISLAND", 0, -1, "^ZD8", AF, "66", "36", R.drawable.sh ),
@@ -254,7 +440,7 @@ public class GlobalDxccList {
     new Entity( 214, "CORSICA", 0, -1, "^TK", EU, "28", "15", R.drawable.fr ),
     new Entity( 215, "CYPRUS", 0, -1, "^5B|^C4|^H2|^P3|^1B", AS, "39", "20", R.drawable.cy ),
     new Entity( 216, "SAN ANDREAS & PROVIDENCIA", 0, -1, "^HK0[^MNT]", NA, "11", "09", R.drawable.co ),
-    new Entity( 217, "SAN FELIX", 0, -1, "^C[A-E]0X|^3G0X|^X[QR]0X", SA, "14", "12", R.drawable.cl ),
+    new Entity( 217, "SAN FELIX", 0, -1, "^C[A-E]0X|^X[QR]0X", SA, "14", "12", R.drawable.cl ),
     new Entity( 218, "CZECHOSLOVAKIA", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 219, "SAO TOME & PRINCIPE", 0, -1, "^S9", AF, "47", "36", R.drawable.st ),
     new Entity( 220, "SARAWAK", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
@@ -278,13 +464,13 @@ public class GlobalDxccList {
     new Entity( 238, "SOUTH ORKNEY ISLAND", 0, -1, "^VP8O|^VP8.*/O", SA, "73", "13", R.drawable.aq ),
     new Entity( 239, "HUNGARY", 0, -1, "^HA|^HG", EU, "28", "15", R.drawable.hu ), 
     new Entity( 240, "SOUTH SANDWICH ISLANDS", 0, -1, "^VP8SSI|^VP8.*/S", SA, "73", "13", R.drawable.gs ),
-    new Entity( 241, "SOUTH SHETLAND ISLANDS", 0, -1, "^4K1|^CE9|^VP8.*/H|^VP8H", SA, "73", "13", R.drawable.aq ), 
+    new Entity( 241, "SOUTH SHETLAND ISLANDS", 0, -1, "^4K1|^CE9|^VP8.*/H|^VP8H|^RI1ANU|^RI44", SA, "73", "13", R.drawable.aq ), 
     new Entity( 242, "ICELAND", 0, -1, "^TF", EU, "17", "40", R.drawable.is ),
     new Entity( 243, "DEM REP OF YEMEN", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 244, "SOUTHERN SUDAN", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 245, "IRELAND", 0, -1, "^EI|^EJ", EU, "27", "14", R.drawable.ie ),
     new Entity( 246, "MALTA, SOVERIGN", 0, -1, "^1A0", EU, "28", "15", R.drawable.dk ),
-    new Entity( 247, "SPRATLY ISLAND", 0, -1, "^9M4SLL|^1S", AS, "50", "26", R.drawable.my ),
+    new Entity( 247, "SPRATLY ISLAND", 0, -1, "^1S", AS, "50", "26", R.drawable.my ),
     new Entity( 248, "ITALY", 0, -1, "^I[^S]", EU, "28,37,15", "33", R.drawable.it ),
     new Entity( 249, "ST KITTS & NEVIS", 0, -1, "^V4", NA, "11", "08", R.drawable.kn ),
     new Entity( 250, "ST HELENA ISLAND", 0, -1, "^ZD7", AF, "66", "36", R.drawable.sh ),
@@ -314,7 +500,7 @@ public class GlobalDxccList {
     new Entity( 274, "TRISTAN DA CUNHA", 0, -1, "^ZD9", AF, "66", "38", R.drawable.sh ),
     new Entity( 275, "ROMANIA", 0, -1, "^Y[O-R]", EU, "28", "20", R.drawable.ro ), 
     new Entity( 276, "TROMELIN", 0, -1, "^FR.*/T", AF, "53", "39", R.drawable.tf ),
-    new Entity( 277, "ST PIERRE & MIQUELON", 0, -1, "^FP|^TO7I|^TO2FP|^TO2U|^TO0DX", NA, "09", "05", R.drawable.pm ),
+    new Entity( 277, "ST PIERRE & MIQUELON", 0, -1, "^FP", NA, "09", "05", R.drawable.pm ),
     new Entity( 278, "SAN MARINO", 0, -1, "^T7", EU, "28", "15", R.drawable.sm ),
     new Entity( 279, "SCOTLAND", 0, -1, "^[GM2][MS]", EU, "27", "14", R.drawable.scotland ),
     new Entity( 280, "TURKMENISTAN", 0, -1, "^EZ", AS, "30", "17", R.drawable.tm ), 
@@ -337,7 +523,7 @@ public class GlobalDxccList {
     new Entity( 298, "WALLIS & FUTUNA", 0, -1, "^FW|^TW", OC, "62", "32", R.drawable.wf ),
     new Entity( 299, "WESTERN MALAYSIA", 0, -1, "^9[MW]2|^9[MW]4", AS, "54", "28", R.drawable.my ),
     new Entity( 301, "WESTERN KIRIBATI", 0, -1, "^T30", OC, "65", "31", R.drawable.ki ),
-    new Entity( 302, "WESTERN SAHARA", 0, -1, "^SO", AS, "41", "22", R.drawable.eh ),
+    new Entity( 302, "WESTERN SAHARA", 0, -1, "^S0", AS, "41", "22", R.drawable.eh ),
     new Entity( 303, "WILLIS ISLAND", 0, -1, "^VK9[DW]", OC, "55", "30", R.drawable.au ),
     new Entity( 304, "BAHRAIN", 0, -1, "^A9", AS, "39", "21", R.drawable.bh ),
     new Entity( 305, "BANGLADESH", 0, -1, "^S[23]", AS, "41", "22", R.drawable.bd ),
@@ -402,7 +588,7 @@ public class GlobalDxccList {
     new Entity( 446, "MOROCCO", 0, -1, "^5[C-G]|^CN", AF, "37", "33", R.drawable.ma ),
     new Entity( 450, "NIGERIA", 0, -1, "^5N|^5O", AF, "46", "35", R.drawable.ng ),
     new Entity( 452, "ZIMBABWE", 0, -1, "^Z2", AF, "53", "38", R.drawable.zw ),
-    new Entity( 453, "REUNION", 0, -1, "^FR|^TO5M|^TO2Z|^TO3R|^TO4WW|^TO4G|^TO4E|^TO7CC|^TO2R", AF, "53", "39", R.drawable.re ),
+    new Entity( 453, "REUNION", 0, -1, "^FR", AF, "53", "39", R.drawable.re ),
     new Entity( 454, "RWANDA", 0, -1, "^9X", AF, "52", "36", R.drawable.rw ),
     new Entity( 456, "SENEGAL", 0, -1, "^6V|^6W", AF, "46", "35", R.drawable.sn ),
     new Entity( 458, "SIERRA LEONE", 0, -1, "^9L", AF, "46", "35", R.drawable.sl ),
@@ -431,7 +617,7 @@ public class GlobalDxccList {
     new Entity( 505, "PRATAS ISLAND", 0, -1, "^BV9|^BQ9", AS, "44", "24", R.drawable.tw ),
     new Entity( 506, "SCARBOROUGH REEF", 0, -1, "^BS7", AS, "50", "27", R.drawable.cn ),
     new Entity( 507, "TEMOTU ISLAND", 0, -1, "^H40", OC, "51", "32", R.drawable.sb ),
-    new Entity( 508, "AUSTRAL ISLAND", 0, -1, "^FO.*/A|^TX6|^TX5[^K]", OC, "63", "32", R.drawable.pf ),
+    new Entity( 508, "AUSTRAL ISLAND", 0, -1, "^FO.*/A|^TX6|^TX5", OC, "63", "32", R.drawable.pf ),
     new Entity( 509, "MARQUESAS ISLAND", 0, -1, "^FO.*/M", OC, "63", "31", R.drawable.pf ),
     new Entity( 510, "PALESTINE", 0, -1, "^E4", AS, "39", "20", R.drawable.zz ),
     new Entity( 511, "DUCIE IS", 0, 513, "^VP6.*/D", OC, "63", "32", R.drawable.pn ),
@@ -439,7 +625,7 @@ public class GlobalDxccList {
     new Entity( 513, "EAST TIMOR", 0, 511, "^4W", AS, "54", "28", R.drawable.tl ),
     new Entity( 514, "MONTENEGRO", 0, -1, "^4O", EU, "28", "15", R.drawable.cs ),
     new Entity( 515, "SWAINS ISLAND", 0, -1, "^[AKNW]H8S", OC, "62", "32", R.drawable.use ),    
-    new Entity( 516, "SAINT BARTHELEMY", 0, -1, "^FJ|^TO3[AX]|^TO7ZG|^TO2D|^TO8YY", OC, "62", "32", R.drawable.bl ),
+    new Entity( 516, "SAINT BARTHELEMY", 0, -1, "^FJ", OC, "62", "32", R.drawable.bl ),
     new Entity( 517, "CURACAO", 0, -1, "^PJ2", SA, "11", "09", R.drawable.cw ),
     new Entity( 518, "SINT MAARTEN", 0, -1, "^PJ7", NA, "11", "08", R.drawable.sx),
     new Entity( 519, "SABA AND ST EUSTATIUS", 0, -1, "^PJ[5689]", NA, "11", "08", R.drawable.saba ),
