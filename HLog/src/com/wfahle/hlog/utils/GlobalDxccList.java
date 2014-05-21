@@ -66,6 +66,7 @@ public class GlobalDxccList {
 		exceptions.put("TO2FG", 79);
 		exceptions.put("TO4T", 79);
 		exceptions.put("TO4D", 79);
+		exceptions.put("TO5BG", 79);
 		exceptions.put("TO7T", 79);
 		exceptions.put("TO9T", 79);
 		
@@ -279,7 +280,7 @@ public class GlobalDxccList {
     new Entity(  38, "COCOS-KEELING ISLAND", 0, -1, "^VK9C", OC, "54", "29", R.drawable.cc ),
     new Entity(  39, "COMOROS (FB8)", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity(  40, "CRETE", 0, -1, "^S[V-Z]9|^S[V-Z].*/9", EU, "28", "20", R.drawable.gr ),
-    new Entity(  41, "CROZET", 0, -1, "^FT8W", AF, "68", "39", R.drawable.tf ),
+    new Entity(  41, "CROZET", 0, -1, "^FT[5-8]W", AF, "68", "39", R.drawable.tf ),
     new Entity(  42, "DAMAO, DIU", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity(  43, "DESECHEO ISLAND", 0, -1, "^[KNW]P5", NA, "11", "08", R.drawable.use ),
     new Entity(  44, "DESROCHES", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
@@ -364,7 +365,7 @@ public class GlobalDxccList {
     new Entity( 128, "KARELO-FINN REP", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 129, "GUYANA", 0, -1, "^8R", SA, "12", "09", R.drawable.gy ),
     new Entity( 130, "KAZAKHSTAN", 0, -1, "^U[N-Q]", AS, "29", "17" , R.drawable.kz),
-    new Entity( 131, "KERGUELEN", 0, -1, "^FT8X|^FT.*/X|^FT5X", AF, "68", "39", R.drawable.tf ),
+    new Entity( 131, "KERGUELEN", 0, -1, "^FT[5-8]X|^FT.*/X", AF, "68", "39", R.drawable.tf ),
     new Entity( 132, "PARAGUAY", 0, -1, "^ZP", SA, "14", "11", R.drawable.py ),
     new Entity( 133, "KERMADEC", 0, -1, "^ZL8", OC, "60", "32", R.drawable.nz ),
     new Entity( 134, "KINGMAN REEF", 0, -1, "^[AKNW]H5K", OC, "61", "31", R.drawable.use ), 
