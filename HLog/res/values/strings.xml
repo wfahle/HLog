@@ -54,5 +54,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="mail_ui">Mail adif</string>
     <string name="import_ui">Import dx</string>
+    <string name="hotspot_ui">Hotspot</string>
 
 </resources>
