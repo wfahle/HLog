@@ -185,6 +185,35 @@ public class GlobalDxccList {
 		exceptions.put("JD1BCK", 177);
 		exceptions.put("JD1BND", 177);
 		exceptions.put("JD1YAA", 177);
+		exceptions.put("JA6GXK/JD1", 177);
+		exceptions.put("JD1/JA6GXK", 177);
+		exceptions.put("JD1/JD1BIC", 177);
+		exceptions.put("JD1/JE6XPF", 177);
+		exceptions.put("JD1/JF3CTR", 177);
+		exceptions.put("JD1/JF7MTO", 177);
+		exceptions.put("JD1/JF8HIQ", 177);
+		exceptions.put("JD1/JG8NQJ", 177);
+		exceptions.put("JD1/JH1EFP", 177);
+		exceptions.put("JD1/JI2AMA", 177);
+		exceptions.put("JD1/JK1PCN", 177);
+		exceptions.put("JD1/JR8XXQ", 177);
+		exceptions.put("JD1BIC/JD1", 177);
+		exceptions.put("JD1BME", 177);
+		exceptions.put("JD1BMM", 177);
+		exceptions.put("JD1M/JI2AMA", 177);
+		exceptions.put("JD1YBJ", 177);
+		exceptions.put("JF3CTR/JD1", 177);
+		exceptions.put("JF7MTO/JD1", 177);
+		exceptions.put("JF8HIQ/JD1", 177);
+		exceptions.put("JG8NQJ/JD1", 177);
+		exceptions.put("JH1EFP/JD1", 177);
+		exceptions.put("JI2AMA/JD1", 177);
+		exceptions.put("JK1PCN/JD1", 177);
+		exceptions.put("JR8XXQ/JD1", 177);
+		
+		// Japan
+		exceptions.put("JD1BHH/6", 339);
+		
 		
 		// Norfolk: 189
 		exceptions.put("VK9DAC", 189);
@@ -217,6 +246,12 @@ public class GlobalDxccList {
 		exceptions.put("TO4E", 453);
 		exceptions.put("TO7CC", 453);
 
+		// Swains Island
+		exceptions.put("K1ER/KH8", 515);
+		exceptions.put("K8YSE/KH8", 515);
+		exceptions.put("KH6BK/KH8", 515);
+		
+		
 		// Saint Barthelemy: 516
 		exceptions.put("TO3A", 516);
 		exceptions.put("TO3X", 516);
@@ -518,7 +553,7 @@ public class GlobalDxccList {
     new Entity( 282, "TUVALU", 0, -1, "^T2", OC, "65", "31", R.drawable.tv ), 
     new Entity( 283, "UK BASES ON CYPRUS", 0, -1, "^ZC", AS, "39", "20", R.drawable.gb ), 
     new Entity( 284, "SWEDEN", 0, -1, "^S[A-M]|^7S|^8S", EU, "18", "14", R.drawable.se ),
-    new Entity( 285, "VIRGIN ISLANDS", 0, -1, "^[KNW]P2", NA, "11", "08", R.drawable.vi ),
+    new Entity( 285, "VIRGIN ISLANDS", 0, -1, "^[KNW]P2|^[AKNW].*/KP2", NA, "11", "08", R.drawable.vi ),
     new Entity( 286, "UGANDA", 0, -1, "^5X", AF, "48", "37", R.drawable.ug ),
     new Entity( 287, "SWITZERLAND", 0, -1, "^H[EB][^0]", EU, "28", "14", R.drawable.ch ),
     new Entity( 288, "UKRAINE", 0, -1, "^E[M-O]|^U[R-Z]", EU, "29", "16", R.drawable.ua ),
