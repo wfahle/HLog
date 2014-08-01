@@ -54,6 +54,9 @@ public class GlobalDxccList {
 		// Clipperton Island: 36
 		exceptions.put("TX5K", 36);
 
+		// Cocos-Keeling Island: 38
+		exceptions.put("VK9EC", 38);
+
 		// French Guiana: 63
 		exceptions.put("TO2A", 63);
 		exceptions.put("TO7C", 63);
@@ -578,7 +581,7 @@ public class GlobalDxccList {
     new Entity( 309, "MYANMAR", 0, -1, "^XY|^XZ", AS, "49", "26", R.drawable.mm ),
     new Entity( 312, "KAMPUCHEA (CAMBODIA)", 0, -1, "^XU", AS, "49", "26", R.drawable.kh ),
     new Entity( 315, "SRI LANKA", 0, -1, "^4[P-S]", AS, "41", "22", R.drawable.lk ),
-    new Entity( 318, "CHINA", 0, -1, "^B[A-LRTYZ]|^3[H-U]|^XS|^BS[^7]", AS, "(A)", "23,24", R.drawable.cn ),
+    new Entity( 318, "CHINA", 0, -1, "^B[0-9A-LRTYZ]|^3[H-U]|^XS|^BS[^7]", AS, "(A)", "23,24", R.drawable.cn ),
     new Entity( 321, "HONG KONG", 0, -1, "^VR|^VS", AS, "44", "24", R.drawable.hk ),
     new Entity( 324, "INDIA", 0, -1, "^V[T-W][^47]|^8[T-Y][^47]|^A[T-W][^47]", AS, "41", "22", R.drawable.in ),
     new Entity( 327, "INDONESIA", 0, -1, "^Y[B-H]|^7[A-I]|^8[A-I]|^JZ|^P[K-O]", OC, "51", "28", R.drawable.id ), 
