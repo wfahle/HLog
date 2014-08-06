@@ -51,6 +51,9 @@ public class GlobalDxccList {
 		exceptions.put("RI1ANT", 13);
 		exceptions.put("RI20ANT", 13);
 
+		// Christmas Island: 35
+		exceptions.put("VK9EX", 35);
+		
 		// Clipperton Island: 36
 		exceptions.put("TX5K", 36);
 
