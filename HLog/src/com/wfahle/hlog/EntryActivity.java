@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.wfahle.hlog.contentprovider.QSOContact;
 import com.wfahle.hlog.contentprovider.QSOContactProvider;
 import com.wfahle.hlog.contentprovider.QSOContactTable;
 import com.wfahle.hlog.network.RHandler;
@@ -13,7 +14,6 @@ import com.wfahle.hlog.network.TerminalSocket;
 import com.wfahle.hlog.utils.Entity;
 import com.wfahle.hlog.utils.GlobalDxccList;
 import com.wfahle.hlog.utils.RadioUtils;
-import com.wfahle.unused.QSOContact;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -372,6 +372,7 @@ public class EntryActivity extends Activity {
 		values.put(QSOContactTable.KEY_STATE, qso.getState());
 		values.put(QSOContactTable.KEY_COUNTRY, qso.getCountry());
 		values.put(QSOContactTable.KEY_GRID, qso.getGrid());
+		values.put(QSOContactTable.KEY_TXPWR, qso.getPower());
 		values.put(QSOContactTable.KEY_COMPLETE, qso.getComplete());
 		
 		if (contactUri == null) {

@@ -93,7 +93,7 @@ public class ToolsActivity extends Activity {
 		String[] projection = {    QSOContactTable.KEY_ID, QSOContactTable.KEY_CALL, QSOContactTable.KEY_RXFREQ, QSOContactTable.KEY_TXFREQ,
 				QSOContactTable.KEY_TIMEON, QSOContactTable.KEY_TIMEOFF, QSOContactTable.KEY_MODE, QSOContactTable.KEY_RRST,
 				QSOContactTable.KEY_SRST, QSOContactTable.KEY_NAME, QSOContactTable.KEY_QTH, QSOContactTable.KEY_STATE, 
-				QSOContactTable.KEY_COUNTRY, QSOContactTable.KEY_GRID, QSOContactTable.KEY_COMPLETE };
+				QSOContactTable.KEY_COUNTRY, QSOContactTable.KEY_GRID, QSOContactTable.KEY_TXPWR, QSOContactTable.KEY_COMPLETE };
 		String selectionClause = null; // string if selecting
 		String[] selectionArgs = null; // args to clause
 		String sortOrder = QSOContactTable.KEY_TIMEON; // in order of qso start
@@ -156,6 +156,7 @@ public class ToolsActivity extends Activity {
 		    		time2 = timeOff;
 		    	}
 		    	String rxFreq = mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_RXFREQ));
+		    	String txFreq = mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_TXFREQ));
 		    	String call = mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_CALL));
 		    	String rrst =  mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_RRST));
 		    	String srst =  mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_SRST));
@@ -165,11 +166,14 @@ public class ToolsActivity extends Activity {
 		    	String state =  mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_STATE));
 		    	String country =  mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_COUNTRY));
 		    	String mode =  mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_MODE));
+		    	String txpwr = mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_TXPWR));
 		    	String complete = mCursor.getString(mCursor.getColumnIndex(QSOContactTable.KEY_COMPLETE));
 		    	String date2str = "";
 		    	if (!date2.equals(date))
 		    		date2str = "<QSO_DATE_OFF:"+date2.length()+">" + date2;
-		    	
+
+		    	if (txpwr== null || txpwr.length() == 0)
+		    		txpwr = "100";
 		    	String row = 
 		        // Gets the value from the column.
 		        "<QSO_DATE:" + date.length() + ">" + date + 
@@ -177,6 +181,7 @@ public class ToolsActivity extends Activity {
 		    	date2str+
 		    	"<TIME_OFF:" + time2.length() + ">" + time2 +
 		    	"<FREQ:" +rxFreq.length() + ">" + rxFreq + 
+		    	"<FREQ_RX:" + txFreq.length() + ">" + txFreq +
 		    	"<CALL:" +call.length() + ">" + call + 
 		    	"<RST_RCVD:" +rrst.length() + ">" + rrst +
 		    	"<RST_SENT:" +srst.length() + ">" + srst +
@@ -186,6 +191,7 @@ public class ToolsActivity extends Activity {
 		    	"<STATE:"+state.length() + ">" + state +
 		    	"<COUNTRY:"+country.length() + ">" + country +
 		    	"<MODE:"+mode.length() + ">" + mode +
+		    	"<TX_PWR:"+txpwr.length() + ">" + txpwr + 
 		    	"<QSO_COMPLETE:"+complete.length() + ">" + complete + 
 		        "<eor>\r\n";
 

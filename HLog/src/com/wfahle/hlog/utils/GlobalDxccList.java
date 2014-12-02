@@ -174,6 +174,7 @@ public class GlobalDxccList {
 		
 		// Lord Howe Island: 147
 		exceptions.put("VK0YQS", 147);
+		exceptions.put("VK9DLX",  147);
 
 		// Macquarie Island: 153
 		exceptions.put("VK0TH", 153);
@@ -220,6 +221,8 @@ public class GlobalDxccList {
 		// Japan
 		exceptions.put("JD1BHH/6", 339);
 		
+		// Navassa: 182
+		exceptions.put("K1P", 182);
 		
 		// Norfolk: 189
 		exceptions.put("VK9DAC", 189);
@@ -286,7 +289,7 @@ public class GlobalDxccList {
     new Entity(   3, "AFGHANISTAN", 0, -1, "^YA|^T6", AS, "40", "21", R.drawable.af ),
     new Entity(   4, "AGALEGA & ST BRANDON", 0, -1, "^3B6|^3B7", AF, "53", "39", R.drawable.mu),
     new Entity(   5, "ALAND ISLAND", 0, -1, "^O[FGI]0|^OH0[^M]", EU, "18", "15", R.drawable.ax ),
-    new Entity(   6, "ALASKA", 0, -1, "^[AKNW]L([0-8]|9[^K])|^[AKNW].*/KL7", NA, "1,2", "01", R.drawable.use ),
+    new Entity(   6, "ALASKA", 0, -1, "^[AKNW]L([0-8]|9[^K])|^[AKNW].*/[AKNW]L[0-9]$", NA, "1,2", "01", R.drawable.use ),
     new Entity(   7, "ALBANIA", 0, -1, "^ZA", EU, "37", "14", R.drawable.al ),
     new Entity(   8, "ALDABRA", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity(   9, "AMERICAN SAMOA", 0, -1, "^[AKNW]H8[^S]", OC, "62", "32", R.drawable.as ),
@@ -300,7 +303,7 @@ public class GlobalDxccList {
     new Entity(  17, "AVES ISLAND", 0, -1, "^Y[V-Y]0|^4M0", NA, "11", "08", R.drawable.ve ),
     new Entity(  18, "AZERBAIJAN", 0, -1, "^4J|^4K", AS, "29", "21", R.drawable.az ),
     new Entity(  19, "BAJO NUEVO", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
-    new Entity(  20, "BAKER, HOWLAND ISLAND", 0, -1, "^[AKNW]H1", OC, "64", "27", R.drawable.use ),
+    new Entity(  20, "BAKER, HOWLAND ISLAND", 0, -1, "^[AKNW]H1|^[ANKW].*/KH1$", OC, "64", "27", R.drawable.use ),
     new Entity(  21, "BALEARIC ISLAND", 0, -1, "^E[A-H]6|^A[M-O]6", EU, "37", "14", R.drawable.es ),
     new Entity(  22, "BELAU (PALAU)", 0, -1, "^T8", OC, "64", "27", R.drawable.pw ),
     new Entity(  23, "BLENHEIM REEF", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
@@ -323,7 +326,7 @@ public class GlobalDxccList {
     new Entity(  40, "CRETE", 0, -1, "^S[V-Z]9|^S[V-Z].*/9", EU, "28", "20", R.drawable.gr ),
     new Entity(  41, "CROZET", 0, -1, "^FT[5-8]W", AF, "68", "39", R.drawable.tf ),
     new Entity(  42, "DAMAO, DIU", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
-    new Entity(  43, "DESECHEO ISLAND", 0, -1, "^[KNW]P5", NA, "11", "08", R.drawable.use ),
+    new Entity(  43, "DESECHEO ISLAND", 0, -1, "^[KNW]P5|^[ANKW].*/KP5$", NA, "11", "08", R.drawable.use ),
     new Entity(  44, "DESROCHES", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity(  45, "DODECANESE", 0, -1, "^S[V-Z]5|^S[V-Z].*/5", EU, "28", "20", R.drawable.gr ),
     new Entity(  46, "EAST MALAYSIA", 0, -1, "^9[MW]6|^9[MW]8", OC, "54", "28", R.drawable.my ), 
@@ -398,7 +401,7 @@ public class GlobalDxccList {
     new Entity( 119, "JAVA", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 120, "ECUADOR", 0, -1, "^H[CD][^8]", SA, "12", "10", R.drawable.ec ),
     new Entity( 122, "JERSEY", 0, -1, "^[GM2][HJ]", EU, "27", "14", R.drawable.je ),
-    new Entity( 123, "JOHNSTON ISLAND", 0, -1, "^[AKNW]H3", OC, "61", "31", R.drawable.use ), 
+    new Entity( 123, "JOHNSTON ISLAND", 0, -1, "^[AKNW]H3|^[ANKW].*/KH3$", OC, "61", "31", R.drawable.use ), 
     new Entity( 124, "JUAN DE NOVA", 0, -1, "^FR.*/[EJ]", AF, "53", "39", R.drawable.tf ), 
     new Entity( 125, "JUAN FERNANDEZ", 0, -1, "^C[A-E]0Z|^3G0Z|^X[QR]0Z", SA, "14", "12", R.drawable.cl ),
     new Entity( 126, "KALININGRAD", 0, -1, "^U[A-I]2|^RA2", EU, "29", "15", R.drawable.ru ),
@@ -409,11 +412,11 @@ public class GlobalDxccList {
     new Entity( 131, "KERGUELEN", 0, -1, "^FT[5-8]X|^FT.*/X", AF, "68", "39", R.drawable.tf ),
     new Entity( 132, "PARAGUAY", 0, -1, "^ZP", SA, "14", "11", R.drawable.py ),
     new Entity( 133, "KERMADEC", 0, -1, "^ZL8", OC, "60", "32", R.drawable.nz ),
-    new Entity( 134, "KINGMAN REEF", 0, -1, "^[AKNW]H5K", OC, "61", "31", R.drawable.use ), 
+    new Entity( 134, "KINGMAN REEF", 0, -1, "^[AKNW]H5K|^[ANKW].*/KH5K$", OC, "61", "31", R.drawable.use ), 
     new Entity( 135, "KYRGYZSTAN", 0, -1, "^EX", AS, "30,31", "17", R.drawable.kg ),
     new Entity( 136, "PERU", 0, -1, "^O[A-C]|^4T", SA, "12", "10", R.drawable.pe ), 
     new Entity( 137, "SOUTH KOREA", 0, -1, "^HL|^D[ST789]|^6[K-N]|^KL9K[A-H]", AS, "44", "25", R.drawable.kr ),
-    new Entity( 138, "KURE ISLAND", 0, -1, "^[AKNW]H7K", OC, "61", "31", R.drawable.use ),
+    new Entity( 138, "KURE ISLAND", 0, -1, "^[AKNW]H7K|^[ANKW].*/KH7K$", OC, "61", "31", R.drawable.use ),
     new Entity( 139, "KURIA MURIA ISLAND", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 140, "SURINAME", 0, -1, "^PZ", SA, "12", "09", R.drawable.sr ),
     new Entity( 141, "FALKLAND ISLAND", 0, -1, "^VP8[A-EKLNVY]", SA, "16", "13", R.drawable.fk ),
@@ -448,7 +451,7 @@ public class GlobalDxccList {
     new Entity( 171, "MELLISH REEF", 0, -1, "^VK9[GMW]", OC, "56", "30", R.drawable.au ),
     new Entity( 172, "PITCAIRN ISLAND", 0, -1, "^VP6", OC, "63", "32", R.drawable.pn ),
     new Entity( 173, "MICRONESIA", 0, -1, "^V6", OC, "65", "27", R.drawable.fm ),
-    new Entity( 174, "MIDWAY ISLAND", 0, -1, "^[AKNW]H4", OC, "61", "31", R.drawable.use ),
+    new Entity( 174, "MIDWAY ISLAND", 0, -1, "^[AKNW]H4|^[ANKW].*/KH4$", OC, "61", "31", R.drawable.use ),
     new Entity( 175, "FRENCH POLYNESIA", 0, -1, "^FO|^TX4", OC, "63", "32", R.drawable.pf ),
     new Entity( 176, "FIJI", 0, -1, "^3D2|^3D[N-Z]", OC, "56", "32", R.drawable.fj ),
     new Entity( 177, "MINAMI TORISHIMA", 0, -1, "^JD1.*/M", OC, "90", "27", R.drawable.jp ),
@@ -456,7 +459,7 @@ public class GlobalDxccList {
     new Entity( 179, "MOLDOVA", 0, -1, "^ER", EU, "29", "16", R.drawable.md ),
     new Entity( 180, "MT ATHOS (SY)", 0, -1, "^SV.*/A", EU, "28", "20", R.drawable.gr ), 
     new Entity( 181, "MOZAMBIQUE", 0, -1, "^C8|^C9", AF, "53", "37", R.drawable.mz ),
-    new Entity( 182, "NAVASSA ISLAND", 0, -1, "^[KNW]P1", NA, "11", "08", R.drawable.use ),
+    new Entity( 182, "NAVASSA ISLAND", 0, -1, "^[KNW]P1|^[ANKW].*/KP1$", NA, "11", "08", R.drawable.use ),
     new Entity( 183, "DUTCH BORNEO", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 184, "NETHER N. GUNIEA", 1, -1, null, ZZ, "ZZ", "ZZ" , R.drawable.zz),
     new Entity( 185, "SOLOMON ISLANDS", 0, -1, "^H4[^0]", OC, "51", "29", R.drawable.sb ),
@@ -570,7 +573,7 @@ public class GlobalDxccList {
     new Entity( 294, "WALES", 0, -1, "^[GM2][CW]", EU, "27", "14", R.drawable.wales ),
     new Entity( 295, "VATICAN", 0, -1, "^HV", EU, "28", "15", R.drawable.va ),
     new Entity( 296, "SERBIA", 0, -1, "^YT|^YU|^YZ", EU, "28", "15", R.drawable.rs ),
-    new Entity( 297, "WAKE ISLAND", 0, -1, "^[AKNW]H9", OC, "65", "31", R.drawable.use ),
+    new Entity( 297, "WAKE ISLAND", 0, -1, "^[AKNW]H9|^[ANKW].*/KH9$", OC, "65", "31", R.drawable.use ),
     new Entity( 298, "WALLIS & FUTUNA", 0, -1, "^FW|^TW", OC, "62", "32", R.drawable.wf ),
     new Entity( 299, "WESTERN MALAYSIA", 0, -1, "^9[MW]2|^9[MW]4", AS, "54", "28", R.drawable.my ),
     new Entity( 301, "WESTERN KIRIBATI", 0, -1, "^T30", OC, "65", "31", R.drawable.ki ),
@@ -675,7 +678,7 @@ public class GlobalDxccList {
     new Entity( 512, "CHESTERFIELD IS (TX0)", 0, -1, "^TX0", ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 513, "EAST TIMOR", 0, 511, "^4W", AS, "54", "28", R.drawable.tl ),
     new Entity( 514, "MONTENEGRO", 0, -1, "^4O", EU, "28", "15", R.drawable.cs ),
-    new Entity( 515, "SWAINS ISLAND", 0, -1, "^[AKNW]H8S", OC, "62", "32", R.drawable.use ),    
+    new Entity( 515, "SWAINS ISLAND", 0, -1, "^[AKNW]H8S|^[ANKW].*/KH8S$", OC, "62", "32", R.drawable.use ),    
     new Entity( 516, "SAINT BARTHELEMY", 0, -1, "^FJ", OC, "62", "32", R.drawable.bl ),
     new Entity( 517, "CURACAO", 0, -1, "^PJ2", SA, "11", "09", R.drawable.cw ),
     new Entity( 518, "SINT MAARTEN", 0, -1, "^PJ7", NA, "11", "08", R.drawable.sx),

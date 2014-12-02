@@ -88,6 +88,8 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	
 	          try 
 	          {
+	        	 Method m1 = wifi_manager.getClass().getMethod("getWifiApConfiguration" );
+	        	 wifi_configuration = (WifiConfiguration)m1.invoke(wifi_manager);
 	             //USE REFLECTION TO GET METHOD "SetWifiAPEnabled"
 	             Method method=wifi_manager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
 	             method.invoke(wifi_manager, wifi_configuration, true);

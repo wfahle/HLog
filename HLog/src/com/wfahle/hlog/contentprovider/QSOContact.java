@@ -1,4 +1,4 @@
-package com.wfahle.unused;
+package com.wfahle.hlog.contentprovider;
 
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -17,6 +17,7 @@ public class QSOContact {
 	String state;
 	String country;
 	String grid;
+	String power;
 	String complete; // Y, N, NIL, ?
 	public QSOContact() {
 	
@@ -37,6 +38,7 @@ public class QSOContact {
 		this.state=state;
 		this.country=country;
 		this.grid=grid;
+		this.power="100";
 		this.complete = complete?"Y":"N";
 	}
 	
@@ -56,6 +58,7 @@ public class QSOContact {
     			cal.get(Calendar.DATE)+" "+cal.get(Calendar.HOUR_OF_DAY)+":"+cal.get(Calendar.MINUTE);
     	this.timeon = (String)text;
     	this.timeoff = this.timeon;
+    	this.power = "100";
     	this.complete = "?";
 	}
 	public String getCall() { return call; }
@@ -69,6 +72,7 @@ public class QSOContact {
 	public String getState() { return state; }
 	public String getCountry() { return country; }
 	public String getGrid() { return grid; }
+	public String getPower() { return power; }
 	public String getTimeoff() { return timeoff; }
 	public String getTimeon() { return timeon; }
 	public String getComplete() { return complete; }

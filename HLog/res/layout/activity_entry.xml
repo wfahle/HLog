@@ -90,7 +90,7 @@
         android:layout_above="@+id/call"
         android:layout_alignRight="@+id/spot_list"
         android:onClick="done"
-        android:text="@string/done_ui" />
+        android:text="@string/cancel_ui" />
 
     <Button
         android:id="@+id/dxcStart"
