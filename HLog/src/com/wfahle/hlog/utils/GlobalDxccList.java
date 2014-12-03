@@ -512,7 +512,7 @@ public class GlobalDxccList {
     new Entity( 232, "SOMALIA", 0, -1, "^T5|^6O", AF, "48", "37", R.drawable.so ),
     new Entity( 233, "GIBRALTAR", 0, -1, "^ZB|^ZQ", EU, "37", "14", R.drawable.gi ),
     new Entity( 234, "SOUTHERN COOK ISLAND", 0, -1, "^ZK0|^E5", OC, "62", "32", R.drawable.ck ), 
-    new Entity( 235, "SOUTH GEORGIA ISLAND", 0, -1, "^VP8G|^VP8.*/G", SA, "73", "13", R.drawable.gs ), 
+    new Entity( 235, "SOUTH GEORGIA ISLAND", 0, -1, "^VP8G|^VP8.*/G|^VP8.G", SA, "73", "13", R.drawable.gs ), 
     new Entity( 236, "GREECE", 0, -1, "^S[V-Z][^59]|^J4", EU, "28", "20", R.drawable.gr ), 
     new Entity( 237, "GREENLAND", 0, -1, "^OX|^XP", NA, "5,75", "40", R.drawable.gl ),
     new Entity( 238, "SOUTH ORKNEY ISLAND", 0, -1, "^VP8O|^VP8.*/O", SA, "73", "13", R.drawable.aq ),
