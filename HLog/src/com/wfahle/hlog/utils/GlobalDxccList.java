@@ -465,7 +465,7 @@ public class GlobalDxccList {
     new Entity( 185, "SOLOMON ISLANDS", 0, -1, "^H4[^0]", OC, "51", "29", R.drawable.sb ),
     new Entity( 186, "NEWFOUNDLAND/LAB", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 187, "NIGER", 0, -1, "^5U", AF, "46", "35", R.drawable.ne ),
-    new Entity( 188, "NIUE", 0, -1, "^ZK2|^E6", OC, "62", "32", R.drawable.nz ),
+    new Entity( 188, "NIUE", 0, -1, "^ZK2|^E6", OC, "62", "32", R.drawable.nu ),
     new Entity( 189, "NORFOLK ISLAND", 0, -1, "^VK9[AFJN0]", OC, "60", "32", R.drawable.nf ),
     new Entity( 190, "SAMOA", 0, -1, "^5W", OC, "62", "32", R.drawable.ws ),
     new Entity( 191, "NORTHERN COOK ISLAND", 0, -1, "^ZK1", OC, "62", "32", R.drawable.ck ),

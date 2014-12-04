@@ -231,6 +231,23 @@ public class RadioUtils {
 		return ret;
 	}
 	
+    public static String convertToKHz(String freq, int posp)
+    {
+    	String ret = "";
+        if (posp == -1)
+        {
+        	ret = freq+"000"; // no ., just append 0's
+        }
+        else
+        {
+        	String decimal = "";
+        	if (freq.length() > posp+4)
+        		decimal = "." + freq.substring(posp+4, posp+5);
+        	ret = freq.substring(0, posp)+freq.substring(posp+1, posp+4) + decimal;
+        }
+        return ret;
+    }
+    //convert from khz to mhz
     public static String convertToMHz(String freq, int posp)
     {
     

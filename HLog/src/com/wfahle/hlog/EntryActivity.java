@@ -609,6 +609,30 @@ public class EntryActivity extends Activity {
 		}
 	}
 	
+	public void onSpot(View view) {
+		if (state == loggedIn) {
+			if (telnetsk != null) {
+	            String qsoCall = callBox.getText().toString();
+	            String rfreq = rxfreqBox.getText().toString();
+	            if (rfreq.length() > 0) {
+		            int posp = rfreq.indexOf('.');
+		            String comment = "\r\n";
+		            rfreq = RadioUtils.convertToKHz(rfreq, posp);
+		            String tfreq = txfreqBox.getText().toString();
+		            if (tfreq.length() > 0) {
+			            posp = tfreq.indexOf('.');
+			            tfreq = RadioUtils.convertToKHz(tfreq, posp);
+			            if (!tfreq.equals(rfreq)) {
+			            	comment = " QSX " + tfreq +"\r\n";
+			            }
+		            }
+					String dx = "DX " + rfreq + " " + qsoCall + comment; 
+					telnetsk.SpecialSocketSend(dx.getBytes());
+	            }
+			}
+		}
+	}
+	
 	public void done(View view) {
 		abandon(Activity.RESULT_OK);
     	finish();

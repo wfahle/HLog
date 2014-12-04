@@ -55,5 +55,6 @@
     <string name="mail_ui">Mail adif</string>
     <string name="import_ui">Import dx</string>
     <string name="hotspot_ui">Hotspot</string>
+    <string name="spot_ui">Spot</string>
 
 </resources>
