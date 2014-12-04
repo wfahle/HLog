@@ -286,7 +286,7 @@ public final class R {
     }
     public static final class id {
         public static final int QRZuname=0x7f08000e;
-        public static final int action_settings=0x7f080047;
+        public static final int action_settings=0x7f080049;
         public static final int auto_check=0x7f08000f;
         public static final int call=0x7f080011;
         public static final int call_edit=0x7f080012;
@@ -304,17 +304,19 @@ public final class R {
         public static final int cport=0x7f08000b;
         public static final int cport_edit=0x7f08000a;
         public static final int done_button=0x7f080004;
-        public static final int dx_message=0x7f080046;
+        public static final int dx_message=0x7f080048;
         public static final int dxcStart=0x7f080019;
         public static final int dxc_out=0x7f08001b;
         public static final int entity=0x7f080022;
         public static final int grid=0x7f08003b;
         public static final int grid_edit=0x7f08003c;
-        public static final int key_call=0x7f080040;
-        public static final int key_rxfreq=0x7f080041;
-        public static final int key_timeon=0x7f080042;
+        public static final int import_button=0x7f080041;
+        public static final int key_call=0x7f080042;
+        public static final int key_rxfreq=0x7f080043;
+        public static final int key_timeon=0x7f080044;
         public static final int log_button=0x7f08001a;
         public static final int lookup_button=0x7f080031;
+        public static final int mail_button=0x7f080040;
         public static final int mode=0x7f08001d;
         public static final int mode_edit=0x7f08001c;
         public static final int modet=0x7f08002c;
@@ -340,10 +342,10 @@ public final class R {
         public static final int rxfreqt_edit=0x7f080029;
         public static final int save_button=0x7f080023;
         public static final int shdx_button=0x7f080010;
-        public static final int spot_call=0x7f080044;
-        public static final int spot_flag=0x7f080043;
+        public static final int spot_call=0x7f080046;
+        public static final int spot_flag=0x7f080045;
         public static final int spot_list=0x7f080017;
-        public static final int spot_rxfreq=0x7f080045;
+        public static final int spot_rxfreq=0x7f080047;
         public static final int srst_edit=0x7f080020;
         public static final int srstt=0x7f080021;
         public static final int srstt_edit=0x7f080030;
@@ -363,15 +365,17 @@ public final class R {
         public static final int activity_entry=0x7f030001;
         public static final int activity_log=0x7f030002;
         public static final int activity_main=0x7f030003;
-        public static final int log_row=0x7f030004;
-        public static final int spot_row=0x7f030005;
-        public static final int spotview=0x7f030006;
+        public static final int activity_tools=0x7f030004;
+        public static final int log_row=0x7f030005;
+        public static final int spot_row=0x7f030006;
+        public static final int spotview=0x7f030007;
     }
     public static final class menu {
         public static final int config=0x7f070000;
         public static final int entry=0x7f070001;
         public static final int log=0x7f070002;
         public static final int main=0x7f070003;
+        public static final int tools=0x7f070004;
     }
     public static final class string {
         public static final int action_settings=0x7f050001;
@@ -392,10 +396,13 @@ public final class R {
         public static final int dxmessage=0x7f050029;
         public static final int edit_ui=0x7f050022;
         public static final int grid_ui=0x7f05001e;
+        public static final int hello_world=0x7f050032;
+        public static final int import_ui=0x7f050034;
         public static final int log_contact=0x7f050007;
         public static final int log_ui=0x7f050008;
         public static final int login_ui=0x7f05000e;
         public static final int lookup_ui=0x7f050018;
+        public static final int mail_ui=0x7f050033;
         public static final int menu_delete=0x7f050024;
         public static final int mode_ui=0x7f050011;
         public static final int namet_ui=0x7f050017;
@@ -420,6 +427,7 @@ public final class R {
         public static final int title_activity_config=0x7f05000b;
         public static final int title_activity_entry=0x7f05001f;
         public static final int title_activity_log=0x7f050014;
+        public static final int title_activity_tools=0x7f050031;
         public static final int tools_ui=0x7f050023;
         public static final int txfreq_ui=0x7f050005;
         public static final int yourcall_ui=0x7f05000d;
