@@ -306,7 +306,7 @@ public final class R {
         public static final int cport_edit=0x7f08000a;
         public static final int done_button=0x7f080004;
         public static final int dx_message=0x7f08004a;
-        public static final int dxcStart=0x7f080013;
+        public static final int dxcStart=0x7f08001a;
         public static final int dxc_out=0x7f08001b;
         public static final int entity=0x7f080023;
         public static final int grid=0x7f08003c;
@@ -315,7 +315,7 @@ public final class R {
         public static final int key_call=0x7f080044;
         public static final int key_rxfreq=0x7f080045;
         public static final int key_timeon=0x7f080046;
-        public static final int log_button=0x7f08001a;
+        public static final int log_button=0x7f080013;
         public static final int lookup_button=0x7f080032;
         public static final int mail_button=0x7f080042;
         public static final int mode=0x7f08001f;

@@ -627,7 +627,7 @@ public class GlobalDxccList {
     new Entity( 414, "DEM. REP. CONGO", 0, -1, "^9[O-T]", AF, "52", "36", R.drawable.cd ),
     new Entity( 416, "BENIN", 0, -1, "^TY", AF, "46", "35", R.drawable.bj ),
     new Entity( 420, "GABON", 0, -1, "^TR", AF, "52", "36", R.drawable.ga ),
-    new Entity( 422, "GAMBIA", 0, -1, "^C5", AF, "46", "35", R.drawable.gm ),
+    new Entity( 422, "THE GAMBIA", 0, -1, "^C5", AF, "46", "35", R.drawable.gm ),
     new Entity( 424, "GHANA", 0, -1, "^9G", AF, "46", "35", R.drawable.gh ),
     new Entity( 428, "IVORY COAST", 0, -1, "^TU", AF, "46", "35", R.drawable.ci ),
     new Entity( 430, "KENYA", 0, -1, "^5Y|^5Z", AF, "48", "37", R.drawable.ke ),

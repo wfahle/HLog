@@ -529,8 +529,6 @@ public class EntryActivity extends Activity {
 			if(telnetsk != null) {
 				String quit = "q\r\n";
 				telnetsk.SpecialSocketSend(quit.getBytes());
-				Button button = (Button) findViewById(R.id.dxcStart);
-				button.setText(R.string.login_ui);
 				telnetsk.SocketStop();
 				telnetsk=null;
 			}
