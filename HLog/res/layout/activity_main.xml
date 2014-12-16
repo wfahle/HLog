@@ -12,20 +12,9 @@
         android:id="@+id/contacts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/capture_button"
-        android:layout_alignBottom="@+id/capture_button"
+		android:layout_marginTop="22dp"
         android:layout_alignParentLeft="true"
         android:text="@string/contacts_ui" />
-
-    <Button
-        android:id="@+id/capture_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="18dp"
-        android:layout_toRightOf="@+id/contacts"
-        android:onClick="onCapture"
-        android:text="@string/new_ui" />
 
     <Button
         android:id="@+id/config_1"
@@ -54,6 +43,24 @@
         android:layout_alignParentRight="true"
         android:onClick="onTools"
         android:text="@string/tools_ui" />
+
+    <Button
+        android:id="@+id/capture_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_below="@+id/contacts"
+        android:layout_marginTop="34dp"
+        android:onClick="onCapture"
+        android:text="@string/new_ui" />
+
+    <Button
+        android:id="@+id/btnEnableAP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/config_1"
+        android:layout_toRightOf="@+id/config_1"
+        android:text="@string/hotspot_ui" />
 
 </RelativeLayout>
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.wfahle.hlog.contentprovider.QSOContact;
 import com.wfahle.hlog.contentprovider.QSOContactProvider;
 import com.wfahle.hlog.contentprovider.QSOContactTable;
 import com.wfahle.hlog.network.RHandler;
@@ -13,7 +14,6 @@ import com.wfahle.hlog.network.TerminalSocket;
 import com.wfahle.hlog.utils.Entity;
 import com.wfahle.hlog.utils.GlobalDxccList;
 import com.wfahle.hlog.utils.RadioUtils;
-import com.wfahle.unused.QSOContact;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,7 +33,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.KeyEvent;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -372,6 +371,7 @@ public class EntryActivity extends Activity {
 		values.put(QSOContactTable.KEY_STATE, qso.getState());
 		values.put(QSOContactTable.KEY_COUNTRY, qso.getCountry());
 		values.put(QSOContactTable.KEY_GRID, qso.getGrid());
+		values.put(QSOContactTable.KEY_TXPWR, qso.getPower());
 		values.put(QSOContactTable.KEY_COMPLETE, qso.getComplete());
 		
 		if (contactUri == null) {
@@ -528,8 +528,6 @@ public class EntryActivity extends Activity {
 			if(telnetsk != null) {
 				String quit = "q\r\n";
 				telnetsk.SpecialSocketSend(quit.getBytes());
-				Button button = (Button) findViewById(R.id.dxcStart);
-				button.setText(R.string.login_ui);
 				telnetsk.SocketStop();
 				telnetsk=null;
 			}
@@ -605,6 +603,30 @@ public class EntryActivity extends Activity {
 	public void onFilter(View view) {
 		if (state == loggedIn) {
 			//TODO: send configured filter info
+		}
+	}
+	
+	public void onSpot(View view) {
+		if (state == loggedIn) {
+			if (telnetsk != null) {
+	            String qsoCall = callBox.getText().toString();
+	            String rfreq = rxfreqBox.getText().toString();
+	            if (rfreq.length() > 0) {
+		            int posp = rfreq.indexOf('.');
+		            String comment = "\r\n";
+		            rfreq = RadioUtils.convertToKHz(rfreq, posp);
+		            String tfreq = txfreqBox.getText().toString();
+		            if (tfreq.length() > 0) {
+			            posp = tfreq.indexOf('.');
+			            tfreq = RadioUtils.convertToKHz(tfreq, posp);
+			            if (!tfreq.equals(rfreq)) {
+			            	comment = " QSX " + tfreq +"\r\n";
+			            }
+		            }
+					String dx = "DX " + rfreq + " " + qsoCall + comment; 
+					telnetsk.SpecialSocketSend(dx.getBytes());
+	            }
+			}
 		}
 	}
 	

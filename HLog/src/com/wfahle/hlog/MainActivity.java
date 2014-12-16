@@ -1,5 +1,8 @@
 package com.wfahle.hlog;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import com.wfahle.hlog.contentprovider.QSOContactProvider;
 import com.wfahle.hlog.contentprovider.QSOContactTable;
 
@@ -11,6 +14,8 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -18,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
@@ -63,6 +69,54 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	      tv.setText(conts);
       }
     }    
+
+    WifiManager wifi_manager;
+    Button btnEnableAP;
+    public  void setupHotspot() {
+	    wifi_manager = (WifiManager) this.getSystemService(MainActivity.WIFI_SERVICE);
+	    btnEnableAP = (Button)findViewById(R.id.btnEnableAP);
+	
+	    btnEnableAP.setOnClickListener(new View.OnClickListener() 
+	    {
+	
+	       @Override
+	       public void onClick(View arg0) 
+	       {
+	          // TODO Auto-generated method stub
+	          WifiConfiguration wifi_configuration = null;
+	          wifi_manager.setWifiEnabled(false);
+	
+	          try 
+	          {
+	        	 Method m1 = wifi_manager.getClass().getMethod("getWifiApConfiguration" );
+	        	 wifi_configuration = (WifiConfiguration)m1.invoke(wifi_manager);
+	             //USE REFLECTION TO GET METHOD "SetWifiAPEnabled"
+	             Method method=wifi_manager.getClass().getMethod("setWifiApEnabled", WifiConfiguration.class, boolean.class);
+	             method.invoke(wifi_manager, wifi_configuration, true);
+	          } 
+	          catch (NoSuchMethodException e) 
+	          {
+	             // TODO Auto-generated catch block
+	             e.printStackTrace();
+	          } 
+	          catch (IllegalArgumentException e) 
+	          {
+	             // TODO Auto-generated catch block
+	             e.printStackTrace();
+	          } 
+	          catch (IllegalAccessException e) 
+	          {
+	             // TODO Auto-generated catch block
+	             e.printStackTrace();
+	          } 
+	          catch (InvocationTargetException e) 
+	          {
+	             // TODO Auto-generated catch block
+	             e.printStackTrace();
+	          }
+	       }
+	    });
+    }
     
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -111,8 +165,8 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	    this.getListView().setDividerHeight(2);
-		
 		setContentView(R.layout.activity_main);
+		setupHotspot();
 	    fillData();
 	    registerForContextMenu(getListView());
 	}
