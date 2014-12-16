@@ -152,4 +152,14 @@
         android:layout_alignTop="@+id/QRZuname"
         android:text="@string/auto_ui" />
 
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/done_button"
+        android:layout_alignBottom="@+id/done_button"
+        android:layout_toRightOf="@+id/done_button"
+        android:onClick="onCancel"
+        android:text="@string/cancel_ui" />
+
 </RelativeLayout>

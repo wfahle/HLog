@@ -13,6 +13,7 @@ import android.widget.EditText;
 public class ConfigActivity extends Activity {
 
 	public static final String PREFS_NAME = "com.wfahle.hlog.PREFS_NAME";
+	public static final String NONPREF_NAME = "com.wfahle.hlog.NONPREF_NAME";
 	public static final String CLUSTER_SERVER = "com.wfahle.hlog.CLUSTER_SERVER";
 	public static final String TELNET_PORT = "com.wfahle.hlog.TELNET_PORT";
 	public static final String PIGLET_ID = "com.wfahle.hlog.PIGLET_ID";
@@ -21,13 +22,22 @@ public class ConfigActivity extends Activity {
 	public static final String QRZ_USER = "com.wfahle.hlog.QRZ_USER";
 	public static final String QRZ_PASSWORD = "com.wfahle.hlog.QRZ_PASSWORD";
 	public static final String QRZ_AUTO = "com.wfahle.hlog.QRZ_AUTO";
-	
+	private boolean cancelled = false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_config);
 
-	    final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		cancelled = false;
+	    SharedPreferences settings = getSharedPreferences(NONPREF_NAME, 0);
+	    if (settings == null || !settings.contains("CLUSTER_SERVER"))
+	    	settings = getSharedPreferences(PREFS_NAME, 0);
+	    else {
+	        final SharedPreferences.Editor editor = settings.edit();
+	        editor.clear(); // clear out the non-preferred if they don't get saved
+	        editor.apply();
+	    }
+	    	
 		final EditText server_edit = (EditText) findViewById(R.id.cluster_edit);
 		final EditText cport_edit = (EditText) findViewById(R.id.cport_edit);		
 		final EditText logon_edit = (EditText) findViewById(R.id.yourcall_edit);
@@ -75,7 +85,8 @@ public class ConfigActivity extends Activity {
 			ldb.addConfig(cfg);
 		else
 			ldb.updateConfig(cfg); */
-        final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        final SharedPreferences settings = preferred?getSharedPreferences(PREFS_NAME, 0):
+        		getSharedPreferences(NONPREF_NAME, 0);
         final SharedPreferences.Editor editor = settings.edit();
         editor.putString(QRZ_USER, qrzon_edit.getEditableText().toString());
         editor.putString(QRZ_PASSWORD, qrzpassword_edit.getText().toString());
@@ -94,7 +105,8 @@ public class ConfigActivity extends Activity {
 	protected void onPause()
 	{
 		super.onPause();
-		saveConfig(false);
+		if (!cancelled)
+			saveConfig(false);
 	}
 
 	@Override
@@ -118,6 +130,13 @@ public class ConfigActivity extends Activity {
     	saveConfig(true);
     	Intent resultIntent = new Intent();
     	setResult(Activity.RESULT_OK, resultIntent);
+    	finish();
+    }
+    public void onCancel(View view) {
+    	cancelled = true;
+//    	saveConfig(true);
+    	Intent resultIntent = new Intent();
+    	setResult(Activity.RESULT_CANCELED, resultIntent);
     	finish();
     }
 
