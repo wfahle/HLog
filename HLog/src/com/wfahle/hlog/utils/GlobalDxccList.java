@@ -523,7 +523,7 @@ public class GlobalDxccList {
     new Entity( 243, "DEM REP OF YEMEN", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 244, "SOUTHERN SUDAN", 1, -1, null, ZZ, "ZZ", "ZZ", R.drawable.zz ),
     new Entity( 245, "IRELAND", 0, -1, "^EI|^EJ", EU, "27", "14", R.drawable.ie ),
-    new Entity( 246, "MALTA, SOVERIGN", 0, -1, "^1A0", EU, "28", "15", R.drawable.dk ),
+    new Entity( 246, "MALTA, SOVERIGN", 0, -1, "^1A0", EU, "28", "15", R.drawable.mt ),
     new Entity( 247, "SPRATLY ISLAND", 0, -1, "^1S", AS, "50", "26", R.drawable.my ),
     new Entity( 248, "ITALY", 0, -1, "^I[^S]", EU, "28,37,15", "33", R.drawable.it ),
     new Entity( 249, "ST KITTS & NEVIS", 0, -1, "^V4", NA, "11", "08", R.drawable.kn ),
