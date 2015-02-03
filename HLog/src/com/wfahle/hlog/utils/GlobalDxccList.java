@@ -222,7 +222,7 @@ public class GlobalDxccList {
 		exceptions.put("JD1BHH/6", 339);
 		
 		// Navassa: 182
-		exceptions.put("K1P", 182);
+		exceptions.put("K1N", 182);
 		
 		// Norfolk: 189
 		exceptions.put("VK9DAC", 189);
